@@ -1,0 +1,252 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SHEDS Fish Data Visualizations</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="libs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="libs/landing-page/css/landing-page.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="libs/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="libs/leaflet/dist/leaflet.css" rel="stylesheet" type="text/css">
+
+  <style>
+    body, h1, h2, h3, h4, h5, h6 {
+      font-weight: 400;
+      font-family: "Open Sans", Helvetica, Arial, sans-serif !important;
+    }
+
+    .top-section {
+      background: #222;
+      color: white;
+    }
+
+    #map {
+      height: 300px;
+      width: 400px;
+      margin: 0 10px;
+      display: block;
+      margin: auto;
+      width: 80%;
+    }
+
+    div.tooltip {
+      position: absolute;
+      padding: 2px;
+      font: 12px sans-serif;
+      background: #C6C6C6;
+      pointer-events: none;
+      height: auto;
+      width: 620px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div style="border-bottom: 2px solid #e7e7e7;background:#f8f8f8">
+    <div class="container">
+      <div class="row" style="margin-top: 20px; margin-bottom: 20px">
+        <div class="col-xs-12">
+          <h1>West Brook Fish Tagging Study</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-section-b top-section">
+    <div class="container">
+      <div class="row" style="margin-top: 40px">
+        <div class="col-md-6">
+          <h2>What is a tagging study?</h2>
+          <p style="font-size:1.2em;">Understanding the performance and fate of individual fish helps us understand why populations fluctuate and why species come and go.</p>
+          <p style="font-size:1.2em;">Since 1997, we have studied stream fish using <a href="https://en.wikipedia.org/wiki/Radio-frequency_identification" target="_blank"> tags </a>that contain unique electronic codes. We can estimate body growth, movement and reproduction (performance) and survival (fate) by recapturing tagged fish over time. </p>
+          <p style="font-size:1.2em;">Our longest-running study is the West Brook, in Whately MA. Dots on the map are 20m-long sampling sections. Mouse over a section to see a picture of the section from 2006. Blue dots are the West Brook mainstem. Green, orange and red dots are tributaries. Get a tour of the data by  <a href="#"> launching </a>the introduction.</p>
+
+        </div>
+
+        <div class="col-md-6 text-center">
+          <h2>Study site location</h2>
+          <div>
+            <div id="map"></div>
+          </div>
+          <p><a class="btn btn-lg btn-primary" style="margin-top: 25px" href="#">Launch Intro <span class="glyphicon glyphicon-chevron-right"></span></a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-section-a">
+    <div class="container">
+      <div class="row" style="margin-top: 40px">
+        <div class="col-md-6">
+
+          <h2>Want a detailed look at the data?</h2>
+
+          <p>
+            This <a href="#">app</a> shows the locations of individual fish over time. Watch the fish move from season to season and see who lives and dies...
+          </p>
+        </div>
+        <div class="col-md-6 text-center">
+          <a href="#">
+            <img src="/img/thumb-select-watershed.png" class="img-rounded" alt="Web pic" width="500" height="267">
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-section-b">
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12 col-md-8">
+          <h2>Project Team</h2>
+          <p>Ben Letcher initiated the study in 1997 with Gabe Gries. Since then the study has been a collaboration among the <a href="http://www.lsc.usgs.gov/?q=cafb-population-dynamics-personnel" target="_blank">USGS Conte Laboratory</a> (Ben Letcher, Matt O'Donnell, Todd Dubreuil), the <a href="http://www.nrs.fs.fed.us/people/knislow" target="_blank">USFS Northern Research Station</a> (Keith Nislow, Jason Coombs), and the <a href="http://eco.umass.edu/" target="_blank">University of Massachusetts Department of Environmental Conservation</a> ( <a href="http://www.cfc.umt.edu/personnel/details.php?ID=4461" target="_blank">Andrew Whiteley</a> - now at The University of Montana). We thank the many graduate students, interns, post-docs and others who have helped sample the stream over the years. </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="content-section-a">
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12 col-md-8">
+          <h2>Funding Sources</h2>
+          <p> USGS Conte Laboratory and USFS Northern Research Station</p>
+          <p>... </p>
+          <p>ICE is funded by the <a href="https://necsc.umass.edu/" target="_blank">NE Climate Science Center</a>, <a href="http://northatlanticlcc.org/" target="_blank">North Atlantic Landscape Conservation Cooperative</a>, <a href="http://www.usgs.gov/hurricane/sandy/#overview.html" target="_blank">USGS and DOI Hurricane Sandy Restoration funds</a>, and the <a href="https://nccwsc.usgs.gov/" target="_blank">USGS National Climate Science Center</a>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12">
+          <p class="copyright text-muted">Copyright © 2016 SHEDS Development Team</p>
+          <p class="copyright text-muted"><strong>Disclaimer:</strong> This web site (SHEDS) has not yet been approved by the U.S. Geological Survey (USGS). As such, it does not represent any official USGS finding or policy.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+
+
+<script src="libs/leaflet/dist/leaflet.js"></script>
+<script src="libs/d3/d3.min.js"></script>
+
+<script>
+var map = L.map('map').setView([42.434, -72.669], 15);
+
+// L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.{ext}', {
+//   attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+//   subdomains: 'abcd',
+//   minZoom: 4,
+//   maxZoom: 18,
+//   ext: 'png'
+// }).addTo(map);
+
+L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
+
+map._initPathRoot();
+
+
+var year = 2006, season = 1;
+var locations,locationsMap,feature;
+
+var svg = d3.select("#map").select("svg"),
+    g = svg.append("g");
+
+var tooltip = d3.select("body").append("div")
+  .attr("class", "tooltip")
+  .style("opacity", 0);
+
+// this doesn't get fired on error
+function imgError(){
+  tooltip.html('Image not found')
+    .style("left", "100px")
+    .style("top",  "160px")
+    .transition()
+    .duration(100)
+    .style("opacity", 1);
+}
+
+d3.queue()
+  .defer(d3.csv, '/data/coordsForD3JS.csv')
+  .await(ready);
+
+function ready(error, locations) {
+  if (error) throw error;
+
+  locations =  locations.filter(function(dd) {
+    return dd.watershed == "west" && dd.section > 0 && dd.section < 48;
+  });
+
+  var riverNames = {
+    'West Brook': 'WB',
+    'WB Mitchell': 'OS',
+    'WB Jimmy': 'OL',
+    'WB Obear': 'IL'
+  };
+
+  locations.forEach(function (d) {
+      d.lat = +d.lat;
+      d.lon = +d.lon;
+      d.river = riverNames[d.riverFull];
+      d.LatLng = new L.LatLng(d.lat, d.lon)
+  });
+
+  var riverColors = d3.scaleOrdinal(d3.schemeCategory10)
+    .domain(['WB', 'OS', 'OL', 'IL']);
+
+  feature = g.selectAll("circle")
+    .data(locations)
+    .enter().append("circle")
+    .style("stroke", function(d) { return d3.rgb(riverColors(d.river)).darker(1); })
+    .style("fill", function(d) { return riverColors(d.river); })
+    .style("opacity", 0.6)
+    .attr("r", 4)
+    .on("mouseover", function(d) {
+      d3.select(this)
+        .attr("r", 8)
+        .style("stroke", "red")
+        .style("fill", "lightgrey");
+
+      var fileName = "img/" + d.river + "_" + year + "_" + season + "_" + d.section + ".jpg";
+
+      // tooltip.html('<h3>River = ' + d.riverFull + ", Section = " + d.section + '</h3><br><img src= ' + fileName + '>')
+      //   .style("left", "100px")// (d3.event.pageX + 15) + "px")
+      //   .style("top",  "160px")// (d3.event.pageY - 15) + "px")
+      //   .transition()
+      //   .duration(100)
+      //   .style("opacity", 1);
+    })
+    .on("mouseout", function (d) {
+      d3.select(this)
+        .attr("r", 4)
+        .style("stroke", function(d) { return d3.rgb(riverColors(d.river)).darker(1); })
+        .style("fill", function(d) { return riverColors(d.river); });
+
+      // tooltip.transition()
+      //   .duration(250)
+      //   .style("opacity", 0);
+    });
+
+  map.on("viewreset", onViewReset);
+  onViewReset();
+
+  function onViewReset() {
+    feature.attr("transform", function(d) {
+      return "translate(" + map.latLngToLayerPoint(d.LatLng).x + "," +
+                            map.latLngToLayerPoint(d.LatLng).y + ")";
+    });
+  }
+}
+</script>
+
+</body>
+</html>
