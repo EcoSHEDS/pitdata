@@ -1,0 +1,24 @@
+{
+  "name": "sheds-fish",
+  "homepage": "https://github.com/walkerjeffd/sheds-fish",
+  "authors": [
+    "Jeff Walker <walker.jeff.d@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "landing-page": "https://github.com/BlackrockDigital/startbootstrap-landing-page/archive/v3.3.7.zip",
+    "bootstrap": "^3.3.7",
+    "d3": "^4.2.2",
+    "font-awesome": "^4.6.3",
+    "leaflet": "^0.7.7"
+  }
+}
