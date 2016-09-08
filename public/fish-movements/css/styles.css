@@ -1,0 +1,57 @@
+.container-fluid {
+    padding-top: 0px;
+    padding-bottom: 40px;
+    margin-right: 20px;
+    margin-left: 15px;
+}
+
+.container-canvas {
+    margin: 0 auto;
+    width: 1024px;
+}
+
+svgHeatMap,
+canvasHeatMap {
+  position: absolute;
+  z-index: 2
+}
+
+#prevSamp {
+  position: absolute;
+  bottom: 60px;
+  left: 715px;
+  font-family: "verdana", sans-serif;
+}
+
+#yearSelect {
+  position: absolute;
+  bottom: 60px;
+  left: 884px;
+}
+
+#nextSamp {
+  position: absolute;
+  bottom: 60px;
+  left: 805px;
+}
+
+.bar rect {
+  fill: rgb(74,116,134);
+}
+
+.bar2 rect {
+  fill: rgba(249, 164, 6, 0.65);
+
+}
+
+.bar text {
+  fill: #fff;
+  font: 10px sans-serif;
+}
+
+.btn-group-vertical {
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+
+}

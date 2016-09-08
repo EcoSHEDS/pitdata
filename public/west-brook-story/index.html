@@ -4,12 +4,12 @@
 <head>
   <meta charset="utf-8">
 
-  <title>West Brook PIT study</title>
+  <title>West Brook Story | SHEDS</title>
 
   <link rel="stylesheet" href="/libs/bootstrap/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="/libs/bootstrap/dist/css/bootstrap-theme.min.css">
 
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body>
@@ -105,10 +105,10 @@
 <script src="/libs/jquery/dist/jquery.min.js"></script>
 <script src="/libs/bootstrap/dist/js/bootstrap.min.js"></script>
 
-<script src="app.js"></script>
+<script src="js/app.js"></script>
 
 <script>
-d3.csv("/data/coreDataOut.csv", typeCoreData, function (error,cd) {
+d3.csv("data/coreDataOut.csv", typeCoreData, function (error,cd) {
   if (error) throw error;
 
   var cd = getDataEnc(cd);
