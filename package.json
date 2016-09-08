@@ -1,0 +1,20 @@
+{
+  "name": "sheds-fish",
+  "version": "1.0.0",
+  "description": "Interactive Data Visualizations of Fish Tagging Data for SHEDS",
+  "main": "index.js",
+  "scripts": {
+    "start": "http-server ./public",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/walkerjeffd/sheds-fish.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/walkerjeffd/sheds-fish/issues"
+  },
+  "homepage": "https://github.com/walkerjeffd/sheds-fish#readme"
+}
