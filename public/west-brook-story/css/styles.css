@@ -23,32 +23,20 @@ svg {
   max-width: 1200px;
 }
 
-.right-container {
-  position: relative;
-  height: 700px;
-  padding: 10px;
-  padding-top: 100px;
-}
-
-.description  {
-  top: 50%;
-  -webkit-transform: translateY(-50%);
-  transform: translateY(-50%);
-  font-size: 20px;
+.narration-container {
+  padding-top: 20px;
+  font-size: 16px;
   line-height: 1.2;
-  position: relative;
   color: #737373;
 }
 
-.bottom-container {
-  position: relative;
-  padding: 0;
+.narration-step {
+  display: none;
 }
 
 .step-container {
-  padding-top: 0px;
-  padding-left: 20px;
-  font-family: sans-serif, monospace;
+  margin-top: 10px;
+  margin-bottom: 20px;
 }
 
 .step-container .step.selected {
@@ -62,20 +50,14 @@ svg {
 }
 
 .step-container .step {
-  -webkit-transition: background-color .3s;
-  transition: background-color .25s;
-  width: min-content;
+  display: inline-block;
+  padding: 3px 10px;
+  font-size: 20px;
+  color: #999;
   background-color: #f0f0f0;
   text-align: center;
-  cursor: pointer;
   border: 2px solid #fff;
-  font-size: 14px;
-  color: #999;
-  margin-right: 0;
-  padding: 5px;
-  padding-left: 10px;
-  padding-right: 10px;
-  display: inline-block;
+  cursor: pointer;
 }
 
 
@@ -84,6 +66,29 @@ svg {
 ============================================================================ */
 
 /*
+
+.right-container {
+  position: relative;
+  height: 700px;
+  padding: 10px;
+  padding-top: 100px;
+}
+
+.bottom-container {
+  position: relative;
+  padding: 0;
+}
+
+.description  {
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+  font-size: 20px;
+  line-height: 1.2;
+  position: relative;
+  color: #737373;
+}
+
 .nodes circle {
   pointer-events: all;
   stroke: none;
