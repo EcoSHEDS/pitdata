@@ -816,20 +816,13 @@ svgContainer =
       .attr('height', canvas.height)
       .append('g');
 
-svgContainer.append('rect')
-  .attr('class', 'overlay')
-      .attr('width', canvas.width)
-      .attr('height', canvas.height);
-
-////////////
-// force simulation
   simulation = d3.forceSimulation()
     .force("charge", d3.forceManyBody()
-                       .strength(-initialRadius + 1) //strength of attraction among points [ - repels, + attracts ]
+                       .strength(-initialRadius + 1) // strength of attraction among points [ - repels, + attracts ]
 //                    .distanceMax(200)
           )
     .force("collide", d3.forceCollide()
-                        .radius(initialRadius + 1.02)//(function(d) { return ageScale(d.currentAge) + 1.025; })
+                        .radius(initialRadius + 1.02) // (function(d) { return ageScale(d.currentAge) + 1.025; })
           )
     .force("x", d3.forceX().x(function(d) { return d.xx; })
           )

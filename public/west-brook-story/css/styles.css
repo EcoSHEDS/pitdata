@@ -88,16 +88,8 @@ p {
     color: #737373;
 }
 
-hr {
-  padding-left: 20;
-}
-
-
 svg {
   position: absolute;
   top: 96px;
   left: 15px;
 }
-
-rect { fill: transparent; }
-
