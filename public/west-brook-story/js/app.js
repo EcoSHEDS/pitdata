@@ -78,7 +78,8 @@ function typeCoreData(d){
 }
 
 function initializeInterface(){
-
+  d3.select('#fish-per-circle').text(fishPerCircle);
+  d3.select('#chart-footnote').style('display', 'block');
    $("#all").on("click", function () {
      console.log("#all click");
      getXY("all");
@@ -168,7 +169,15 @@ function initializeInterface(){
      canvasL.height = 0;
    });
 
-   // $("#numF").text("Each circle represents " + fishPerCircle + " fish");
+   d3.select('#loading')
+    .style('opacity', 1)
+    .transition()
+    .duration(1000)
+    .style('opacity', 0)
+    .on('end', function () {
+      console.log('test');
+      d3.select(this).style('display', 'none');
+    })
 }
 
 function initializeXY(w,h){
