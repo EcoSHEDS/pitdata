@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+<head>
+  <title>West Brook PIT study</title>
+  <meta charset="utf-8">
+  
+  <script src="https://d3js.org/d3.v4.js"></script>
+  
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  
+  <script type='text/javascript' src="http://felek.cns.umass.edu:4444/indTagViz/WB/dev/js/functions.js"></script>
+  <script type='text/javascript' src="http://felek.cns.umass.edu:4444/indTagViz/WB/dev/js/globalVariables.js"></script>
+  
+  <link rel="stylesheet" href="http://felek.cns.umass.edu:4444/indTagViz/WB/dev/css/indTagViz.css">  
+  
+</head>
+
+<body>
+
+
+  <!-- Page Content -->
+  <div class="container-fluid">
+
+      <!-- Page Header -->
+    <div class="row">
+      
+       <div class="col-lg-10">
+            <h3 class="page-header">Trout and salmon in a small stream network in western MA, USA  -  The West Brook Story
+            </h3>
+   <!--         <div class = "top-container">
+              <div class="description" style="opacity: 1; pointer-events: none; display: block;">
+                <p class = "text" style="opacity: 1;">
+                  
+                </p>
+              </div>
+            </div>   -->
+            
+        <canvas width="900" height="600"></canvas>
+        
+        <hr noshade>
+        
+        <div class="bottom-container">
+          <div class="step-container" style="opacity: 1;">
+            <div id="step1" class="step selected">1</div>
+            <div id="step2" class="step">2</div>
+            <div id="step3" class="step">3</div>
+            <div id="step4" class="step">4</div>
+            <div id="step5" class="step">5</div>
+            <div id="step6" class="step">6</div>
+            <div id="step7" class="step">7</div>
+            <div id="step8" class="step">Explore</div>
+          </div>
+        </div>
+      </div>
+      
+        <div class="col-lg-2">
+           
+           <div class = "right-container">
+              <div class="description" style="opacity: 1; display: block;">
+                <p class = "text" style="opacity: 1;">
+                  
+                </p>
+              </div>
+            </div> 
+
+              <div class="panel panel-default">
+                 <div class="panel-body">
+                    
+                    <form class="form-inline-vertical"> 
+                       <div class="form-group form-group-sm">
+                         
+                         <div class="btn-group-vertical pull-left" role="group" aria-label="...">
+                           Position by:             
+                          <button type="button" class="btn btn-default btn-sm" id="all">None</button>
+                          <button type="button" class="btn btn-default btn-sm" id="species">Species</button>
+                          <button type="button" class="btn btn-default btn-sm" id="river">River</button>
+                          <button type="button" class="btn btn-default btn-sm" id="season">Season</button>
+                          <button type="button" class="btn btn-default btn-sm" id="year">Year</button>
+                          <button type="button" class="btn btn-default btn-sm" id="seasonYear">Season/Year</button>
+        
+                        </div>
+                      </div>
+                    </form>
+  
+                    <form class="form-inline-vertical"> 
+                      <div class="form-group form-group-sm">
+  
+                         <div class="btn-group-vertical pull-right" role="group" aria-label="...">
+                           Color by:
+                           <button type="button" class="btn btn-default btn-sm" id="reset">None</button>
+                           <button type="button" class="btn btn-default btn-sm" id="colorSpecies">Species</button>
+                           <button type="button" class="btn btn-default btn-sm" id="colorRiver">River</button> 
+                           <button type="button" class="btn btn-default btn-sm" id="colorSeason">Season</button>
+                           <button type="button" class="btn btn-default btn-sm" id="colorYear">Year</button>
+                         </div>
+                     
+               <!--          <div class="btn-group-vertical pull-right" role="group">
+                           <button type="button" class="btn btn-primary btn-md btn-space pull-right" id="reset"> Reset </button>
+                         </div> -->
+  
+                      </div>
+                   </form>
+                 </div>
+              </div>
+          </div>
+          
+          <div class="col-lg-2"> 
+              <div class="panel panel-default" id="colorLegend">
+                <div class="panel-heading" role="tab" id="headingOne">
+                  <h3 class="panel-title">
+                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                      Color legend
+                    </a>
+                  </h3>
+                </div>
+                <div id="collapseOne" class="panel" role="tabpanel" aria-labelledby="headingTwo">
+                  <div class="panel-body">
+                    <div id="legend">
+                      <canvas id="legendCanvas" width="160" height="500"></canvas>
+                      <p id='numF'></p>
+                    </div>
+                  </div>
+                </div>
+            </div>
+          
+          </div>
+        
+      </div>
+        
+    </div>
+
+<script>
+
+
+var sppScale = d3.scaleOrdinal().domain(["ats","bnt","bkt"]).range(["Atlantic salmon", "Brown trout", "Brook trout"]);
+var riverScale = d3.scaleOrdinal().domain(["WB","OL","OS","IL"]).range(["Main branch","Large tributary","Small tributary","Isolated trib."]);
+
+var fourColors = ['#a6cee3','#1f78b4','#b2df8a','#33a02c']
+var sppColor = d3.scaleOrdinal().domain(["ats","bnt","bkt"]).range(fourColors);//[d3.rgb(162,205,174), d3.rgb(74,116,134), d3.rgb(36,45,66)]); //ICE+20
+
+//var riverColor = d3.scaleOrdinal().domain(["WB","OL","OS","IL"]).range([d3.schemeCategory20[0], d3.schemeCategory20[2],d3.schemeCategory20[4],d3.schemeCategory20[6]]);
+
+var riverColor = d3.scaleOrdinal().domain(["WB","OL","OS","IL"]).range(fourColors);
+
+//var riverColor = d3.scaleOrdinal().domain(["WB","OL","OS","IL"]).range([d3.rgb(162,205,174), d3.rgb(74,116,134), d3.rgb(36,45,66), d3.rgb(16,25,46)]); //ICE+20
+
+var seasonColor = d3.scaleOrdinal().domain(["Spring","Summer","Autumn","Winter"]).range(fourColors);//[d3.rgb(162,205,174), d3.rgb(74,116,134), d3.rgb(36,45,66), d3.rgb(16,25,46)]); //ICE+20
+//var yearColor = d3.scaleOrdinal().domain(d3.range(0,3)).range([d3.rgb(162,205,174), d3.rgb(74,116,134), d3.rgb(36,45,66), d3.rgb(16,25,46)]); //ICE+20
+
+var yearColor = d3.scaleOrdinal(d3.schemeCategory20c); 
+
+/////////////////////
+// set up map graphics
+
+var canvas = document.querySelector("canvas"),
+    context = canvas.getContext("2d");
+
+var margin = {top: 40, right: 40, bottom: 0, left: 100},
+    width = canvas.width - margin.left - margin.right,
+    height = canvas.height - margin.top - margin.bottom;
+
+var xScale = d3.scaleLinear()
+    .range([0, width - margin.top - margin.bottom]);
+    
+var yScale = d3.scaleLinear()
+    .range([0, height - margin.left - margin.right]);    
+
+//var scaleWidth = d3.scaleLinear().domain([0, canvas.width - margin.left]).range([40, canvas.width - 240]);
+var scaleWidth = d3.scaleLinear().domain([0, width]).range([40, width - 140]);
+var scaleWidthYear = d3.scaleLinear().domain([0, width]).range([-margin.left - margin.right, width - 10]);
+var scaleWidthSeasonYear = d3.scaleLinear().domain([0, width]).range([-margin.left- margin.right, width - 40]);
+var scaleHeight = d3.scaleLinear().domain([0, height]).range([40, height - 80]);
+
+d3.select(canvas)
+  .on("mousemove", mouseMoved)
+  .call(d3.drag()
+    .container(canvas)
+    .subject(clickDot)  // acts as 'onclick'
+  );
+
+var canvasL = document.getElementById("legendCanvas"), 
+    contextL = canvasL.getContext("2d");
+
+var marginL = {top: 0, right: 0, bottom: 0, left: 0},
+    widthL = canvasL.width - marginL.left - marginL.right,
+    heightL = 0; //canvasL.height - marginL.top - marginL.bottom; 
+    
+//////////////
+// svg labels 
+
+svgContainer =
+  d3.select('body')
+    .append('svg')
+      .attr('width', canvas.width)
+      .attr('height', canvas.height)
+      .append('g');
+
+svgContainer.append('rect')
+  .attr('class', 'overlay')
+      .attr('width', canvas.width)
+      .attr('height', canvas.height);
+  
+////////////  
+// force simulation
+  simulation = d3.forceSimulation()
+    .force("charge", d3.forceManyBody()
+                       .strength(-initialRadius + 1) //strength of attraction among points [ - repels, + attracts ]
+//                    .distanceMax(200)
+          )
+    .force("collide", d3.forceCollide()
+                        .radius(initialRadius + 1.02)//(function(d) { return ageScale(d.currentAge) + 1.025; })
+          )              
+    .force("x", d3.forceX().x(function(d) { return d.xx; })
+          ) 
+    .force("y", d3.forceY().y(function(d) { return d.yy; })
+          ) 
+  ;
+
+
+  // hide panels to start
+  d3.selectAll(".panel").style("visibility", "hidden")
+        
+  d3.selectAll(".step").on("click", function() {
+      var transDur = 400, desc;
+    
+      d3.selectAll(".panel").style("visibility", "hidden"); // in case go back to steps
+      d3.selectAll(".right-container").style("display", "block")
+      desc = d3.select(".description");
+      
+      d3.selectAll(".step").classed("selected", false); 
+      d3.select(this).classed("selected", true);
+      
+      selectedStep = d3.select(this).attr("id");
+      
+      switch(selectedStep){
+        case "step1":
+          $("#all").click();
+          state.counts.forEach(function(d){ d.color = "lightgrey" });
+          contextL.clearRect(0, 0, canvasL.width, canvasL.height);
+          break;
+        case "step2":
+          $("#colorSpecies").click();
+          $("#species").click();
+          break;  
+       case "step3":
+          $("#colorRiver").click();
+          $("#river").click();
+          break;
+       case "step4":
+          $("#colorSeason").click();
+          $("#season").click();
+          break;
+       case "step5":
+          $("#colorYear").click();
+          $("#year").click();
+          break;
+       case "step6":
+          $("#colorYear").click();
+          $("#seasonYear").click();
+          break;
+       case "step7":
+          $("#species").click();
+          $("#colorSpecies").click();
+          window.setTimeout( function(){
+            $("#seasonYear").click()},
+            2000
+          );
+          break;
+       case "step8":
+          $("#all").click(),
+          state.counts.forEach(function(d){ d.color = "lightgrey" });
+          canvasL.height = 0;
+          contextL.clearRect(0, 0, canvasL.width, canvasL.height);
+          window.setTimeout( function(){
+            d3.selectAll(".panel").transition().duration(2000).style("visibility", "visible"),
+            d3.selectAll(".right-container").style("display", "none")} 
+            ,
+            5000
+          );
+          break;
+      }
+      
+      desc.html(stepText[+selectedStep.substr(4)]).style("opacity", 0); // can't transition html
+      desc.transition().duration(transDur).delay(250).style("opacity", 1)
+  });
+          
+
+d3.csv("/forceV4/WB/coreDataOut.csv", typeCoreData, function (error,cd){
+  if (error) throw error;
+  
+  var cd = getDataEnc(cd);
+  csvIn.cd = cd;
+
+  initializeInterface();
+  initializeXY(width,height); 
+  initializeFishData(cd);
+  getXY("all");
+
+  console.log(cd,state.counts);
+
+  // variables for positionsing year data
+  uniqueYears = sortUnique(state.counts.map(function(d){return d.year}));
+  stepWidth = (canvas.width - margin.left)/(uniqueYears.length + 1);
+    
+  uniqueSeasons = ["Spring", "Summer", "Autumn", "Winter"]; //uniques(state.counts.map(function(d){return d.season[0]}));
+  stepHeight = (canvas.height - margin.top)/(uniqueSeasons.length + 1);
+
+  $("#step1").click()
+
+  simulation
+      .nodes(state.counts)
+      .on("tick", ticked)
+//      .on("end", ended)
+
+}); //csv  
+
+    </script>
+  </body>
+</html>
+
+
