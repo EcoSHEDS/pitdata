@@ -1,24 +1,35 @@
-.nodes circle {
-  pointer-events: all;
-  stroke: none;
-  stroke-width: 40px;
+/* ---- TEXT ELEMENTS ---- */
+
+p {
+  font: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #000;
 }
 
-.btn-space {
-  margin-top: 5px;
+/* ---- SVG STYLES ---- */
+
+svg {
+  position: absolute;
+  top: 96px;
+  left: 15px;
 }
 
-.top-container {
-  position: relative;
-  height: 180px;
-  padding: 10px;
-}
+/* ---- LAYOUT ---- */
 
 .right-container {
   position: relative;
-  height: 700px; 
+  height: 700px;
   padding: 10px;
   padding-top: 100px;
+}
+
+.description  {
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+  font-size: 20px;
+  line-height: 1.2;
+  position: relative;
+  color: #737373;
 }
 
 .bottom-container {
@@ -37,7 +48,6 @@
   background-color: "lightgrey";
   color: #C5B4B4;
 }
-
 
 .step-container .step:hover {
   border: 2px solid #A6A4A4;
@@ -60,23 +70,21 @@
   display: inline-block;
 }
 
-p {
-  font: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  color: #000;
+
+/* ============================================================================
+                                  GRAVEYARD
+============================================================================ */
+
+/*
+.nodes circle {
+  pointer-events: all;
+  stroke: none;
+  stroke-width: 40px;
 }
 
-.description  {
-  top: 50%;
-  -webkit-transform: translateY(-50%);
-  transform: translateY(-50%);
-  font-size: 20px;
-  line-height: 1.2;
+.top-container {
   position: relative;
-  color: #737373;
+  height: 180px;
+  padding: 10px;
 }
-
-svg {
-  position: absolute;
-  top: 96px;
-  left: 15px;
-}
+*/
