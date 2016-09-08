@@ -296,87 +296,35 @@ function getDataSRSY(d,spp,riv,sea,yea){
 }
 
 function getXY(scenario){
-
-    state.counts.forEach(function(d){
-
-      switch(scenario){
-        case "all":
-          d.xx = xy.all[0];
-          d.yy = xy.all[1];
+  state.counts.forEach(function(d){
+    switch(scenario){
+      case "all":
+        d.xx = xy.all[0];
+        d.yy = xy.all[1];
         break;
-
-        case "species":
-          switch(d.species){
-            case "ats":
-              d.xx = xy.species.ats[0];
-              d.yy = xy.species.ats[1];
-              break;
-            case "bkt":
-              d.xx = xy.species.bkt[0];
-              d.yy = xy.species.bkt[1];
-              break;
-            case "bnt":
-              d.xx = xy.species.bnt[0];
-              d.yy = xy.species.bnt[1];
-              break;
-          }
+      case "species":
+        d.xx = xy.species[d.species][0];
+        d.yy = xy.species[d.species][1];
         break;
-
-        case "river":
-          switch(d.river){
-            case "WB":
-              d.xx = xy.river.WB[0];
-              d.yy = xy.river.WB[1];
-              break;
-            case "OL":
-              d.xx = xy.river.OL[0];
-              d.yy = xy.river.OL[1];
-              break;
-            case "OS":
-              d.xx = xy.river.OS[0];
-              d.yy = xy.river.OS[1];
-              break;
-            case "IL":
-              d.xx = xy.river.IL[0];
-              d.yy = xy.river.IL[1];
-              break;
-          }
+      case "river":
+        d.xx = xy.river[d.river][0];
+        d.yy = xy.river[d.river][1];
         break;
-
-        case "season":
-          switch(d.season){
-            case "Spring":
-              d.xx = xy.season.Spring[0];
-              d.yy = xy.season.Spring[1];
-              break;
-            case "Summer":
-              d.xx = xy.season.Summer[0];
-              d.yy = xy.season.Summer[1];
-              break;
-            case "Autumn":
-              d.xx = xy.season.Autumn[0];
-              d.yy = xy.season.Autumn[1];
-              break;
-            case "Winter":
-              d.xx = xy.season.Winter[0];
-              d.yy = xy.season.Winter[1];
-              break;
-          }
+      case "season":
+        d.xx = xy.season[d.season][0];
+        d.yy = xy.season[d.season][1];
         break;
-
-        case "year":
-          d.xx = scaleWidth( uniqueYears.indexOf(d.year) * stepWidth + stepWidth );
-          d.yy = height * 0.5;
+      case "year":
+        d.xx = scaleWidth( uniqueYears.indexOf(d.year) * stepWidth + stepWidth );
+        d.yy = height * 0.5;
         break;
-
-        case "seasonYear":
-          d.xx = scaleWidth( uniqueYears.indexOf(d.year) * stepWidth + stepWidth );
-          d.yy = scaleHeight( uniqueSeasons.indexOf(d.season) * stepHeight + stepHeight );
+      case "seasonYear":
+        d.xx = scaleWidth( uniqueYears.indexOf(d.year) * stepWidth + stepWidth );
+        d.yy = scaleHeight( uniqueSeasons.indexOf(d.season) * stepHeight + stepHeight );
         break;
-      }
-
-    });
-  }
+    }
+  });
+}
 
 function ticked() {
 //  console.log(state.currentSample,simulation.alpha())
