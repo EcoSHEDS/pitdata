@@ -810,7 +810,7 @@ var marginL = {top: 0, right: 0, bottom: 0, left: 0},
 // svg labels
 
 svgContainer =
-  d3.select('body')
+  d3.select('#chart-container')
     .append('svg')
       .attr('width', canvas.width)
       .attr('height', canvas.height)

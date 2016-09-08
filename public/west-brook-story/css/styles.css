@@ -9,11 +9,19 @@ p {
 
 svg {
   position: absolute;
-  top: 96px;
-  left: 15px;
+  top: 0;
+  left: 0;
 }
 
 /* ---- LAYOUT ---- */
+
+#chart-container {
+  position: relative;
+}
+
+.container-fluid {
+  max-width: 1200px;
+}
 
 .right-container {
   position: relative;
