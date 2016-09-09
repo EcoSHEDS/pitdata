@@ -101,17 +101,13 @@
             </div>
           </div>
           <div class="narration-step" id="narration-step8">
-            <p>Explore the data by <b>yourself</b> by clicking buttons to <u>position</u> and <u>color</u> the circles.</p>
-            <div class="navigate-btns">
-              <button class="btn btn-default"><i class="fa fa-angle-double-left"></i> Prev</button>
-              <button class="btn btn-default">Next <i class="fa fa-angle-double-right"></i></button>
-            </div>
+            <p>Explore the data by <b>yourself</b> by clicking buttons to change the <u>group</u> and <u>color</u> of the circles.</p>
             <form class="form-inline-vertical">
               <div class="form-group form-group-sm">
                 <div>
-                  Position by:
+                  Group by:
                 </div>
-                <div class="btn-group-vertical" role="group" style="width:100%">
+                <div class="btn-group-vertical" role="group">
                   <button type="button" class="btn btn-default" id="all">None</button>
                   <button type="button" class="btn btn-default" id="species">Species</button>
                   <button type="button" class="btn btn-default" id="river">River</button>
@@ -127,7 +123,7 @@
                 <div>
                   Color by:
                 </div>
-                <div class="btn-group-vertical" role="group" style="width:100%">
+                <div class="btn-group-vertical" role="group">
                   <button type="button" class="btn btn-default" id="reset">None</button>
                   <button type="button" class="btn btn-default" id="colorSpecies">Species</button>
                   <button type="button" class="btn btn-default" id="colorRiver">River</button>
@@ -136,6 +132,11 @@
                 </div>
               </div>
             </form>
+
+            <div class="navigate-btns">
+              <button class="btn btn-default"><i class="fa fa-angle-double-left"></i> Prev</button>
+              <button class="btn btn-default disabled">Next <i class="fa fa-angle-double-right"></i></button>
+            </div>
           </div>
         </div>
       </div>
