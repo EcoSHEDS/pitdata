@@ -22,6 +22,7 @@ svg {
 
 #chart-container {
   position: relative;
+  height: 640px;
 }
 
 .container-fluid {
@@ -71,6 +72,12 @@ svg {
   right: 0;
   font-size: 14px;
   color: #777;
+}
+
+#legendCanvas {
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 
 .main-container {

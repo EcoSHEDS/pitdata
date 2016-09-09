@@ -789,12 +789,12 @@ svgContainer =
 
 
   // hide panels to start
-  d3.selectAll(".panel").style("visibility", "hidden")
+  // d3.selectAll(".panel").style("visibility", "hidden")
 
   d3.selectAll(".step").on("click", function() {
       var transDur = 400, desc;
 
-      d3.selectAll(".panel").style("visibility", "hidden"); // in case go back to steps
+      // d3.selectAll(".panel").style("visibility", "hidden"); // in case go back to steps
       d3.selectAll(".right-container").style("display", "block")
       desc = d3.select(".description");
 
