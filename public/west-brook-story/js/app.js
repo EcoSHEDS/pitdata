@@ -71,6 +71,7 @@ app.steps.step7 = {
     app.state.colorby = 'species';
     this.timeout = window.setTimeout( function() {
       app.state.groupby = 'seasonyear';
+      redraw();
     }, 2000);
   },
   exit: function () {
@@ -516,7 +517,7 @@ function redraw () {
   // TODO: update labels
 
   // restart simulation
-  if (app.state.groupby == 'year') {
+  if (app.state.groupby === 'year' || app.state.groupby === 'seasonyear') {
     // hack to restart simulation after 50% completion in order to get all
     // nodes to move to their groups (otherwise nodes get stuck in wrong group)
     app.simulation
@@ -527,10 +528,10 @@ function redraw () {
       .on('end', function () {
         app.simulation
           .alpha(1)
-          .alphaMin(0.01)
+          .alphaMin(0.01) // need to reset default alphaMin, otherwise future simulations will end at 0.5
           .nodes(app.nodes)
           .restart()
-          .on('end', function () {}); // need to turn off the end event, otherwise simulation will infinitely restart
+          .on('end', function () {}); // need to turn off the end event, otherwise future simulations will restart infinitely
       });
   } else {
     app.simulation
