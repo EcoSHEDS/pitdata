@@ -1,4 +1,5 @@
-var app = window.app = {
+(function () {
+var app = {
   params: {
     fishPerCircle: 25,
     radius: 3
@@ -44,6 +45,8 @@ app.init = function (url) {
     switchStep(app.state.step);
 
     hideLoading();
+
+    console.log('Ready!');
   });
 }
 
@@ -558,21 +561,76 @@ function drawLabels (posVar) {
     .attr("fill", function(d) { return d.col; });
 }
 
+// INTERACTION ----------------------------------------------------------------
+function clickSubject() {
+  console.log("mouseClickSubject",d3.event.x,d3.event.y,simulation.find(d3.event.x - margin.left, d3.event.y - margin.top, searchRadius));
+  return simulation.find(d3.event.x - margin.left, d3.event.y - margin.top, searchRadius);
+}
 
-// GLOBALS --------------------------------------------------------------------
+function clickDot(){
 
-// var xy, posVar, posData = [], xPos, yPos, textLabel;
+  var d = clickSubject();
+  console.log("selected",d.id);
+}
 
-// var byFish;
+function mouseMoved() {
+  var a = this.parentNode,
+      m = d3.mouse(this),
+      d = simulation.find(m[0]- margin.left , m[1]- margin.top , searchRadius);
 
-// var spp, riv, sea, yea;
-// // var spp = ["bkt", "bnt", "ats"].reverse();//sortUnique(cd.map(function(d){return d.species}));
-// // var riv = [ "WB", "OL", "OS", "IL"].reverse(); //sortUnique(cd.map(function(d){return d.river}));
-// // var sea = [ "Spring", "Summer", "Autumn", "Winter"].reverse(); // sortUnique(cd.map(function(d){return d.season}));
-// // var yea = sortUnique(data.map(function(d){return d.year}));
+  if (!d) return a.removeAttribute("title"), tooltip.style('visibility','hidden');
 
-// var uniqueYears, stepWidth, uniqueSeasons, stepHeight;
+  a.setAttribute("title", sppScale(d.species) + ", " + d.river + ", " +  d.season + ", " + d.year);
 
+  tooltip
+    .style("visibility", "visible");
+}
+
+// UTILITIES ------------------------------------------------------------------
+function parseRow (d) {
+  d.sample = +d.sample;
+  d.date = Date.parse(d.date);
+  d.id = +d.id;
+  d.section = +d.section;
+  d.len = +d.len;
+  d.wt = +d.wt;
+  d.enc = +d.enc;
+  d.moveDir = +d.moveDir;
+  d.distMoved = +d.distMoved;
+  d.lagSection = +d.lagSection;
+  d.season = d.seasonStr;
+  d.year = +d.year;
+  d.cohortFamilyID = d.cohortFamilyID;
+  d.familyID = +d.familyID;
+  d.minSample = +d.minSample;
+  d.maxSample = +d.maxSample;
+  d.familyCount = +d.familyCount;
+  d.riverAbbr = d.river;
+  d.age = +d.age;
+  d.dateEmigrated = Date.parse(d.dateEmigrated);
+  d.isYOY = +d.isYOY;
+  return d;
+}
+
+function uniques(array) {
+  return Array.from(new Set(array));
+}
+
+function sortUnique(arr) {
+  arr.sort();
+  var last_i;
+  for (var i=0;i<arr.length;i++) {
+    if ((last_i = arr.lastIndexOf(arr[i])) !== i) {
+      arr.splice(i+1, last_i-i);
+    }
+  }
+  return arr;
+}
+
+/*** Copyright 2013 Teun Duynstee Licensed under the Apache License, Version 2.0 https://github.com/Teun/thenBy.js ***/
+firstBy=function(){function n(n){return n}function t(n){return"string"==typeof n?n.toLowerCase():n}function r(r,e){if(e="number"==typeof e?{direction:e}:e||{},"function"!=typeof r){var i=r;r=function(n){return n[i]?n[i]:""}}if(1===r.length){var u=r,o=e.ignoreCase?t:n;r=function(n,t){return o(u(n))<o(u(t))?-1:o(u(n))>o(u(t))?1:0}}return-1===e.direction?function(n,t){return-r(n,t)}:r}function e(n,t){var i="function"==typeof this?this:!1,u=r(n,t),o=i?function(n,t){return i(n,t)||u(n,t)}:u;return o.thenBy=e,o}return e}();
+
+// OLD CODE --------------------------------------------------------------------
 // var searchRadius = 5;
 
 // var tooltip = d3.select("body")
@@ -581,19 +639,6 @@ function drawLabels (posVar) {
 //     .style("position", "absolute")
 //     .style("z-index", "10")
 //     .style("visibility", "hidden");
-
-// FUNCTIONS ------------------------------------------------------------------
-
-// function getDataSRSY(d,spp,riv,sea,yea){
-//  return d.filter( function(dd) {
-//    return dd.species == spp && dd.river == riv && dd.season == sea && dd.year == yea ;
-//  });
-// }
-
-
-
-
-
 
 function getPosData(d,i,variable,sOrY){
   var col,txt;
@@ -734,95 +779,7 @@ function getPosData(d,i,variable,sOrY){
                };
 }
 
-// INTERACTION ----------------------------------------------------------------
-function clickSubject() {
-  console.log("mouseClickSubject",d3.event.x,d3.event.y,simulation.find(d3.event.x - margin.left, d3.event.y - margin.top, searchRadius));
-  return simulation.find(d3.event.x - margin.left, d3.event.y - margin.top, searchRadius);
-}
-
-function clickDot(){
-
-  var d = clickSubject();
-  console.log("selected",d.id);
-}
-
-function mouseMoved() {
-  var a = this.parentNode,
-      m = d3.mouse(this),
-      d = simulation.find(m[0]- margin.left , m[1]- margin.top , searchRadius);
-
-  if (!d) return a.removeAttribute("title"), tooltip.style('visibility','hidden');
-
-  a.setAttribute("title", sppScale(d.species) + ", " + d.river + ", " +  d.season + ", " + d.year);
-
-  tooltip
-    .style("visibility", "visible");
-}
-
-// UTILITIES ------------------------------------------------------------------
-function parseRow (d) {
-  d.sample = +d.sample;
-  d.date = Date.parse(d.date);
-  d.id = +d.id;
-  d.section = +d.section;
-  d.len = +d.len;
-  d.wt = +d.wt;
-  d.enc = +d.enc;
-  d.moveDir = +d.moveDir;
-  d.distMoved = +d.distMoved;
-  d.lagSection = +d.lagSection;
-  d.season = d.seasonStr;
-  d.year = +d.year;
-  d.cohortFamilyID = d.cohortFamilyID;
-  d.familyID = +d.familyID;
-  d.minSample = +d.minSample;
-  d.maxSample = +d.maxSample;
-  d.familyCount = +d.familyCount;
-  d.riverAbbr = d.river;
-  d.age = +d.age;
-  d.dateEmigrated = Date.parse(d.dateEmigrated);
-  d.isYOY = +d.isYOY;
-  return d;
-}
-
-function uniques(array) {
-  return Array.from(new Set(array));
-}
-
-function sortUnique(arr) {
-  arr.sort();
-  var last_i;
-  for (var i=0;i<arr.length;i++) {
-    if ((last_i = arr.lastIndexOf(arr[i])) !== i) {
-      arr.splice(i+1, last_i-i);
-    }
-  }
-  return arr;
-}
-
-/*** Copyright 2013 Teun Duynstee Licensed under the Apache License, Version 2.0 https://github.com/Teun/thenBy.js ***/
-firstBy=function(){function n(n){return n}function t(n){return"string"==typeof n?n.toLowerCase():n}function r(r,e){if(e="number"==typeof e?{direction:e}:e||{},"function"!=typeof r){var i=r;r=function(n){return n[i]?n[i]:""}}if(1===r.length){var u=r,o=e.ignoreCase?t:n;r=function(n,t){return o(u(n))<o(u(t))?-1:o(u(n))>o(u(t))?1:0}}return-1===e.direction?function(n,t){return-r(n,t)}:r}function e(n,t){var i="function"==typeof this?this:!1,u=r(n,t),o=i?function(n,t){return i(n,t)||u(n,t)}:u;return o.thenBy=e,o}return e}();
-
-
-// APP CODE -------------------------------------------------------------------
-
-// var sppScale = d3.scaleOrdinal().domain(["ats","bnt","bkt"]).range(["Atlantic salmon", "Brown trout", "Brook trout"]);
-// var riverScale = d3.scaleOrdinal().domain(["WB","OL","OS","IL"]).range(["Main branch","Large tributary","Small tributary","Isolated trib."]);
-
-// var fourColors = ['#a6cee3','#1f78b4','#b2df8a','#33a02c']
-// var sppColor = d3.scaleOrdinal().domain(["ats","bnt","bkt"]).range(fourColors);//[d3.rgb(162,205,174), d3.rgb(74,116,134), d3.rgb(36,45,66)]); //ICE+20
-
-// //var riverColor = d3.scaleOrdinal().domain(["WB","OL","OS","IL"]).range([d3.schemeCategory20[0], d3.schemeCategory20[2],d3.schemeCategory20[4],d3.schemeCategory20[6]]);
-
-// var riverColor = d3.scaleOrdinal().domain(["WB","OL","OS","IL"]).range(fourColors);
-
-// //var riverColor = d3.scaleOrdinal().domain(["WB","OL","OS","IL"]).range([d3.rgb(162,205,174), d3.rgb(74,116,134), d3.rgb(36,45,66), d3.rgb(16,25,46)]); //ICE+20
-
-// var seasonColor = d3.scaleOrdinal().domain(["Spring","Summer","Autumn","Winter"]).range(fourColors);//[d3.rgb(162,205,174), d3.rgb(74,116,134), d3.rgb(36,45,66), d3.rgb(16,25,46)]); //ICE+20
-// //var yearColor = d3.scaleOrdinal().domain(d3.range(0,3)).range([d3.rgb(162,205,174), d3.rgb(74,116,134), d3.rgb(36,45,66), d3.rgb(16,25,46)]); //ICE+20
-
-// var yearColor = d3.scaleOrdinal(d3.schemeCategory20c);
-
-/////////////////////
-// set up map graphics
-
+// export globals
+window.switchStep = switchStep;
+window.app = app;
+})();
