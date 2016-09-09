@@ -17,6 +17,58 @@ var app = window.app = {
   steps: {}
 };
 
+// PRIMARY INITIALIZATION FUNCTION --------------------------------------------
+app.init = function (url) {
+  console.log('Loading data...');
+  d3.csv(url, parseRow, function (error, data) {
+    if (error) {
+      alert('Error occurred trying to load data.');
+      throw error;
+    }
+
+    console.log('Initializing interface...');
+
+    data = data.filter(function(d) {
+      return d.enc == 1;
+    });
+    app.nodes = initNodes(data, app.params.fishPerCircle);
+
+    app.layout.canvas = initCanvas('#viz-canvas', app.layout.canvas);
+    app.layout.legend = initLegend('#legend-canvas');
+    app.layout.labels = initLabels('#chart-container');
+    app.scales = initScales(app.layout.canvas, app.nodes);
+    app.simulation = initSimulation(app.nodes, app.layout.canvas, app.params.radius);
+
+    initControls();
+
+    switchStep(app.state.step);
+
+    hideLoading();
+  });
+}
+
+// STATE TRANSITIONS ----------------------------------------------------------
+function switchStep (step) {
+  // exit current step
+  app.steps[app.state.step].exit();
+
+  // update app state to next step
+  app.state.step = step;
+
+  // enter next step
+  app.steps[app.state.step].enter();
+
+  // update active step button
+  d3.selectAll('.step').classed('selected', false);
+  d3.select('.step[data-value="' + app.state.step + '"]').classed('selected', true);
+
+  // show next step narration
+  d3.selectAll('.narration-step').style('display', 'none');
+  d3.select('#narration-' + app.state.step).style('display', 'block');
+
+  redraw();
+}
+
 app.steps.step1 = {
   enter: function () {
     app.state.groupby = 'none';
@@ -91,61 +143,20 @@ app.steps.step8 = {
   }
 };
 
-app.initialize = function (url) {
-  console.log('Loading data...');
-  d3.csv(url, parseRow, function (error, data) {
-    if (error) {
-      alert('Error occurred trying to load data.');
-      throw error;
-    }
-
-    console.log('Initializing interface...');
-
-    data = data.filter(function(d) {
-      return d.enc == 1;
-    });
-    app.nodes = initializeNodes(data, app.params.fishPerCircle);
-
-    app.layout.canvas = initializeCanvas('#viz-canvas', app.layout.canvas);
-    app.layout.legend = initializeLegend('#legend-canvas');
-    app.layout.labels = initializeLabels('#chart-container');
-    app.scales = initializeScales(app.layout.canvas, app.nodes);
-    app.simulation = initializeSimulation(app.nodes, app.layout.canvas, app.params.radius);
-
-
-    initializeControls();
-
-    switchStep(app.state.step);
+function hideLoading () {
+  d3.select('#loading')
+    .style('opacity', 1)
+    .transition()
+    .duration(1000)
+    .style('opacity', 0)
+    .on('end', function () {
+      // after transition, hide element
+      d3.select(this).style('display', 'none');
   });
 }
 
-
-function parseRow (d) {
-  d.sample = +d.sample;
-  d.date = Date.parse(d.date);
-  d.id = +d.id;
-  d.section = +d.section;
-  d.len = +d.len;
-  d.wt = +d.wt;
-  d.enc = +d.enc;
-  d.moveDir = +d.moveDir;
-  d.distMoved = +d.distMoved;
-  d.lagSection = +d.lagSection;
-  d.season = d.seasonStr;
-  d.year = +d.year;
-  d.cohortFamilyID = d.cohortFamilyID;
-  d.familyID = +d.familyID;
-  d.minSample = +d.minSample;
-  d.maxSample = +d.maxSample;
-  d.familyCount = +d.familyCount;
-  d.riverAbbr = d.river;
-  d.age = +d.age;
-  d.dateEmigrated = Date.parse(d.dateEmigrated);
-  d.isYOY = +d.isYOY;
-  return d;
-}
-
-function initializeNodes (data, fishPerCircle) {
+// INITIALIZATION FUNCTIONS ---------------------------------------------------
+function initNodes (data, fishPerCircle) {
   var result = [];
 
   var nest = d3.nest()
@@ -186,7 +197,7 @@ function initializeNodes (data, fishPerCircle) {
   return result;
 }
 
-function initializeControls () {
+function initControls () {
   // update footnote
   d3.select('#fish-per-circle').text(app.params.fishPerCircle);
   d3.select('#chart-footnote').style('display', 'block');
@@ -203,6 +214,7 @@ function initializeControls () {
 
     redraw();
   });
+
   // set initial active groupby button
   d3.select('.btn-groupby[data-value="' + state.groupby + '"]').classed('active', true);
 
@@ -217,6 +229,7 @@ function initializeControls () {
 
     redraw();
   });
+
   // set initial active colorby button
   d3.select('.btn-colorby[data-value="' + state.colorby + '"]').classed('active', true);
 
@@ -225,132 +238,12 @@ function initializeControls () {
     var step = d3.select(this).attr('data-value');
     switchStep(step);
   });
-
-  // $("#all").on("click", function () {
-  //   console.log("#all click");
-  //   getGroupbyPosition("all");
-  //   posVar = "all";
-  //   drawLabels(posVar); // to empty out the labels if return to here
-  //   simulation.alpha(1).nodes(state.counts).restart();
-  // });
-  // $("#species").on("click", function () {
-  //   console.log("#species click");
-  //   getGroupbyPosition("species");
-  //   posVar = "species";
-  //   drawLabels(posVar);
-  //   simulation.alpha(1).nodes(state.counts).restart();
-  // });
-  // $("#river").on("click", function () {
-  //   console.log("#river click");
-  //   getGroupbyPosition("river");
-  //   posVar = "river";
-  //   drawLabels(posVar);
-  //   simulation.alpha(1).nodes(state.counts).restart();
-  // });
-  // $("#season").on("click", function () {
-  //   console.log("#season click");
-  //   getGroupbyPosition("season");
-  //   posVar = "season";
-  //   drawLabels(posVar);
-  //   simulation.alpha(1).nodes(state.counts).restart();
-  // });
-  // $("#year").on("click", function () {
-  //   console.log("#year click");
-  //   getGroupbyPosition("year");
-  //   posVar = "year";
-  //   drawLabels(posVar);
-  //   // sim was not completing - run 3/4 way, then start again seems to work well
-  //   simulation.alpha(1).alphaMin(0.75).nodes(state.counts).restart()
-  //     .on( "end", function(){simulation.alpha(1).nodes(state.counts).restart()} );
-  // });
-  // $("#seasonYear").on("click", function () {
-  //   console.log("#seasonYear click");
-  //   getGroupbyPosition("seasonYear");
-  //   posVar = "seasonYear";
-  //   drawLabels(posVar);
-  //   simulation.alpha(1).alphaMin(0.75).nodes(state.counts).restart()
-  //     .on( "end", function(){simulation.alpha(1).nodes(state.counts).restart()} );
-  // });
-  // $("#colorSpecies").on("click", function () {
-  //   console.log("#colorSpecies click");
-  //   state.counts.forEach(function(d){ d.color = sppColor( d.species )  });
-  //   ticked();
-  //   canvasL.height = 125;
-  //   contextL.clearRect(0, 0, canvasL.width, canvasL.height);
-  //   spp.forEach(function(d,i) {drawLegend(d,i,"species")});
-  // });
-  // $("#colorRiver").on("click", function () {
-  //   console.log("#colorSpecies click");
-  //   state.counts.forEach(function(d){ d.color = riverColor( d.river )  });
-  //   ticked();
-  //   canvasL.height = 150;
-  //   contextL.clearRect(0, 0, canvasL.width, canvasL.height);
-  //   riv.forEach(function(d,i) {drawLegend(d,i,"river")});
-  // });
-  // $("#colorSeason").on("click", function () {
-  //   console.log("#colorSeason click");
-  //   state.counts.forEach(function(d){ d.color = seasonColor( d.season )  });
-  //   ticked();
-  //   canvasL.height = 150;
-  //   contextL.clearRect(0, 0, canvasL.width, canvasL.height);
-  //   sea.forEach(function(d,i) {drawLegend(d,i,"season")});
-  // });
-  // $("#colorYear").on("click", function () {
-  //   console.log("#colorYear click");
-  //   state.counts.forEach(function(d){ d.color = yearColor( d.year )  });
-  //   ticked();
-  //   canvasL.height = 500;
-  //   contextL.clearRect(0, 0, canvasL.width, canvasL.height);
-  //   yea.forEach(function(d,i) {drawLegend(d,i,"year")});
-  // });
-
-  // $("#reset").on("click", function () {
-  //   console.log("#reset click");
-  //   //location.reload();
-  //   //$("#all").click();
-  //   state.counts.forEach(function(d){ d.color = "lightgrey" });
-  //   ticked();
-  //   contextL.clearRect(0, 0, canvasL.width, canvasL.height);
-  //   canvasL.height = 0;
-  // });
-
-  // remove loading splash
-  d3.select('#loading')
-    .style('opacity', 1)
-    .transition()
-    .duration(1000)
-    .style('opacity', 0)
-    .on('end', function () {
-      // after transition, hide element
-      d3.select(this).style('display', 'none');
-  });
 }
 
-function switchStep (step) {
-  // exit current step
-  app.steps[app.state.step].exit();
-
-  // update app state to next step
-  app.state.step = step;
-
-  // enter next step
-  app.steps[app.state.step].enter();
-
-  // update active step button
-  d3.selectAll('.step').classed('selected', false);
-  d3.select('.step[data-value="' + app.state.step + '"]').classed('selected', true);
-
-  // show next step narration
-  d3.selectAll('.narration-step').style('display', 'none');
-  d3.select('#narration-' + app.state.step).style('display', 'block');
-
-  redraw();
+function initGroupbyPositions (w, h) {
 }
 
-function initializeGroupbyPositions (w, h) {
-}
-
-function initializeScales (canvas, data) {
+function initScales (canvas, data) {
   var width = canvas.width,
       height = canvas.height,
       margin = canvas.margin;
@@ -439,7 +332,7 @@ function initializeScales (canvas, data) {
   };
 }
 
-function initializeSimulation (nodes, canvas, radius) {
+function initSimulation (nodes, canvas, radius) {
   var simulation = d3.forceSimulation()
     .force("charge",
            d3.forceManyBody()
@@ -459,7 +352,7 @@ function initializeSimulation (nodes, canvas, radius) {
   return simulation;
 }
 
-function initializeCanvas (el, options) {
+function initCanvas (el, options) {
   var el = document.querySelector(el),
       context = el.getContext("2d");
 
@@ -484,7 +377,7 @@ function initializeCanvas (el, options) {
   }
 }
 
-function initializeLegend (el) {
+function initLegend (el) {
   var canvas = document.querySelector(el),
       context = canvas.getContext("2d");
 
@@ -501,7 +394,7 @@ function initializeLegend (el) {
   }
 }
 
-function initializeLabels (el) {
+function initLabels (el) {
   var svg = d3.select(el)
     .append('svg')
     .append('g');
@@ -842,7 +735,6 @@ function getPosData(d,i,variable,sOrY){
 }
 
 // INTERACTION ----------------------------------------------------------------
-
 function clickSubject() {
   console.log("mouseClickSubject",d3.event.x,d3.event.y,simulation.find(d3.event.x - margin.left, d3.event.y - margin.top, searchRadius));
   return simulation.find(d3.event.x - margin.left, d3.event.y - margin.top, searchRadius);
@@ -852,7 +744,6 @@ function clickDot(){
 
   var d = clickSubject();
   console.log("selected",d.id);
-
 }
 
 function mouseMoved() {
@@ -869,6 +760,30 @@ function mouseMoved() {
 }
 
 // UTILITIES ------------------------------------------------------------------
+function parseRow (d) {
+  d.sample = +d.sample;
+  d.date = Date.parse(d.date);
+  d.id = +d.id;
+  d.section = +d.section;
+  d.len = +d.len;
+  d.wt = +d.wt;
+  d.enc = +d.enc;
+  d.moveDir = +d.moveDir;
+  d.distMoved = +d.distMoved;
+  d.lagSection = +d.lagSection;
+  d.season = d.seasonStr;
+  d.year = +d.year;
+  d.cohortFamilyID = d.cohortFamilyID;
+  d.familyID = +d.familyID;
+  d.minSample = +d.minSample;
+  d.maxSample = +d.maxSample;
+  d.familyCount = +d.familyCount;
+  d.riverAbbr = d.river;
+  d.age = +d.age;
+  d.dateEmigrated = Date.parse(d.dateEmigrated);
+  d.isYOY = +d.isYOY;
+  return d;
+}
 
 function uniques(array) {
   return Array.from(new Set(array));
