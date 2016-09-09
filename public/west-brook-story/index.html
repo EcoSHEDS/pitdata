@@ -29,14 +29,14 @@
     <div class="row">
       <div class="col-xs-12">
         <div class="step-container" style="opacity: 1;">
-          <div id="step1" class="step selected">1</div>
-          <div id="step2" class="step">2</div>
-          <div id="step3" class="step">3</div>
-          <div id="step4" class="step">4</div>
-          <div id="step5" class="step">5</div>
-          <div id="step6" class="step">6</div>
-          <div id="step7" class="step">7</div>
-          <div id="step8" class="step">Explore</div>
+          <div data-value="step1" class="step selected">1</div>
+          <div data-value="step2" class="step">2</div>
+          <div data-value="step3" class="step">3</div>
+          <div data-value="step4" class="step">4</div>
+          <div data-value="step5" class="step">5</div>
+          <div data-value="step6" class="step">6</div>
+          <div data-value="step7" class="step">7</div>
+          <div data-value="step8" class="step">Explore</div>
         </div>
       </div>
     </div>
@@ -50,7 +50,7 @@
             <p>Each circle represents 25 individual fish.</p>
             <div class="navigate-btns">
               <button class="btn btn-default disabled"><i class="fa fa-angle-double-left"></i> Prev</button>
-              <button class="btn btn-default">Next <i class="fa fa-angle-double-right"></i></button>
+              <button class="btn btn-default" onclick="switchStep('step2')">Next <i class="fa fa-angle-double-right"></i></button>
             </div>
           </div>
           <div class="narration-step" id="narration-step2">
@@ -59,45 +59,45 @@
             <p><u>Brown trout</u> reproduce naturally, but were introduced from Europe in the mid 1800's.</p>
             <p><u>Atlantic salmon</u> were native but do not reproduce naturally. They were stocked as 25 mm fry in the spring.</p>
             <div class="navigate-btns">
-              <button class="btn btn-default"><i class="fa fa-angle-double-left"></i> Prev</button>
-              <button class="btn btn-default">Next <i class="fa fa-angle-double-right"></i></button>
+              <button class="btn btn-default" onclick="switchStep('step1')"><i class="fa fa-angle-double-left"></i> Prev</button>
+              <button class="btn btn-default" onclick="switchStep('step3')">Next <i class="fa fa-angle-double-right"></i></button>
             </div>
           </div>
           <div class="narration-step" id="narration-step3">
             <p>There were four <b>rivers</b> in the stream network.</p>
             <p>add map here</p>
             <div class="navigate-btns">
-              <button class="btn btn-default"><i class="fa fa-angle-double-left"></i> Prev</button>
-              <button class="btn btn-default">Next <i class="fa fa-angle-double-right"></i></button>
+              <button class="btn btn-default" onclick="switchStep('step2')"><i class="fa fa-angle-double-left"></i> Prev</button>
+              <button class="btn btn-default" onclick="switchStep('step4')">Next <i class="fa fa-angle-double-right"></i></button>
             </div>
           </div>
           <div class="narration-step" id="narration-step4">
             <p>We sampled in four <b>seasons</b>.</p>
             <p>Most fish were caught in Autumn, when we could first tag the youngest fish</p>
             <div class="navigate-btns">
-              <button class="btn btn-default"><i class="fa fa-angle-double-left"></i> Prev</button>
-              <button class="btn btn-default">Next <i class="fa fa-angle-double-right"></i></button>
+              <button class="btn btn-default" onclick="switchStep('step3')"><i class="fa fa-angle-double-left"></i> Prev</button>
+              <button class="btn btn-default" onclick="switchStep('step5')">Next <i class="fa fa-angle-double-right"></i></button>
             </div>
           </div>
           <div class="narration-step" id="narration-step5">
             <p>We sampled for 19 <b>years</b>.</p> There were high abundances in some years (e.g. 2003) and low abundances in others (e.g. 2011).</p>
             <div class="navigate-btns">
-              <button class="btn btn-default"><i class="fa fa-angle-double-left"></i> Prev</button>
-              <button class="btn btn-default">Next <i class="fa fa-angle-double-right"></i></button>
+              <button class="btn btn-default" onclick="switchStep('step4')"><i class="fa fa-angle-double-left"></i> Prev</button>
+              <button class="btn btn-default" onclick="switchStep('step6')">Next <i class="fa fa-angle-double-right"></i></button>
             </div>
           </div>
           <div class="narration-step" id="narration-step6">
             <p>Over the 19 <b>years</b> of sampling we couldn't sample the winter in some years because of ice.</p>
             <div class="navigate-btns">
-              <button class="btn btn-default"><i class="fa fa-angle-double-left"></i> Prev</button>
-              <button class="btn btn-default">Next <i class="fa fa-angle-double-right"></i></button>
+              <button class="btn btn-default" onclick="switchStep('step5')"><i class="fa fa-angle-double-left"></i> Prev</button>
+              <button class="btn btn-default" onclick="switchStep('step7')">Next <i class="fa fa-angle-double-right"></i></button>
             </div>
           </div>
           <div class="narration-step" id="narration-step7">
             <p>We started tagging <b>trout</b> in the WB in 2000 and in the WB and the tributaries in 2002.</p> We stopped stocking <b>salmon</b> in 2004. By 2008, there were very few salmon left in the stream network</p>
             <div class="navigate-btns">
-              <button class="btn btn-default"><i class="fa fa-angle-double-left"></i> Prev</button>
-              <button class="btn btn-default">Next <i class="fa fa-angle-double-right"></i></button>
+              <button class="btn btn-default" onclick="switchStep('step6')"><i class="fa fa-angle-double-left"></i> Prev</button>
+              <button class="btn btn-default" onclick="switchStep('step8')">Next <i class="fa fa-angle-double-right"></i></button>
             </div>
           </div>
           <div class="narration-step" id="narration-step8">
@@ -108,12 +108,12 @@
                   Group by:
                 </div>
                 <div class="btn-group-vertical" role="group">
-                  <button type="button" class="btn btn-default" id="all">None</button>
-                  <button type="button" class="btn btn-default" id="species">Species</button>
-                  <button type="button" class="btn btn-default" id="river">River</button>
-                  <button type="button" class="btn btn-default" id="season">Season</button>
-                  <button type="button" class="btn btn-default" id="year">Year</button>
-                  <button type="button" class="btn btn-default" id="seasonYear">Season/Year</button>
+                  <button type="button" class="btn btn-default btn-groupby" data-value="none">None</button>
+                  <button type="button" class="btn btn-default btn-groupby" data-value="species">Species</button>
+                  <button type="button" class="btn btn-default btn-groupby" data-value="river">River</button>
+                  <button type="button" class="btn btn-default btn-groupby" data-value="season">Season</button>
+                  <button type="button" class="btn btn-default btn-groupby" data-value="year">Year</button>
+                  <button type="button" class="btn btn-default btn-groupby" data-value="seasonYear">Season/Year</button>
                 </div>
               </div>
             </form>
@@ -124,17 +124,17 @@
                   Color by:
                 </div>
                 <div class="btn-group-vertical" role="group">
-                  <button type="button" class="btn btn-default" id="reset">None</button>
-                  <button type="button" class="btn btn-default" id="colorSpecies">Species</button>
-                  <button type="button" class="btn btn-default" id="colorRiver">River</button>
-                  <button type="button" class="btn btn-default" id="colorSeason">Season</button>
-                  <button type="button" class="btn btn-default" id="colorYear">Year</button>
+                  <button type="button" class="btn btn-default btn-colorby" data-value="none">None</button>
+                  <button type="button" class="btn btn-default btn-colorby" data-value="species">Species</button>
+                  <button type="button" class="btn btn-default btn-colorby" data-value="river">River</button>
+                  <button type="button" class="btn btn-default btn-colorby" data-value="season">Season</button>
+                  <button type="button" class="btn btn-default btn-colorby" data-value="year">Year</button>
                 </div>
               </div>
             </form>
 
             <div class="navigate-btns">
-              <button class="btn btn-default"><i class="fa fa-angle-double-left"></i> Prev</button>
+              <button class="btn btn-default" onclick="switchStep('step7')"><i class="fa fa-angle-double-left"></i> Prev</button>
               <button class="btn btn-default disabled">Next <i class="fa fa-angle-double-right"></i></button>
             </div>
           </div>
@@ -142,11 +142,11 @@
       </div>
       <div class="col-lg-10">
         <div id="chart-container">
-          <canvas width="900" height="600"></canvas>
+          <canvas width="900" height="600" id="viz-canvas"></canvas>
           <div id="chart-footnote" style="display:none">
             Each circle represents <span id="fish-per-circle"></span> individual fish
           </div>
-          <canvas id="legendCanvas" width="160" height="500"></canvas>
+          <canvas id="legend-canvas" width="160" height="500"></canvas>
         </div>
       </div>
     </div>
@@ -165,29 +165,8 @@
 <script src="js/app.js"></script>
 
 <script>
-d3.csv("data/coreDataOut.csv", typeCoreData, function (error,cd) {
-  if (error) throw error;
-
-  var cd = getDataEnc(cd);
-  csvIn.cd = cd;
-
-  initializeInterface();
-  initializeXY(width,height);
-  initializeFishData(cd);
-  getXY("all");
-
-  // variables for positioning year data
-  uniqueYears = sortUnique(state.counts.map(function(d) { return d.year; }));
-  stepWidth = (canvas.width - margin.left)/(uniqueYears.length + 1);
-
-  uniqueSeasons = ["Spring", "Summer", "Autumn", "Winter"];
-  stepHeight = (canvas.height - margin.top)/(uniqueSeasons.length + 1);
-
-  $("#step1").click()
-
-  simulation
-    .nodes(state.counts)
-    .on("tick", ticked);
+$(document).ready(function () {
+  app.initialize('data/coreDataOut.csv');
 });
 </script>
 </body>
