@@ -1,11 +1,7 @@
 var app = window.app = {
-  // forceX: undefined,
-  // forceY: undefined,
-  // nodes: undefined,
-  // counts: [],
-  steps: {},
   params: {
-    fishPerCircle: 25
+    fishPerCircle: 25,
+    radius: 3
   },
   scales: {},
   state: {
@@ -17,52 +13,9 @@ var app = window.app = {
     canvas: {
       margin: { top: 40, right: 40, bottom: 0, left: 100 }
     }
-  }
+  },
+  steps: {}
 };
-
-// // Original switch step logic
-// case "step1":
-//   $("#all").click();
-//   state.counts.forEach(function(d){ d.color = "lightgrey" });
-//   contextL.clearRect(0, 0, canvasL.width, canvasL.height);
-//   break;
-// case "step2":
-//   $("#colorSpecies").click();
-//   $("#species").click();
-//   break;
-// case "step3":
-//   $("#colorRiver").click();
-//   $("#river").click();
-//   break;
-// case "step4":
-//   $("#colorSeason").click();
-//   $("#season").click();
-//   break;
-// case "step5":
-//   $("#colorYear").click();
-//   $("#year").click();
-//   break;
-// case "step6":
-//   $("#colorYear").click();
-//   $("#seasonYear").click();
-//   break;
-// case "step7":
-//   $("#species").click();
-//   $("#colorSpecies").click();
-//   window.setTimeout( function(){
-//     $("#seasonYear").click()},
-//     2000
-//   );
-//   break;
-// case "step8":
-//   $("#all").click(),
-//   app.counts.forEach(function(d){ d.color = "lightgrey" });
-//   canvasL.height = 0;
-//   contextL.clearRect(0, 0, canvasL.width, canvasL.height);
-//   // d3.select('.control-container').style('display', 'block');
-//   // d3.selectAll(".panel").transition().duration(2000).style("visibility", "visible"),
-//   // d3.selectAll(".right-container").style("display", "none")
-//   break;
 
 app.steps.step1 = {
   enter: function () {
@@ -150,32 +103,18 @@ app.initialize = function (url) {
     data = data.filter(function(d) {
       return d.enc == 1;
     });
-    app.data = initializeDataset(data, app.params.fishPerCircle);
-
-    app.scales = initializeScales();
-    initializeControls();
+    app.nodes = initializeNodes(data, app.params.fishPerCircle);
 
     app.layout.canvas = initializeCanvas('#viz-canvas', app.layout.canvas);
     app.layout.legend = initializeLegend('#legend-canvas');
     app.layout.labels = initializeLabels('#chart-container');
+    app.scales = initializeScales(app.layout.canvas, app.nodes);
+    app.simulation = initializeSimulation(app.nodes, app.layout.canvas, app.params.radius);
 
-    app.simulation = initializeSimulation(3);
-    app.groupbyPositions = initializeGroupbyPositions(app.layout.canvas.width, app.layout.canvas.height);
 
-    // getXY("all");
+    initializeControls();
 
-    // // variables for positioning year data
-    // uniqueYears = sortUnique(state.counts.map(function(d) { return d.year; }));
-    // stepWidth = (canvas.width - margin.left)/(uniqueYears.length + 1);
-
-    // uniqueSeasons = ["Spring", "Summer", "Autumn", "Winter"];
-    // stepHeight = (canvas.height - margin.top)/(uniqueSeasons.length + 1);
-
-    // $("#step1").click()
-
-    // simulation
-    //   .nodes(state.counts)
-    //   .on("tick", ticked);
+    switchStep(app.state.step);
   });
 }
 
@@ -205,7 +144,7 @@ function parseRow (d) {
   return d;
 }
 
-function initializeDataset (data, fishPerCircle) {
+function initializeNodes (data, fishPerCircle) {
   var result = [];
 
   var nest = d3.nest()
@@ -246,7 +185,6 @@ function initializeDataset (data, fishPerCircle) {
   return result;
 }
 
-
 function initializeControls () {
   // update footnote
   d3.select('#fish-per-circle').text(app.params.fishPerCircle);
@@ -261,8 +199,10 @@ function initializeControls () {
     // update active groupby button
     d3.selectAll('.btn-groupby').classed('active', false);
     d3.select(this).classed('active', true);
+
+    redraw();
   });
-  // initialize active groupby button
+  // set initial active groupby button
   d3.select('.btn-groupby[data-value="' + state.groupby + '"]').classed('active', true);
 
   // setup listeners on colorby buttons
@@ -273,8 +213,10 @@ function initializeControls () {
     // update active colorby button
     d3.selectAll('.btn-colorby').classed('active', false);
     d3.select(this).classed('active', true);
+
+    redraw();
   });
-  // initialize active colorby button
+  // set initial active colorby button
   d3.select('.btn-colorby[data-value="' + state.colorby + '"]').classed('active', true);
 
   // setup listeners on step buttons
@@ -285,35 +227,35 @@ function initializeControls () {
 
   // $("#all").on("click", function () {
   //   console.log("#all click");
-  //   getXY("all");
+  //   getGroupbyPosition("all");
   //   posVar = "all";
   //   drawLabels(posVar); // to empty out the labels if return to here
   //   simulation.alpha(1).nodes(state.counts).restart();
   // });
   // $("#species").on("click", function () {
   //   console.log("#species click");
-  //   getXY("species");
+  //   getGroupbyPosition("species");
   //   posVar = "species";
   //   drawLabels(posVar);
   //   simulation.alpha(1).nodes(state.counts).restart();
   // });
   // $("#river").on("click", function () {
   //   console.log("#river click");
-  //   getXY("river");
+  //   getGroupbyPosition("river");
   //   posVar = "river";
   //   drawLabels(posVar);
   //   simulation.alpha(1).nodes(state.counts).restart();
   // });
   // $("#season").on("click", function () {
   //   console.log("#season click");
-  //   getXY("season");
+  //   getGroupbyPosition("season");
   //   posVar = "season";
   //   drawLabels(posVar);
   //   simulation.alpha(1).nodes(state.counts).restart();
   // });
   // $("#year").on("click", function () {
   //   console.log("#year click");
-  //   getXY("year");
+  //   getGroupbyPosition("year");
   //   posVar = "year";
   //   drawLabels(posVar);
   //   // sim was not completing - run 3/4 way, then start again seems to work well
@@ -322,7 +264,7 @@ function initializeControls () {
   // });
   // $("#seasonYear").on("click", function () {
   //   console.log("#seasonYear click");
-  //   getXY("seasonYear");
+  //   getGroupbyPosition("seasonYear");
   //   posVar = "seasonYear";
   //   drawLabels(posVar);
   //   simulation.alpha(1).alphaMin(0.75).nodes(state.counts).restart()
@@ -384,10 +326,6 @@ function initializeControls () {
 }
 
 function switchStep (step) {
-  // update active step button
-  d3.selectAll('.step').classed('selected', false);
-  d3.select('.step[data-value="' + step + '"]').classed('selected', true);
-
   // exit current step
   app.steps[app.state.step].exit();
 
@@ -397,41 +335,28 @@ function switchStep (step) {
   // enter next step
   app.steps[app.state.step].enter();
 
+  // update active step button
+  d3.selectAll('.step').classed('selected', false);
+  d3.select('.step[data-value="' + app.state.step + '"]').classed('selected', true);
+
   // show next step narration
   d3.selectAll('.narration-step').style('display', 'none');
   d3.select('#narration-' + app.state.step).style('display', 'block');
+
+  redraw();
 }
 
 function initializeGroupbyPositions (w, h) {
-  var xProp = [0.33, 0.5, 0.66],
-      yProp = [0.33, 0.5, 0.66];
-
-  return {
-    all: [w * xProp[1], h * yProp[1]],
-    species: {
-      ats: [w * xProp[1], h * yProp[2]],
-      bkt: [w * xProp[0], h * yProp[0]],
-      bnt: [w * xProp[2], h * yProp[0]]
-    },
-    river: {
-      WB: [w * xProp[0], h * yProp[0]],
-      OL: [w * xProp[0], h * yProp[2]],
-      OS: [w * xProp[2], h * yProp[0]],
-      IL: [w * xProp[2], h * yProp[2]]
-    },
-    season: {
-      Spring: [w * xProp[0], h * yProp[0]],
-      Summer: [w * xProp[0], h * yProp[2]],
-      Autumn: [w * xProp[2], h * yProp[0]],
-      Winter: [w * xProp[2], h * yProp[2]]
-    }
-  };
 }
 
-function initializeScales () {
+function initializeScales (canvas, data) {
+  var width = canvas.width,
+      height = canvas.height,
+      margin = canvas.margin;
+
   var labels = {},
-      colors = {},
-      greens = ['#A6CEE3', '#1F78B4', '#B2DF8A', '#33A02C'];
+      color = {},
+      groupby = {};
 
   // label scales
   labels.species = d3.scaleOrdinal()
@@ -442,66 +367,115 @@ function initializeScales () {
     .range(["Main branch","Large tributary","Small tributary","Isolated trib."]);
 
   // color scales
-  colors.species =  d3.scaleOrdinal()
+  var greens = ['#A6CEE3', '#1F78B4', '#B2DF8A', '#33A02C'];
+  color.none = function (d) {
+    return 'lightgrey';
+  };
+  color.species =  d3.scaleOrdinal()
     .domain(["ats","bnt","bkt"])
     .range(greens);
-  colors.river = d3.scaleOrdinal()
+  color.river = d3.scaleOrdinal()
     .domain(["WB","OL","OS","IL"])
     .range(greens);
-  colors.season = d3.scaleOrdinal()
+  color.season = d3.scaleOrdinal()
     .domain(["Spring","Summer","Autumn","Winter"])
     .range(greens);
-  colors.year = d3.scaleOrdinal(d3.schemeCategory20c);
+  color.year = d3.scaleOrdinal(d3.schemeCategory20c);
+
+  // groupby position scales
+  var xProp = [0.33, 0.5, 0.66],
+      yProp = [0.33, 0.5, 0.66];
+
+  groupby.none = function () {
+    return [width * xProp[1], height * yProp[1]];
+  };
+  groupby.species = function (d) {
+    var positions = {
+      ats: [width * xProp[1], height * yProp[2]],
+      bkt: [width * xProp[0], height * yProp[0]],
+      bnt: [width * xProp[2], height * yProp[0]]
+    };
+    return positions[d.species];
+  };
+  groupby.river = function (d) {
+    var positions = {
+      WB: [width * xProp[0], height * yProp[0]],
+      OL: [width * xProp[0], height * yProp[2]],
+      OS: [width * xProp[2], height * yProp[0]],
+      IL: [width * xProp[2], height * yProp[2]]
+    };
+    return positions[d.river];
+  };
+  groupby.season = function (d) {
+    var positions = {
+      Spring: [width * xProp[0], height * yProp[0]],
+      Summer: [width * xProp[0], height * yProp[2]],
+      Autumn: [width * xProp[2], height * yProp[0]],
+      Winter: [width * xProp[2], height * yProp[2]]
+    };
+    return positions[d.season];
+  };
+
+  var scaleYearX = d3.scaleLinear()
+    .domain(d3.extent(data, function (d) { return d.year; }))
+    .range([margin.left, width - margin.left - margin.right]);
+  groupby.year = function (d) {
+    return [scaleYearX(d.year), height * 0.5];
+  };
+
+  var seasons = ["Spring", "Summer", "Autumn", "Winter"],
+      scaleSeasonY = d3.scaleLinear()
+                       .domain([0, 3])
+                       .range([100, height - 200]);
+  groupby.seasonyear = function (d) {
+    return [scaleYearX(d.year), 40 + scaleSeasonY(seasons.indexOf(d.season))];
+  };
 
   return {
     labels: labels,
-    colors: colors
+    color: color,
+    groupby: groupby
   };
 }
 
-function initializeSimulation (radius) {
+function initializeSimulation (nodes, canvas, radius) {
   var simulation = d3.forceSimulation()
     .force("charge",
            d3.forceManyBody()
-             .strength(-radius + 1) // strength of attraction among points [ - repels, + attracts ]
-             .distanceMax(200))
+             .strength(- radius + 1)) // strength of attraction among points [ - repels, + attracts ]
+             // .distanceMax(200))
     .force("collide",
            d3.forceCollide()
              .radius(radius + 1.02)) // (function(d) { return ageScale(d.currentAge) + 1.025; })
     .force("x", d3.forceX().x(function (d) { return d.xx; }))
-    .force("y", d3.forceY().y(function (d) { return d.yy; }));
+    .force("y", d3.forceY().y(function (d) { return d.yy; }))
+    .alphaMin(0.01)
+    .nodes(nodes)
+    .on("tick", function () {
+      ticked(canvas, nodes, radius);
+    });
 
   return simulation;
 }
 
 function initializeCanvas (el, options) {
-  var canvas = document.querySelector(el),
-      context = canvas.getContext("2d");
+  var el = document.querySelector(el),
+      context = el.getContext("2d");
 
   var margin = options.margin,
-      width = canvas.width - margin.left - margin.right,
-      height = canvas.height - margin.top - margin.bottom;
+      width = el.width - margin.left - margin.right,
+      height = el.height - margin.top - margin.bottom;
 
-  // var xScale = d3.scaleLinear()
-  //     .range([0, width - margin.top - margin.bottom]);
-
-  // var yScale = d3.scaleLinear()
-  //     .range([0, height - margin.left - margin.right]);
-
-  // var scaleWidth = d3.scaleLinear().domain([0, width]).range([40, width - 140]);
-  // var scaleWidthYear = d3.scaleLinear().domain([0, width]).range([-margin.left - margin.right, width - 10]);
-  // var scaleWidthSeasonYear = d3.scaleLinear().domain([0, width]).range([-margin.left- margin.right, width - 40]);
-  // var scaleHeight = d3.scaleLinear().domain([0, height]).range([40, height - 80]);
-
-  // d3.select(canvas)
+  // TODO: Add interaction
+  // d3.select(el)
   //   .on("mousemove", mouseMoved)
   //   .call(d3.drag()
-  //     .container(canvas)
+  //     .container(el)
   //     .subject(clickDot)  // acts as 'onclick'
   //   );
 
   return {
-    el: canvas,
+    el: el,
     context: context,
     margin: margin,
     width: width,
@@ -533,7 +507,125 @@ function initializeLabels (el) {
   return svg;
 }
 
+// DRAWING FUNCTIONS ----------------------------------------------------------
+function redraw () {
+  // update target and color of each node based on current state
+  updateNodes(app.nodes, app.state, app.scales);
 
+  // TODO: update legend
+  // TODO: update labels
+
+  // restart simulation
+  if (app.state.groupby == 'year') {
+    // hack to restart simulation after 50% completion in order to get all
+    // nodes to move to their groups (otherwise nodes get stuck in wrong group)
+    app.simulation
+      .alpha(1)
+      .alphaMin(0.5)
+      .nodes(app.nodes)
+      .restart()
+      .on('end', function () {
+        app.simulation
+          .alpha(1)
+          .alphaMin(0.01)
+          .nodes(app.nodes)
+          .restart()
+          .on('end', function () {}); // need to turn off the end event, otherwise simulation will infinitely restart
+      });
+  } else {
+    app.simulation
+      .alpha(1)
+      .nodes(app.nodes)
+      .restart();
+  }
+}
+
+function updateNodes (nodes, state, scales) {
+  var groupby = state.groupby,
+      colorby = state.colorby,
+      groupbyScale = scales.groupby[groupby],
+      colorScale = scales.color[colorby];
+
+  nodes.forEach(function (d) {
+    // update target position (focus)
+    d.xx = groupbyScale(d)[0];
+    d.yy = groupbyScale(d)[1];
+
+    // update node color
+    d.color = colorScale(d[colorby]);
+  });
+}
+
+function drawNode(d, radius, context){
+  context.beginPath();
+  context.arc( d.x, d.y, radius, 0, 2 * Math.PI);
+
+  context.strokeStyle = d3.rgb(d.color).darker(1);
+  context.stroke();
+  context.fillStyle = d.color;
+  context.fill();
+}
+
+function ticked (canvas, nodes, radius) {
+  var context = canvas.context;
+  context.clearRect(0, 0, canvas.el.width, canvas.el.height);
+  context.save();
+  context.translate(canvas.margin.left, canvas.margin.top); // subtract the margin values whenever use simulation.find()
+
+  nodes.forEach(function (d) {
+    drawNode(d, radius, context);
+  });
+
+  context.restore();
+}
+
+function drawLegend (d, i, variable) {
+  var col, txt, numrows;
+
+  switch (variable) {
+   case "species":
+     col = d3.rgb(sppColor( d ));
+     txt = sppScale(d);
+     numRows = spp.length;
+     break;
+   case "river":
+     col = d3.rgb(riverColor( d ));
+     txt = d;
+     numRows = riv.length;
+     break;
+   case "season":
+     col = d3.rgb(seasonColor( d ));
+     txt = d;
+     numRows = sea.length;
+     break;
+   case "year":
+     col = d3.rgb(yearColor( d ));
+     txt = d;
+     numRows = yea.length;
+     break;
+  }
+
+  // scale the legend canvas to # or rows
+  var vOffset = 25;
+
+  heightL = canvasL.height - marginL.top - marginL.bottom;
+  var radius = 5; vOffsetText = radius/2;
+  var w = 10, h = (heightL/2 + vOffset*numRows/2 - vOffset) - vOffset * i;
+
+  contextL.save();
+  contextL.translate(0.5, 0.5);
+
+  contextL.beginPath();
+  contextL.arc(w, h, radius, 0, 2 * Math.PI);
+  contextL.strokeStyle = col.darker(2);
+  contextL.stroke();
+  contextL.fillStyle = col;
+  contextL.fill();
+  contextL.font = "20px calibri";
+  contextL.fillText(txt ,w + 20, h + vOffsetText);
+
+  contextL.restore();
+}
 
 function drawLabels (posVar) {
   posData = [];
@@ -559,7 +651,7 @@ function drawLabels (posVar) {
   }
 
   textLabel = svgContainer.selectAll("text")
-                          .data(posData);
+    .data(posData);
 
   textLabel
     .enter()
@@ -575,137 +667,36 @@ function drawLabels (posVar) {
 
 // GLOBALS --------------------------------------------------------------------
 
-var xy, posVar, posData = [], xPos, yPos, textLabel;
+// var xy, posVar, posData = [], xPos, yPos, textLabel;
 
-var byFish;
+// var byFish;
 
-var spp, riv, sea, yea;
-// var spp = ["bkt", "bnt", "ats"].reverse();//sortUnique(cd.map(function(d){return d.species}));
-// var riv = [ "WB", "OL", "OS", "IL"].reverse(); //sortUnique(cd.map(function(d){return d.river}));
-// var sea = [ "Spring", "Summer", "Autumn", "Winter"].reverse(); // sortUnique(cd.map(function(d){return d.season}));
-// var yea = sortUnique(data.map(function(d){return d.year}));
+// var spp, riv, sea, yea;
+// // var spp = ["bkt", "bnt", "ats"].reverse();//sortUnique(cd.map(function(d){return d.species}));
+// // var riv = [ "WB", "OL", "OS", "IL"].reverse(); //sortUnique(cd.map(function(d){return d.river}));
+// // var sea = [ "Spring", "Summer", "Autumn", "Winter"].reverse(); // sortUnique(cd.map(function(d){return d.season}));
+// // var yea = sortUnique(data.map(function(d){return d.year}));
 
-var uniqueYears, stepWidth, uniqueSeasons, stepHeight;
+// var uniqueYears, stepWidth, uniqueSeasons, stepHeight;
 
-var searchRadius = 5;
+// var searchRadius = 5;
 
-var tooltip = d3.select("body")
-  .append("div")
-    .attr("class", "tooltip")
-    .style("position", "absolute")
-    .style("z-index", "10")
-    .style("visibility", "hidden");
+// var tooltip = d3.select("body")
+//   .append("div")
+//     .attr("class", "tooltip")
+//     .style("position", "absolute")
+//     .style("z-index", "10")
+//     .style("visibility", "hidden");
 
 // FUNCTIONS ------------------------------------------------------------------
 
-function getDataSRSY(d,spp,riv,sea,yea){
- return d.filter( function(dd) {
-   return dd.species == spp && dd.river == riv && dd.season == sea && dd.year == yea ;
- });
-}
+// function getDataSRSY(d,spp,riv,sea,yea){
+//  return d.filter( function(dd) {
+//    return dd.species == spp && dd.river == riv && dd.season == sea && dd.year == yea ;
+//  });
+// }
 
-function getXY(scenario){
-  state.counts.forEach(function(d){
-    switch(scenario){
-      case "all":
-        d.xx = xy.all[0];
-        d.yy = xy.all[1];
-        break;
-      case "species":
-        d.xx = xy.species[d.species][0];
-        d.yy = xy.species[d.species][1];
-        break;
-      case "river":
-        d.xx = xy.river[d.river][0];
-        d.yy = xy.river[d.river][1];
-        break;
-      case "season":
-        d.xx = xy.season[d.season][0];
-        d.yy = xy.season[d.season][1];
-        break;
-      case "year":
-        d.xx = scaleWidth( uniqueYears.indexOf(d.year) * stepWidth + stepWidth );
-        d.yy = height * 0.5;
-        break;
-      case "seasonYear":
-        d.xx = scaleWidth( uniqueYears.indexOf(d.year) * stepWidth + stepWidth );
-        d.yy = scaleHeight( uniqueSeasons.indexOf(d.season) * stepHeight + stepHeight );
-        break;
-    }
-  });
-}
 
-function ticked() {
-//  console.log(state.currentSample,simulation.alpha())
-
-  context.clearRect(0, 0, canvas.width, canvas.height);
-  context.save();
-  context.translate(margin.left, margin.top); // subtract the margin values whenever use simulation.find()
-
-  state.counts.forEach(drawNode);
-
-  context.restore();
-}
-
-function drawNode(d){
-    context.beginPath();
-    context.arc( d.x, d.y, initialRadius, 0, 2 * Math.PI);
-
-    context.strokeStyle = d3.rgb(d.color).darker(1);//"grey";
-    context.stroke();
-    context.fillStyle = d.color;//"grey";
-    context.fill();
-
-}
-
-function drawLegend (d, i, variable) {
-  // move to global variables?
-   var col, txt, numrows;
-
-   switch(variable){
-    case "species":
-      col = d3.rgb(sppColor( d ));
-      txt = sppScale(d);
-      numRows = spp.length;
-      break;
-    case "river":
-      col = d3.rgb(riverColor( d ));
-      txt = d;
-      numRows = riv.length;
-      break;
-    case "season":
-      col = d3.rgb(seasonColor( d ));
-      txt = d;
-      numRows = sea.length;
-      break;
-    case "year":
-      col = d3.rgb(yearColor( d ));
-      txt = d;
-      numRows = yea.length;
-      break;
-  }
-
-  // scale the legend canvas to # or rows
-  var vOffset = 25;
-
-  heightL = canvasL.height - marginL.top - marginL.bottom;
-  var radius = 5; vOffsetText = radius/2;
-  var w = 10, h = (heightL/2 + vOffset*numRows/2 - vOffset) - vOffset * i;
-
-  contextL.save();
-  contextL.translate(0.5, 0.5);
-
-  contextL.beginPath();
-  contextL.arc(w, h, radius, 0, 2 * Math.PI);
-  contextL.strokeStyle = col.darker(2);
-  contextL.stroke();
-  contextL.fillStyle = col;
-  contextL.fill();
-  contextL.font = "20px calibri";
-  contextL.fillText(txt ,w + 20, h + vOffsetText);
-
-  contextL.restore();
-}
 
 
 
@@ -847,75 +838,9 @@ function getPosData(d,i,variable,sOrY){
                  fontSize: fontSize,
                  fontFamily: fontFamily
                };
-
-/*    // add legends to context
-  context.save();
-  //context.translate(0.5, 0.5);
-
-  context.fillStyle = col;
-  context.fill();
-
-  context.fillText(txt ,xPos, yPos);
-
-  //if( selectedStep == "step4") spp.forEach(function(dd,ii){ addSpeciesStep4(dd,ii) });
-
-  context.restore();
-*/
 }
 
-/* function addSpeciesStep4 (d,i){
-  var col,txt,xPos,yPos;
-
-  switch(d){
-    case "ats":
-      xPos = 275 - margin.left;
-      yPos = 300 - margin.top;
-      col = d3.rgb(sppColor( d ));
-      txt = sppScale(d);
-      break;
-    case "bkt":
-      xPos = 190 - margin.left;
-      yPos = 122 - margin.top;
-      col = d3.rgb(sppColor( d ));
-      txt = sppScale(d);
-      break;
-    case "bnt":
-      xPos = 360 - margin.left;
-      yPos = 100 - margin.top;
-      col = d3.rgb(sppColor( d ));
-      txt = sppScale(d);
-      break;
-  }
-
-  // add legends to context
-//    context.save();
-
-  context.font = "24px calibri";
-  context.textBaseline = 'top';
-  context.fillStyle = '#FCFCFC';
-  context.fillRect(xPos,yPos, context.measureText(txt).width + 4, 23);
-
-  context.fillStyle = col;
-
-  context.fillText(txt ,xPos + 2, yPos - 2);
-
-//    context.restore();
-}
-*/
-
-function getDataIdLessThan(d,maxId){
- return d.filter( function(dd) {
-   return dd.id < maxId;
- });
-}
-
-function getDataIdBtw(d,minId,maxId){
- return d.filter( function(dd) {
-   return dd.id < maxId && dd.id > minId;
- });
-}
-
-
+// INTERACTION ----------------------------------------------------------------
 
 function clickSubject() {
   console.log("mouseClickSubject",d3.event.x,d3.event.y,simulation.find(d3.event.x - margin.left, d3.event.y - margin.top, searchRadius));
@@ -935,37 +860,33 @@ function mouseMoved() {
       d = simulation.find(m[0]- margin.left , m[1]- margin.top , searchRadius);
 
   if (!d) return a.removeAttribute("title"), tooltip.style('visibility','hidden');
-/*
-  var buildText = d.id + " " + d.tag + '\n' ;
 
-    d.sample.forEach(function(dd,i){
-      var tmp = [dd].concat([d.river[i], d.year[i], d.season[i], d.section[i], d.age[i], d.len[i]]) +'\n';
-      if (dd == state.currentSample + 1) tmp = "*" + tmp;
-      buildText = buildText + tmp;
-    });
-*/
   a.setAttribute("title", sppScale(d.species) + ", " + d.river + ", " +  d.season + ", " + d.year);
 
   tooltip
     .style("visibility", "visible");
 }
 
- function uniques(array) {
-   return Array.from(new Set(array));
+// UTILITIES ------------------------------------------------------------------
+
+function uniques(array) {
+  return Array.from(new Set(array));
 }
 
-    function sortUnique(arr) {
-        arr.sort();
-        var last_i;
-        for (var i=0;i<arr.length;i++)
-            if ((last_i = arr.lastIndexOf(arr[i])) !== i)
-                arr.splice(i+1, last_i-i);
-        return arr;
+function sortUnique(arr) {
+  arr.sort();
+  var last_i;
+  for (var i=0;i<arr.length;i++) {
+    if ((last_i = arr.lastIndexOf(arr[i])) !== i) {
+      arr.splice(i+1, last_i-i);
     }
-
+  }
+  return arr;
+}
 
 /*** Copyright 2013 Teun Duynstee Licensed under the Apache License, Version 2.0 https://github.com/Teun/thenBy.js ***/
 firstBy=function(){function n(n){return n}function t(n){return"string"==typeof n?n.toLowerCase():n}function r(r,e){if(e="number"==typeof e?{direction:e}:e||{},"function"!=typeof r){var i=r;r=function(n){return n[i]?n[i]:""}}if(1===r.length){var u=r,o=e.ignoreCase?t:n;r=function(n,t){return o(u(n))<o(u(t))?-1:o(u(n))>o(u(t))?1:0}}return-1===e.direction?function(n,t){return-r(n,t)}:r}function e(n,t){var i="function"==typeof this?this:!1,u=r(n,t),o=i?function(n,t){return i(n,t)||u(n,t)}:u;return o.thenBy=e,o}return e}();
+
 
 // APP CODE -------------------------------------------------------------------
 
