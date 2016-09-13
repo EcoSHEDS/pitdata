@@ -72,7 +72,7 @@ svg {
   position: absolute;
   bottom: -20;
   right: 0;
-  font-size: 14px;
+  font-size: 12px;
   color: #777;
 }
 
@@ -80,6 +80,31 @@ svg {
   position: absolute;
   top: 0;
   right: 0;
+}
+
+#legend {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 20px;
+  width: 100%;
+  text-align: right;
+}
+
+#legend > .title {
+  margin-left: 0;
+  margin-right: 5px;
+}
+
+#legend > .item {
+  margin-left: 0;
+  margin-right: 5px;
+  vertical-align: center;
+  font-size: 12px;
+}
+
+#legend > .item > .fa {
+  margin-right: 3px;
 }
 
 .main-container {
@@ -107,44 +132,3 @@ svg {
 .btn-group-vertical {
   width: 100%;
 }
-
-/* ============================================================================
-                                  GRAVEYARD
-============================================================================ */
-
-/*
-
-.right-container {
-  position: relative;
-  height: 700px;
-  padding: 10px;
-  padding-top: 100px;
-}
-
-.bottom-container {
-  position: relative;
-  padding: 0;
-}
-
-.description  {
-  top: 50%;
-  -webkit-transform: translateY(-50%);
-  transform: translateY(-50%);
-  font-size: 20px;
-  line-height: 1.2;
-  position: relative;
-  color: #737373;
-}
-
-.nodes circle {
-  pointer-events: all;
-  stroke: none;
-  stroke-width: 40px;
-}
-
-.top-container {
-  position: relative;
-  height: 180px;
-  padding: 10px;
-}
-*/

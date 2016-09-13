@@ -36,7 +36,7 @@ app.init = function (url) {
 
     app.layout.canvas = initCanvas('#viz-canvas', app.layout.canvas);
     app.scales = initScales(app.layout.canvas, app.nodes);
-    app.layout.legend = initLegend('#legend-canvas');
+    app.layout.legend = initLegend('#legend');
     app.layout.labels = initLabels('#chart-container');
     app.simulation = initSimulation(app.nodes, app.layout.canvas, app.params.radius);
 
@@ -255,6 +255,9 @@ function initScales (canvas, data) {
       color = {},
       groupby = {};
 
+  var yearExtent = d3.extent(data, function (d) { return d.year; }),
+      yearValues = d3.range(yearExtent[0], yearExtent[1] + 1);
+
   // label scales
   labels.species = d3.scaleOrdinal()
     .domain(["ats","bnt","bkt"])
@@ -272,7 +275,7 @@ function initScales (canvas, data) {
     return 'lightgrey';
   };
   color.species =  d3.scaleOrdinal()
-    .domain(["ats","bnt","bkt"])
+    .domain(["bkt","bnt","ats"])
     .range(greens.slice(0, 3));
   color.river = d3.scaleOrdinal()
     .domain(["WB","OL","OS","IL"])
@@ -280,7 +283,7 @@ function initScales (canvas, data) {
   color.season = d3.scaleOrdinal()
     .domain(["Spring","Summer","Autumn","Winter"])
     .range(greens);
-  color.year = d3.scaleOrdinal(d3.schemeCategory20c);
+  color.year = d3.scaleOrdinal(d3.schemeCategory20c).domain(yearValues);
 
   // groupby position scales
   var xProp = [0.33, 0.5, 0.66],
@@ -317,10 +320,8 @@ function initScales (canvas, data) {
   };
 
   var scaleYearX = d3.scaleLinear()
-    .domain(d3.extent(data, function (d) { return d.year; }))
+    .domain(yearExtent)
     .range([margin.left, width - margin.left - margin.right]);
-    console.log(scaleYearX.domain())
-    console.log(scaleYearX.range())
   groupby.year = function (d) {
     return [scaleYearX(d.year), height * 0.5];
   };
@@ -386,20 +387,24 @@ function initCanvas (el, options) {
 }
 
 function initLegend (el) {
-  var canvas = document.querySelector(el),
-      context = canvas.getContext("2d");
+  var el = d3.select(el);
+  // var canvas = document.querySelector(el),
+  //     context = canvas.getContext("2d");
 
-  var margin = {top: 0, right: 0, bottom: 0, left: 0},
-      width = canvas.width - margin.left - margin.right,
-      height = 0; //canvas.height - margin.top - margin.bottom;
+  // var margin = {top: 0, right: 0, bottom: 0, left: 0},
+  //     width = canvas.width - margin.left - margin.right,
+  //     height = 0; //canvas.height - margin.top - margin.bottom;
 
+  // return {
+  //   el: canvas,
+  //   context: context,
+  //   margin: margin,
+  //   width: width,
+  //   height: height
+  // }
   return {
-    el: canvas,
-    context: context,
-    margin: margin,
-    width: width,
-    height: height
-  }
+    el: el
+  };
 }
 
 function initLabels (el) {
@@ -544,7 +549,7 @@ function redraw () {
   updateNodes(app.nodes, app.state, app.scales);
 
   drawLabels(app.state.groupby);
-  // TODO: update legend
+  drawLegend(app.state.colorby);
 
   // restart simulation
   if (app.state.groupby === 'year' || app.state.groupby === 'seasonyear') {
@@ -610,52 +615,41 @@ function ticked (canvas, nodes, radius) {
   context.restore();
 }
 
-function drawLegend (d, i, variable) {
-  var col, txt, numrows;
+function drawLegend (colorby) {
+  var labelColors,
+      legend = app.layout.legend.el,
+      scale = app.scales.color[colorby];
 
-  switch (variable) {
-   case "species":
-     col = d3.rgb(sppColor( d ));
-     txt = sppScale(d);
-     numRows = spp.length;
-     break;
-   case "river":
-     col = d3.rgb(riverColor( d ));
-     txt = d;
-     numRows = riv.length;
-     break;
-   case "season":
-     col = d3.rgb(seasonColor( d ));
-     txt = d;
-     numRows = sea.length;
-     break;
-   case "year":
-     col = d3.rgb(yearColor( d ));
-     txt = d;
-     numRows = yea.length;
-     break;
+  if (colorby === 'none') {
+    // hide legend
+    legend.style('display', 'none');
+    return;
+  } else {
+    // show legend
+    legend.style('display', 'block');
+    // 2-d array of [[label, color], ...]
+    labelColors = d3.zip(scale.domain().map(app.scales.labels[colorby]), scale.range());
   }
 
-  // scale the legend canvas to # or rows
-  var vOffset = 25;
+  // remove existing labels
+  legend.selectAll('.item').remove();
 
-  heightL = canvasL.height - marginL.top - marginL.bottom;
-  var radius = 5; vOffsetText = radius/2;
-  var w = 10, h = (heightL/2 + vOffset*numRows/2 - vOffset) - vOffset * i;
+  // add new labels
+  var items = legend.selectAll('.item')
+    .data(labelColors);
 
-  contextL.save();
-  contextL.translate(0.5, 0.5);
-
-  contextL.beginPath();
-  contextL.arc(w, h, radius, 0, 2 * Math.PI);
-  contextL.strokeStyle = col.darker(2);
-  contextL.stroke();
-  contextL.fillStyle = col;
-  contextL.fill();
-  contextL.font = "20px calibri";
-  contextL.fillText(txt ,w + 20, h + vOffsetText);
-
-  contextL.restore();
+  items.enter()
+    .append('span')
+    .classed('item', true)
+    .each(function (d) {
+      // add the circle
+      d3.select(this)
+        .append('i')
+        .classed('fa fa-circle fa-', true)
+        .style('color', function (d) { return d[1]; });
+      // add the text
+      d3.select(this).append('span').text(function (d) { return d[0]; });
+    });
 }
 
 function drawLabels (groupby) {
@@ -680,29 +674,38 @@ function drawLabels (groupby) {
 }
 
 // INTERACTION ----------------------------------------------------------------
-function clickSubject() {
-  console.log("mouseClickSubject",d3.event.x,d3.event.y,simulation.find(d3.event.x - margin.left, d3.event.y - margin.top, searchRadius));
-  return simulation.find(d3.event.x - margin.left, d3.event.y - margin.top, searchRadius);
-}
+// var searchRadius = 5;
 
-function clickDot(){
+// var tooltip = d3.select("body")
+//   .append("div")
+//     .attr("class", "tooltip")
+//     .style("position", "absolute")
+//     .style("z-index", "10")
+//     .style("visibility", "hidden");
 
-  var d = clickSubject();
-  console.log("selected",d.id);
-}
+// function clickSubject() {
+//   console.log("mouseClickSubject",d3.event.x,d3.event.y,simulation.find(d3.event.x - margin.left, d3.event.y - margin.top, searchRadius));
+//   return simulation.find(d3.event.x - margin.left, d3.event.y - margin.top, searchRadius);
+// }
 
-function mouseMoved() {
-  var a = this.parentNode,
-      m = d3.mouse(this),
-      d = simulation.find(m[0]- margin.left , m[1]- margin.top , searchRadius);
+// function clickDot(){
 
-  if (!d) return a.removeAttribute("title"), tooltip.style('visibility','hidden');
+//   var d = clickSubject();
+//   console.log("selected",d.id);
+// }
 
-  a.setAttribute("title", sppScale(d.species) + ", " + d.river + ", " +  d.season + ", " + d.year);
+// function mouseMoved() {
+//   var a = this.parentNode,
+//       m = d3.mouse(this),
+//       d = simulation.find(m[0]- margin.left , m[1]- margin.top , searchRadius);
 
-  tooltip
-    .style("visibility", "visible");
-}
+//   if (!d) return a.removeAttribute("title"), tooltip.style('visibility','hidden');
+
+//   a.setAttribute("title", sppScale(d.species) + ", " + d.river + ", " +  d.season + ", " + d.year);
+
+//   tooltip
+//     .style("visibility", "visible");
+// }
 
 // UTILITIES ------------------------------------------------------------------
 function parseRow (d) {
@@ -747,17 +750,6 @@ function sortUnique(arr) {
 
 /*** Copyright 2013 Teun Duynstee Licensed under the Apache License, Version 2.0 https://github.com/Teun/thenBy.js ***/
 firstBy=function(){function n(n){return n}function t(n){return"string"==typeof n?n.toLowerCase():n}function r(r,e){if(e="number"==typeof e?{direction:e}:e||{},"function"!=typeof r){var i=r;r=function(n){return n[i]?n[i]:""}}if(1===r.length){var u=r,o=e.ignoreCase?t:n;r=function(n,t){return o(u(n))<o(u(t))?-1:o(u(n))>o(u(t))?1:0}}return-1===e.direction?function(n,t){return-r(n,t)}:r}function e(n,t){var i="function"==typeof this?this:!1,u=r(n,t),o=i?function(n,t){return i(n,t)||u(n,t)}:u;return o.thenBy=e,o}return e}();
-
-// OLD CODE --------------------------------------------------------------------
-// var searchRadius = 5;
-
-// var tooltip = d3.select("body")
-//   .append("div")
-//     .attr("class", "tooltip")
-//     .style("position", "absolute")
-//     .style("z-index", "10")
-//     .style("visibility", "hidden");
-
 
 // export globals
 window.app = app;
