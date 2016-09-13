@@ -668,7 +668,6 @@ function drawLabels (groupby) {
       .attr('y', function(d) { return d.y; })
       .attr('font-size', function (d) { return d.size; })
       .attr('fill', '#777')
-      // .attr('fill', function (d) { return app.scales.color.species(d.value); })
       .text(function (d) { return app.scales.labels[groupby](d.value); });
   }
 }
