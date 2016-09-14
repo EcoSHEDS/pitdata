@@ -208,42 +208,23 @@ function initControls () {
   // setup listeners on groupby buttons
   var state = app.state;
   d3.selectAll('.btn-groupby').on('click', function () {
-    // extract value of selected button
+    // extract value of selected button and redraw
     state.groupby = d3.select(this).attr('data-value');
-
-    // update active groupby button
-    d3.selectAll('.btn-groupby').classed('active', false);
-    d3.select(this).classed('active', true);
-
     redraw();
   });
-
-  // set initial active groupby button
-  d3.select('.btn-groupby[data-value="' + state.groupby + '"]').classed('active', true);
 
   // setup listeners on colorby buttons
   d3.selectAll('.btn-colorby').on('click', function () {
-    // extract value of selected button
+    // extract value of selected button and redraw
     state.colorby = d3.select(this).attr('data-value');
-
-    // update active colorby button
-    d3.selectAll('.btn-colorby').classed('active', false);
-    d3.select(this).classed('active', true);
-
     redraw();
   });
-
-  // set initial active colorby button
-  d3.select('.btn-colorby[data-value="' + state.colorby + '"]').classed('active', true);
 
   // setup listeners on step buttons
   d3.selectAll('.step').on('click', function () {
     var step = d3.select(this).attr('data-value');
     app.switchStep(step);
   });
-}
-
-function initGroupbyPositions (w, h) {
 }
 
 function initScales (canvas, data) {
@@ -261,10 +242,10 @@ function initScales (canvas, data) {
   // label scales
   labels.species = d3.scaleOrdinal()
     .domain(["ats","bnt","bkt"])
-    .range(["Atlantic salmon", "Brown trout", "Brook trout"]);
+    .range(["Atlantic Salmon", "Brown Trout", "Brook Trout"]);
   labels.river = d3.scaleOrdinal()
     .domain(["WB","OL","OS","IL"])
-    .range(["Main branch","Large tributary","Small tributary","Isolated trib."]);
+    .range(["Main Branch","Large Tributary","Small Tributary","Isolated Tributary"]);
   labels.season = function (d) { return d; };
   labels.year = function (d) { return d; };
   labels.seasonyear = function (d) { return d; };
@@ -368,14 +349,6 @@ function initCanvas (el, options) {
   var margin = options.margin,
       width = el.width - margin.left - margin.right,
       height = el.height - margin.top - margin.bottom;
-
-  // TODO: Add interaction
-  // d3.select(el)
-  //   .on("mousemove", mouseMoved)
-  //   .call(d3.drag()
-  //     .container(el)
-  //     .subject(clickDot)  // acts as 'onclick'
-  //   );
 
   return {
     el: el,
@@ -551,6 +524,11 @@ function redraw () {
   drawLabels(app.state.groupby);
   drawLegend(app.state.colorby);
 
+  d3.selectAll('.btn-groupby').classed('active', false);
+  d3.selectAll('.btn-colorby').classed('active', false);
+  d3.select('.btn-groupby[data-value="' + app.state.groupby + '"]').classed('active', true);
+  d3.select('.btn-colorby[data-value="' + app.state.colorby + '"]').classed('active', true);
+
   // restart simulation
   if (app.state.groupby === 'year' || app.state.groupby === 'seasonyear') {
     // hack to restart simulation after 50% completion in order to get all
@@ -563,7 +541,7 @@ function redraw () {
       .on('end', function () {
         app.simulation
           .alpha(1)
-          .alphaMin(0.01) // need to reset default alphaMin, otherwise future simulations will end at 0.5
+          .alphaMin(0.001) // need to reset default alphaMin, otherwise future simulations will end at 0.5
           .nodes(app.nodes)
           .restart()
           .on('end', function () {}); // need to turn off the end event, otherwise future simulations will restart infinitely
@@ -671,40 +649,6 @@ function drawLabels (groupby) {
       .text(function (d) { return app.scales.labels[groupby](d.value); });
   }
 }
-
-// INTERACTION ----------------------------------------------------------------
-// var searchRadius = 5;
-
-// var tooltip = d3.select("body")
-//   .append("div")
-//     .attr("class", "tooltip")
-//     .style("position", "absolute")
-//     .style("z-index", "10")
-//     .style("visibility", "hidden");
-
-// function clickSubject() {
-//   console.log("mouseClickSubject",d3.event.x,d3.event.y,simulation.find(d3.event.x - margin.left, d3.event.y - margin.top, searchRadius));
-//   return simulation.find(d3.event.x - margin.left, d3.event.y - margin.top, searchRadius);
-// }
-
-// function clickDot(){
-
-//   var d = clickSubject();
-//   console.log("selected",d.id);
-// }
-
-// function mouseMoved() {
-//   var a = this.parentNode,
-//       m = d3.mouse(this),
-//       d = simulation.find(m[0]- margin.left , m[1]- margin.top , searchRadius);
-
-//   if (!d) return a.removeAttribute("title"), tooltip.style('visibility','hidden');
-
-//   a.setAttribute("title", sppScale(d.species) + ", " + d.river + ", " +  d.season + ", " + d.year);
-
-//   tooltip
-//     .style("visibility", "visible");
-// }
 
 // UTILITIES ------------------------------------------------------------------
 function parseRow (d) {

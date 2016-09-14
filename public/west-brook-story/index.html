@@ -46,65 +46,81 @@
         <div class="narration-container" style="opacity: 1; display: block;">
           <div class="narration-step" id="narration-step1" style="display:block">
             <p>From 1997 to 2015, we tagged almost 30,000 individual fish.</p>
-            <p>Those fish were captured a total of 63,232 times, many just once, some up to 10 times.</p>
-            <p>Each circle represents 25 individual fish.</p>
+            <p class="faded">Those fish were captured a total of 63,232 times, many just once, some up to 10 times.</p>
+            <p class="faded">Each circle represents 25 individual fish.</p>
             <div class="navigate-btns">
-              <button class="btn btn-default disabled"><i class="fa fa-angle-double-left"></i> Prev</button>
-              <button class="btn btn-default" onclick="app.switchStep('step2')">Next <i class="fa fa-angle-double-right"></i></button>
+              <div class="btn-group">
+                <button class="btn btn-default disabled"><i class="fa fa-angle-double-left"></i> Prev</button>
+                <button class="btn btn-default" onclick="app.switchStep('step2')">Next <i class="fa fa-angle-double-right"></i></button>
+              </div>
             </div>
           </div>
           <div class="narration-step" id="narration-step2">
             <p>There were three <b>species</b> of fish in the stream.</p>
-            <p><u>Brook trout</u> are native and reproduce naturally.</p>
-            <p><u>Brown trout</u> reproduce naturally, but were introduced from Europe in the mid 1800's.</p>
-            <p><u>Atlantic salmon</u> were native but do not reproduce naturally. They were stocked as 25 mm fry in the spring.</p>
+            <p class="faded"><u>Brook trout</u> are native and reproduce naturally.</p>
+            <p class="faded"><u>Brown trout</u> reproduce naturally, but were introduced from Europe in the mid 1800's.</p>
+            <p class="faded"><u>Atlantic salmon</u> were native but do not reproduce naturally. They were stocked as 25 mm fry in the spring.</p>
             <div class="navigate-btns">
-              <button class="btn btn-default" onclick="app.switchStep('step1')"><i class="fa fa-angle-double-left"></i> Prev</button>
-              <button class="btn btn-default" onclick="app.switchStep('step3')">Next <i class="fa fa-angle-double-right"></i></button>
+              <div class="btn-group">
+                <button class="btn btn-default" onclick="app.switchStep('step1')"><i class="fa fa-angle-double-left"></i> Prev</button>
+                <button class="btn btn-default" onclick="app.switchStep('step3')">Next <i class="fa fa-angle-double-right"></i></button>
+              </div>
             </div>
           </div>
           <div class="narration-step" id="narration-step3">
             <p>There were four <b>rivers</b> in the stream network.</p>
             <p>add map here</p>
             <div class="navigate-btns">
-              <button class="btn btn-default" onclick="app.switchStep('step2')"><i class="fa fa-angle-double-left"></i> Prev</button>
-              <button class="btn btn-default" onclick="app.switchStep('step4')">Next <i class="fa fa-angle-double-right"></i></button>
+              <div class="btn-group">
+                <button class="btn btn-default" onclick="app.switchStep('step2')"><i class="fa fa-angle-double-left"></i> Prev</button>
+                <button class="btn btn-default" onclick="app.switchStep('step4')">Next <i class="fa fa-angle-double-right"></i></button>
+              </div>
             </div>
           </div>
           <div class="narration-step" id="narration-step4">
             <p>We sampled in four <b>seasons</b>.</p>
-            <p>Most fish were caught in Autumn, when we could first tag the youngest fish</p>
+            <p class="faded">Most fish were caught in Autumn, when we could first tag the youngest fish.</p>
             <div class="navigate-btns">
-              <button class="btn btn-default" onclick="app.switchStep('step3')"><i class="fa fa-angle-double-left"></i> Prev</button>
-              <button class="btn btn-default" onclick="app.switchStep('step5')">Next <i class="fa fa-angle-double-right"></i></button>
+              <div class="btn-group">
+                <button class="btn btn-default" onclick="app.switchStep('step3')"><i class="fa fa-angle-double-left"></i> Prev</button>
+                <button class="btn btn-default" onclick="app.switchStep('step5')">Next <i class="fa fa-angle-double-right"></i></button>
+              </div>
             </div>
           </div>
           <div class="narration-step" id="narration-step5">
-            <p>We sampled for 19 <b>years</b>.</p> There were high abundances in some years (e.g. 2003) and low abundances in others (e.g. 2011).</p>
+            <p>We sampled for 19 <b>years</b>.</p>
+            <p class="faded">There were high abundances in some years (e.g. 2003) and low abundances in others (e.g. 2011).</p>
             <div class="navigate-btns">
-              <button class="btn btn-default" onclick="app.switchStep('step4')"><i class="fa fa-angle-double-left"></i> Prev</button>
-              <button class="btn btn-default" onclick="app.switchStep('step6')">Next <i class="fa fa-angle-double-right"></i></button>
+              <div class="btn-group">
+                <button class="btn btn-default" onclick="app.switchStep('step4')"><i class="fa fa-angle-double-left"></i> Prev</button>
+                <button class="btn btn-default" onclick="app.switchStep('step6')">Next <i class="fa fa-angle-double-right"></i></button>
+              </div>
             </div>
           </div>
           <div class="narration-step" id="narration-step6">
             <p>Over the 19 <b>years</b> of sampling we couldn't sample the winter in some years because of ice.</p>
             <div class="navigate-btns">
-              <button class="btn btn-default" onclick="app.switchStep('step5')"><i class="fa fa-angle-double-left"></i> Prev</button>
-              <button class="btn btn-default" onclick="app.switchStep('step7')">Next <i class="fa fa-angle-double-right"></i></button>
+              <div class="btn-group">
+                <button class="btn btn-default" onclick="app.switchStep('step5')"><i class="fa fa-angle-double-left"></i> Prev</button>
+                <button class="btn btn-default" onclick="app.switchStep('step7')">Next <i class="fa fa-angle-double-right"></i></button>
+              </div>
             </div>
           </div>
           <div class="narration-step" id="narration-step7">
-            <p>We started tagging <b>trout</b> in the WB in 2000 and in the WB and the tributaries in 2002.</p> We stopped stocking <b>salmon</b> in 2004. By 2008, there were very few salmon left in the stream network</p>
+            <p>We started tagging <b>trout</b> in the WB in 2000 and in the WB and the tributaries in 2002.</p>
+            <p class="faded">We stopped stocking <b>salmon</b> in 2004. By 2008, there were very few salmon left in the stream network.</p>
             <div class="navigate-btns">
-              <button class="btn btn-default" onclick="app.switchStep('step6')"><i class="fa fa-angle-double-left"></i> Prev</button>
-              <button class="btn btn-default" onclick="app.switchStep('step8')">Next <i class="fa fa-angle-double-right"></i></button>
+              <div class="btn-group">
+                <button class="btn btn-default" onclick="app.switchStep('step6')"><i class="fa fa-angle-double-left"></i> Prev</button>
+                <button class="btn btn-default" onclick="app.switchStep('step8')">Next <i class="fa fa-angle-double-right"></i></button>
+              </div>
             </div>
           </div>
           <div class="narration-step" id="narration-step8">
             <form class="form-inline-vertical">
               <div class="form-group form-group-sm">
-                <div>
-                  Group by:
+                <div class="text-center">
+                  Group By
                 </div>
                 <div class="btn-group-vertical" role="group">
                   <button type="button" class="btn btn-default btn-groupby" data-value="none">None</button>
@@ -112,15 +128,15 @@
                   <button type="button" class="btn btn-default btn-groupby" data-value="river">River</button>
                   <button type="button" class="btn btn-default btn-groupby" data-value="season">Season</button>
                   <button type="button" class="btn btn-default btn-groupby" data-value="year">Year</button>
-                  <button type="button" class="btn btn-default btn-groupby" data-value="seasonyear">Season/Year</button>
+                  <button type="button" class="btn btn-default btn-groupby" data-value="seasonyear">Season &amp; Year</button>
                 </div>
               </div>
             </form>
 
             <form class="form-inline-vertical">
               <div class="form-group form-group-sm">
-                <div>
-                  Color by:
+                <div class="text-center">
+                  Color By
                 </div>
                 <div class="btn-group-vertical" role="group">
                   <button type="button" class="btn btn-default btn-colorby" data-value="none">None</button>
@@ -133,15 +149,17 @@
             </form>
 
             <div class="navigate-btns">
-              <button class="btn btn-default" onclick="app.switchStep('step7')"><i class="fa fa-angle-double-left"></i> Prev</button>
-              <button class="btn btn-default disabled">Next <i class="fa fa-angle-double-right"></i></button>
+              <div class="btn-group">
+                <button class="btn btn-default" onclick="app.switchStep('step7')"><i class="fa fa-angle-double-left"></i> Prev</button>
+                <button class="btn btn-default disabled">Next <i class="fa fa-angle-double-right"></i></button>
+              </div>
             </div>
           </div>
         </div>
       </div>
       <div class="col-lg-10">
         <div id="chart-container">
-          <canvas width="900" height="600" id="viz-canvas"></canvas>
+          <canvas width="970" height="600" id="viz-canvas"></canvas>
           <div id="chart-footnote" style="display:none">
             One <i class="fa fa-circle" style="color:lightgrey;"></i> = <span id="fish-per-circle"></span> fish
           </div>
@@ -157,6 +175,8 @@
       <p><i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i></p>
     </div>
   </div>
+
+  <hr>
 </div>
 
 <script src="/libs/d3/d3.js"></script>
