@@ -405,81 +405,93 @@ function initLegend (el) {
 }
 
 function initLabels (el) {
-  var positions = {
-    species: [
-      {
-        value: 'ats',
-        x: 180,
-        y: 500,
-        size: '24px'
-      },
-      {
-        value: 'bnt',
-        x: 800,
-        y: 100,
-        size: '24px'
-      },
-      {
-        value: 'bkt',
-        x: 50,
-        y: 100,
-        size: '24px'
-      }
-    ],
-    river: [
-      {
-        value: 'WB',
-        x: 50,
-        y: 50,
-        size: '24px'
-      },
-      {
-        value: 'OL',
-        x: 75,
-        y: 575,
-        size: '24px'
-      },
-      {
-        value: 'OS',
-        x: 800,
-        y: 150,
-        size: '24px'
-      },
-      {
-        value: 'IL',
-        x: 775,
-        y: 575,
-        size: '24px'
-      }
-    ],
-    season: [
-      {
-        value: 'Spring',
-        x: 100,
-        y: 150,
-        size: '24px'
-      },
-      {
-        value: 'Autumn',
-        x: 850,
-        y: 150,
-        size: '24px'
-      },
-      {
-        value: 'Summer',
-        x: 100,
-        y: 500,
-        size: '24px'
-      },
-      {
-        value: 'Winter',
-        x: 850,
-        y: 500,
-        size: '24px'
-      }
-    ]
-  };
-
+  var positions = {};
+  positions.species = [
+    {
+      value: 'ats',
+      x: 180,
+      y: 500,
+      size: '24px'
+    },
+    {
+      value: 'bnt',
+      x: 800,
+      y: 100,
+      size: '24px'
+    },
+    {
+      value: 'bkt',
+      x: 50,
+      y: 100,
+      size: '24px'
+    }
+  ];
+  positions.river = [
+    {
+      value: 'WB',
+      x: 50,
+      y: 50,
+      size: '24px'
+    },
+    {
+      value: 'OL',
+      x: 75,
+      y: 575,
+      size: '24px'
+    },
+    {
+      value: 'OS',
+      x: 800,
+      y: 150,
+      size: '24px'
+    },
+    {
+      value: 'IL',
+      x: 775,
+      y: 575,
+      size: '24px'
+    }
+  ];
+  positions.season = [
+    {
+      value: 'Spring',
+      x: 100,
+      y: 150,
+      size: '24px'
+    },
+    {
+      value: 'Autumn',
+      x: 850,
+      y: 150,
+      size: '24px'
+    },
+    {
+      value: 'Summer',
+      x: 100,
+      y: 500,
+      size: '24px'
+    },
+    {
+      value: 'Winter',
+      x: 850,
+      y: 500,
+      size: '24px'
+    }
+  ];
+  positions.year = [
+    {
+      value: 1997,
+      x: 30,
+      y: 440,
+      size: '14px'
+    },
+    {
+      value: 2015,
+      x: 910,
+      y: 440,
+      size: '14px'
+    }
+  ];
   positions.seasonyear = [
     {
       value: 1997,
