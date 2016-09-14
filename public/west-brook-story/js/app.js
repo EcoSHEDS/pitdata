@@ -24,33 +24,51 @@ app.init = function (url, debug) {
   console.log('Loading data...');
   app.debug = debug;
 
-  d3.csv(url, parseRow, function (error, data) {
-    if (error) {
-      alert('Error occurred trying to load data.');
-      throw error;
-    }
+  var q = d3.queue()
+    .defer(d3.csv, url)
+    .defer(d3.csv, 'data/wb-segment-coordinates.csv')
+    .await(function (error, data, coords) {
+      if (error) {
+        alert('Error occurred while loading the data.');
+        throw error;
+      }
 
-    console.log('Initializing interface...');
+      console.log('Initializing interface...');
 
-    data = data.filter(function(d) {
-      return d.enc == 1;
+      data = data.map(parseRow)
+      data = data.filter(function(d) {
+        return d.enc == 1;
+      });
+
+      app.coords = coords.map(function (d) {
+          return {
+            watershed: d.watershed,
+            river: d.riverAbbr,
+            lat: +d.lat,
+            lon: +d.lon,
+            section: +d.section
+          }
+        })
+        .filter(function (d) {
+          return d.watershed === 'west' && d.section > 0 && d.section < 48;
+        });
+
+      app.nodes = initNodes(data, app.params.fishPerCircle);
+
+      app.layout.canvas = initCanvas('#viz-canvas', app.layout.canvas);
+      app.scales = initScales(app.layout.canvas, app.nodes);
+      app.layout.legend = initLegend('#legend');
+      app.layout.labels = initLabels('#chart-container');
+      app.simulation = initSimulation(app.nodes, app.layout.canvas, app.params.radius);
+
+      initControls();
+
+      app.switchStep(app.state.step);
+
+      hideLoading();
+
+      console.log('Ready!');
     });
-    app.nodes = initNodes(data, app.params.fishPerCircle);
-
-    app.layout.canvas = initCanvas('#viz-canvas', app.layout.canvas);
-    app.scales = initScales(app.layout.canvas, app.nodes);
-    app.layout.legend = initLegend('#legend');
-    app.layout.labels = initLabels('#chart-container');
-    app.simulation = initSimulation(app.nodes, app.layout.canvas, app.params.radius);
-
-    initControls();
-
-    app.switchStep(app.state.step);
-
-    hideLoading();
-
-    console.log('Ready!');
-  });
 }
 
 // STATE TRANSITIONS ----------------------------------------------------------
@@ -61,16 +79,16 @@ app.switchStep = function (step) {
   // update app state to next step
   app.state.step = step;
 
-  // enter next step
-  app.steps[app.state.step].enter();
+  // show next step narration
+  d3.selectAll('.narration-step').style('display', 'none');
+  d3.select('#narration-' + app.state.step).style('display', 'block');
 
   // update active step button
   d3.selectAll('.step').classed('selected', false);
   d3.select('.step[data-value="' + app.state.step + '"]').classed('selected', true);
 
-  // show next step narration
-  d3.selectAll('.narration-step').style('display', 'none');
-  d3.select('#narration-' + app.state.step).style('display', 'block');
+  // enter next step
+  app.steps[app.state.step].enter();
 
   redraw();
 }
@@ -95,8 +113,12 @@ app.steps.step3 = {
   enter: function () {
     app.state.groupby = 'river';
     app.state.colorby = 'river';
+    d3.select('#map-container').append('div').attr('id', 'map');
+    this.map = drawMap();
   },
   exit: function () {
+    this.map.remove();
+    d3.select('#map').remove();
   }
 };
 app.steps.step4 = {
@@ -499,6 +521,7 @@ function initLabels (el) {
 
   var svg = d3.select(el)
     .append('svg')
+    .attr('id', 'labels')
     .append('g');
 
   return {
@@ -647,6 +670,37 @@ function drawLabels (groupby) {
       .attr('fill', '#777')
       .text(function (d) { return app.scales.labels[groupby](d.value); });
   }
+}
+
+function drawMap () {
+  var color = app.scales.color.river;
+
+  var map = L.map('map').setView([42.434, -72.669], 14);
+
+  L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
+
+  var rivers = color.domain(); // ['WB', 'OS', 'OL', 'IL']
+
+  rivers.map(function (river) {
+    // create array of LatLng points for this river sorted by section
+    var polyline = app.coords.
+      filter(function (d) {
+        return d.river == river;
+      })
+      .sort(function (a, b) {
+        return a.section - b.section;
+      })
+      .map(function (d) {
+        return new L.LatLng(d.lat, d.lon);
+      });
+
+    // add river polyline to map
+    new L.polyline(polyline, {color: color(river), opacity: 1}).addTo(map);
+  });
+
+  return map;
 }
 
 // UTILITIES ------------------------------------------------------------------

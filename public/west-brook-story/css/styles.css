@@ -12,7 +12,7 @@ h2 {
 
 /* ---- SVG STYLES ---- */
 
-svg {
+svg#labels {
   position: absolute;
   top: 0;
   left: 0;
@@ -107,6 +107,16 @@ svg {
 
 #legend > .item > .fa {
   margin-right: 3px;
+}
+
+#map-container {
+  width: 170px;
+  height: 200px;
+}
+
+#map {
+  width: 170px;
+  height: 200px;
 }
 
 .main-container {
