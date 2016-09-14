@@ -1,5 +1,6 @@
 (function () {
 var app = {
+  debug: false,
   params: {
     fishPerCircle: 25,
     radius: 3
@@ -19,8 +20,10 @@ var app = {
 };
 
 // PRIMARY INITIALIZATION FUNCTION --------------------------------------------
-app.init = function (url) {
+app.init = function (url, debug) {
   console.log('Loading data...');
+  app.debug = debug;
+
   d3.csv(url, parseRow, function (error, data) {
     if (error) {
       alert('Error occurred trying to load data.');
@@ -327,7 +330,6 @@ function initSimulation (nodes, canvas, radius) {
     .force("charge",
            d3.forceManyBody()
              .strength(- radius + 1)) // strength of attraction among points [ - repels, + attracts ]
-             // .distanceMax(200))
     .force("collide",
            d3.forceCollide()
              .radius(radius + 1.02)) // (function(d) { return ageScale(d.currentAge) + 1.025; })
@@ -385,13 +387,13 @@ function initLabels (el) {
     species: [
       {
         value: 'ats',
-        x: 150,
+        x: 180,
         y: 500,
         size: '24px'
       },
       {
         value: 'bnt',
-        x: 750,
+        x: 800,
         y: 100,
         size: '24px'
       },
@@ -411,100 +413,89 @@ function initLabels (el) {
       },
       {
         value: 'OL',
-        x: 50,
-        y: 525,
+        x: 75,
+        y: 575,
         size: '24px'
       },
       {
         value: 'OS',
-        x: 775,
-        y: 200,
+        x: 800,
+        y: 150,
         size: '24px'
       },
       {
         value: 'IL',
         x: 775,
-        y: 450,
+        y: 575,
         size: '24px'
       }
     ],
     season: [
       {
         value: 'Spring',
-        x: 50,
+        x: 100,
         y: 150,
         size: '24px'
       },
       {
         value: 'Autumn',
-        x: 800,
+        x: 850,
         y: 150,
         size: '24px'
       },
       {
         value: 'Summer',
-        x: 50,
+        x: 100,
         y: 500,
         size: '24px'
       },
       {
         value: 'Winter',
-        x: 800,
+        x: 850,
         y: 500,
         size: '24px'
       }
     ]
   };
 
-  var yearExtent = d3.extent(app.nodes, function (d) { return d.year; }),
-      yearScaleX = d3.scaleLinear().domain(yearExtent).range([0, 820]),
-      allYears = d3.range(yearExtent[0], yearExtent[1] + 1);
-  positions.year = allYears.map(function (year) {
-    return {
-      value: year,
-      x: yearScaleX(year) + 30,
-      y: 500
-    }
-  });
-
-  yearScaleX.range([0, 780]);
-  positions.seasonyear = allYears.map(function (year) {
-    return {
-      value: year,
-      x: yearScaleX(year) + 70,
-      y: 600
-    }
-  });
-
-  var seasonyearSeason = [
+  positions.seasonyear = [
+    {
+      value: 1997,
+      x: 60,
+      y: 580,
+      size: '14px'
+    },
+    {
+      value: 2015,
+      x: 900,
+      y: 580,
+      size: '14px'
+    },
     {
       value: 'Spring',
-      x: 50,
-      y: 50,
-      size: '24px'
+      x: 10,
+      y: 90,
+      size: '14px'
     },
     {
       value: 'Summer',
-      x: 50,
-      y: 180,
-      size: '24px'
+      x: 10,
+      y: 200,
+      size: '14px'
     },
     {
       value: 'Autumn',
-      x: 50,
-      y: 310,
-      size: '24px'
+      x: 10,
+      y: 320,
+      size: '14px'
     },
     {
       value: 'Winter',
-      x: 50,
-      y: 450,
-      size: '24px'
+      x: 10,
+      y: 470,
+      size: '14px'
     }
   ];
-  seasonyearSeason.forEach(function (d) {
-    positions.seasonyear.push(d);
-  });
 
   var svg = d3.select(el)
     .append('svg')
@@ -541,7 +532,7 @@ function redraw () {
       .on('end', function () {
         app.simulation
           .alpha(1)
-          .alphaMin(0.001) // need to reset default alphaMin, otherwise future simulations will end at 0.5
+          .alphaMin(0.01) // need to reset default alphaMin, otherwise future simulations will end at 0.5
           .nodes(app.nodes)
           .restart()
           .on('end', function () {}); // need to turn off the end event, otherwise future simulations will restart infinitely
@@ -578,6 +569,14 @@ function drawNode(d, radius, context){
   context.stroke();
   context.fillStyle = d.color;
   context.fill();
+
+  if (app.debug) {
+    context.beginPath();
+    context.arc( d.xx, d.yy, 5, 0, 2 * Math.PI);
+
+    context.fillStyle = 'red';
+    context.fill();
+  }
 }
 
 function ticked (canvas, nodes, radius) {
