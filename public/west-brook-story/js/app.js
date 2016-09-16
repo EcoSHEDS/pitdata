@@ -112,7 +112,7 @@ app.steps.step2 = {
 app.steps.step3 = {
   enter: function () {
     app.state.groupby = 'river';
-    app.state.colorby = 'river';
+    app.state.colorby = 'species';
     d3.select('#map-container').append('div').attr('id', 'map');
     this.map = drawMap();
   },
@@ -124,7 +124,7 @@ app.steps.step3 = {
 app.steps.step4 = {
   enter: function () {
     app.state.groupby = 'season';
-    app.state.colorby = 'season';
+    app.state.colorby = 'species';
   },
   exit: function () {
   }
@@ -132,37 +132,12 @@ app.steps.step4 = {
 app.steps.step5 = {
   enter: function () {
     app.state.groupby = 'year';
-    app.state.colorby = 'year';
+    app.state.colorby = 'species';
   },
   exit: function () {
   }
 };
 app.steps.step6 = {
-  enter: function () {
-    app.state.groupby = 'seasonyear';
-    app.state.colorby = 'year';
-  },
-  exit: function () {
-  }
-};
-app.steps.step7 = {
-  enter: function () {
-    app.state.groupby = 'species';
-    app.state.colorby = 'species';
-    this.timeout = window.setTimeout( function() {
-      app.state.groupby = 'seasonyear';
-      redraw();
-    }, 2000);
-  },
-  exit: function () {
-    if (this.timeout) {
-      // clear the timeout in case user switches to another state within 2 sec
-      window.clearTimeout(this.timeout);
-      delete this.timeout;
-    }
-  }
-};
-app.steps.step8 = {
   enter: function () {
     app.state.groupby = 'none';
     app.state.colorby = 'none';
