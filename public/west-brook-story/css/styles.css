@@ -110,13 +110,13 @@ svg#labels {
 }
 
 #map-container {
-  width: 170px;
-  height: 200px;
+  width: 270px;
+  height: 150px;
 }
 
 #map {
-  width: 170px;
-  height: 200px;
+  width: 270px;
+  height: 150px;
 }
 
 .main-container {

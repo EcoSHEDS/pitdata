@@ -384,20 +384,20 @@ function initLabels (el) {
   positions.species = [
     {
       value: 'ats',
-      x: 180,
+      x: 150,
       y: 500,
       size: '24px'
     },
     {
       value: 'bnt',
-      x: 800,
-      y: 100,
+      x: 720,
+      y: 80,
       size: '24px'
     },
     {
       value: 'bkt',
-      x: 50,
-      y: 100,
+      x: 40,
+      y: 80,
       size: '24px'
     }
   ];
@@ -416,13 +416,13 @@ function initLabels (el) {
     },
     {
       value: 'OS',
-      x: 800,
-      y: 150,
+      x: 690,
+      y: 120,
       size: '24px'
     },
     {
       value: 'IL',
-      x: 775,
+      x: 680,
       y: 575,
       size: '24px'
     }
@@ -431,38 +431,38 @@ function initLabels (el) {
     {
       value: 'Spring',
       x: 100,
-      y: 150,
+      y: 100,
       size: '24px'
     },
     {
       value: 'Autumn',
-      x: 850,
-      y: 150,
+      x: 775,
+      y: 100,
       size: '24px'
     },
     {
       value: 'Summer',
       x: 100,
-      y: 500,
+      y: 550,
       size: '24px'
     },
     {
       value: 'Winter',
-      x: 850,
-      y: 500,
+      x: 775,
+      y: 550,
       size: '24px'
     }
   ];
   positions.year = [
     {
       value: 1997,
-      x: 30,
+      x: 20,
       y: 440,
       size: '14px'
     },
     {
       value: 2015,
-      x: 910,
+      x: 820,
       y: 440,
       size: '14px'
     }
@@ -476,7 +476,7 @@ function initLabels (el) {
     },
     {
       value: 2015,
-      x: 900,
+      x: 800,
       y: 580,
       size: '14px'
     },
