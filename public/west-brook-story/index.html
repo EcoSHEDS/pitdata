@@ -45,7 +45,7 @@
           <div class="narration-step" id="narration-step1" style="display:block">
             <p>From 1997 to 2015, we tagged almost 30,000 individual fish.</p>
             <p class="faded">Those fish were captured a total of 63,232 times, many just once, some up to 10 times.</p>
-            <p class="faded">Each circle represents <span class="fish-per-circle"></span> individual captures.</p>
+            <p class="faded">Each circle represents <span class="fish-per-circle"></span> individual captures. Individual fish that were captured more than once are included in more than one circle.</p>
             <div class="navigate-btns">
               <div class="btn-group">
                 <button class="btn btn-default disabled"><i class="fa fa-angle-double-left"></i> Prev</button>
@@ -55,9 +55,9 @@
           </div>
           <div class="narration-step" id="narration-step2">
             <p>There were three <b>species</b> of fish in the stream.</p>
-            <p class="faded"><u>Brook trout</u> are native and reproduce naturally.</p>
-            <p class="faded"><u>Brown trout</u> reproduce naturally, but were introduced from Europe in the mid 1800's.</p>
-            <p class="faded"><u>Atlantic salmon</u> were native but do not reproduce naturally. They were stocked as 25 mm fry in the spring.</p>
+            <p class="faded"><u>Brook trout</u> are native to this region and reproduce naturally.</p>
+            <p class="faded"><u>Brown trout</u> also reproduce naturally, but are not native having been introduced from Europe in the mid 1800's.</p>
+            <p class="faded"><u>Atlantic salmon</u> are native but do not reproduce naturally. Young salmon were stocked in the spring of each year until 2004.</p>
             <div class="navigate-btns">
               <div class="btn-group">
                 <button class="btn btn-default" onclick="app.switchStep('step1')"><i class="fa fa-angle-double-left"></i> Prev</button>
@@ -67,10 +67,10 @@
           </div>
           <div class="narration-step" id="narration-step3">
             <p>There were four <b>rivers</b> in the stream network.</p>
-            <p class="faded"><u>Main Branch</u> is the West Brook, which is the primary river.</p>
-            <p class="faded"><u>Small Tributary</u> is...</p>
-            <p class="faded"><u>Large Tributary</u> is...</p>
-            <p class="faded"><u>Isolated Tributary</u> is...</p>
+            <p class="faded">The <u>Main Branch</u> of the West Brook is the primary river.</p>
+            <p class="faded">All fish species can freely move in and out of the <u>Small Tributary</u>, but Atlantic Salmon and Brown Trout are rarely found there. Brook Trout use this stream for spawning in the fall.</p>
+            <p class="faded">The <u>Large Tributary</u> is also open to the Main Branch. All three species use this stream, but only Brook Trout are found high upstream.</p>
+            <p class="faded">A large waterfall near the mouth of the <u>Isolated Tributary</u> blocks access from the <u>Main Branch</u>. Only Brook Trout were found in this stream.</p>
             <div id="map-container"></div>
             <div class="navigate-btns">
               <div class="btn-group">
@@ -80,8 +80,8 @@
             </div>
           </div>
           <div class="narration-step" id="narration-step4">
-            <p>We sampled in four <b>seasons</b>.</p>
-            <p class="faded">Most fish were caught in Autumn, when we could first tag the youngest fish.</p>
+            <p>We sampled in all four <b>seasons</b> of each year.</p>
+            <p class="faded">We captured the most fish in <u>Autumn</u> when the youngest fish hatch and join the population.</p>
             <div class="navigate-btns">
               <div class="btn-group">
                 <button class="btn btn-default" onclick="app.switchStep('step3')"><i class="fa fa-angle-double-left"></i> Prev</button>
@@ -90,8 +90,10 @@
             </div>
           </div>
           <div class="narration-step" id="narration-step5">
-            <p>We sampled for 19 <b>years</b>.</p>
-            <p class="faded">There were high abundances in some years (e.g. 2003) and low abundances in others (e.g. 2011).</p>
+            <p>We sampled over 19 <b>years</b> from 1997 to 2015.</p>
+            <p class="faded">The total number of captured fish was higher in some years (e.g. 2003) and lower in others (e.g. 2011).</p>
+            <p class="faded">Atlantic Salmon were stocked in the spring of each year until 2004. The last remaining individual salmon were captured in 2007.</p>
+            <p class="faded">We started capturing Brook Trout and Brown Trout in 2000. Before then, we simply were not looking for them, but that does not mean they were not there.</p>
             <div class="navigate-btns">
               <div class="btn-group">
                 <button class="btn btn-default" onclick="app.switchStep('step4')"><i class="fa fa-angle-double-left"></i> Prev</button>
