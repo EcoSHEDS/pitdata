@@ -202,7 +202,7 @@ function initNodes (data, fishPerCircle) {
 
 function initControls () {
   // update footnote
-  d3.select('#fish-per-circle').text(app.params.fishPerCircle);
+  d3.selectAll('.fish-per-circle').text(app.params.fishPerCircle);
   d3.select('#chart-footnote').style('display', 'block');
 
   // setup listeners on groupby buttons

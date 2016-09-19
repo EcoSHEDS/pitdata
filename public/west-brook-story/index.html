@@ -7,7 +7,6 @@
   <title>West Brook Story | SHEDS</title>
 
   <link rel="stylesheet" href="/libs/bootstrap/dist/css/bootstrap.min.css">
-  <!-- <link rel="stylesheet" href="/libs/bootstrap/dist/css/bootstrap-theme.min.css"> -->
   <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
   <link rel="stylesheet" href="/libs/leaflet/dist/leaflet.css">
 
@@ -46,7 +45,7 @@
           <div class="narration-step" id="narration-step1" style="display:block">
             <p>From 1997 to 2015, we tagged almost 30,000 individual fish.</p>
             <p class="faded">Those fish were captured a total of 63,232 times, many just once, some up to 10 times.</p>
-            <p class="faded">Each circle represents 25 individual fish.</p>
+            <p class="faded">Each circle represents <span class="fish-per-circle"></span> individual captures.</p>
             <div class="navigate-btns">
               <div class="btn-group">
                 <button class="btn btn-default disabled"><i class="fa fa-angle-double-left"></i> Prev</button>
@@ -145,7 +144,7 @@
         <div id="chart-container">
           <canvas width="970" height="600" id="viz-canvas"></canvas>
           <div id="chart-footnote" style="display:none">
-            One <i class="fa fa-circle" style="color:lightgrey;"></i> = <span id="fish-per-circle"></span> fish
+            One <i class="fa fa-circle" style="color:lightgrey;"></i> = <span class="fish-per-circle"></span> captures
           </div>
           <div id="legend">
             <span class="title">Legend:</span>
