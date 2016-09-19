@@ -119,6 +119,11 @@ svg#labels {
   height: 150px;
 }
 
+.river-label {
+  width: 100px;
+  line-height: 1;
+}
+
 .main-container {
   position: relative;
 }

@@ -660,7 +660,9 @@ function drawLabels (groupby) {
 }
 
 function drawMap () {
-  var color = app.scales.color.river;
+  var labels = app.scales.labels.river,
+      rivers = labels.domain(),
+      color = d3.scaleOrdinal(d3.schemeCategory10).domain(rivers);
 
   var map = L.map('map').setView([42.434, -72.669], 14);
 
@@ -669,6 +671,13 @@ function drawMap () {
   }).addTo(map);
 
   var rivers = color.domain(); // ['WB', 'OS', 'OL', 'IL']
+
+  var labelCoordinates = {
+    WB: new L.LatLng(42.433, -72.663),
+    OS: new L.LatLng(42.4373, -72.668),
+    OL: new L.LatLng(42.4379, -72.673),
+    IL: new L.LatLng(42.433, -72.6775)
+  };
 
   rivers.map(function (river) {
     // create array of LatLng points for this river sorted by section
@@ -685,6 +694,12 @@ function drawMap () {
 
     // add river polyline to map
     new L.polyline(polyline, {color: color(river), opacity: 1}).addTo(map);
+
+    // add text label
+    new L.marker(labelCoordinates[river], {
+        icon: new L.divIcon({ className: 'river-label', html: labels(river) })
+      })
+      .addTo(map);
   });
 
   return map;
