@@ -1,0 +1,158 @@
+/* ---- TEXT ELEMENTS ---- */
+
+p {
+  font: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #000;
+}
+
+h2 {
+  color: #555;
+  font-size: 20px;
+}
+
+/* ---- SVG STYLES ---- */
+
+svg#labels {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* ---- LAYOUT ---- */
+
+#chart-container {
+  position: relative;
+  height: 640px;
+}
+
+.container-fluid {
+  max-width: 1200px;
+}
+
+.narration-container {
+  padding-top: 20px;
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.narration-step {
+  display: none;
+}
+
+.narration-step > p.faded {
+  color: #737373;
+}
+
+.step-container {
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
+.step-container .step.selected {
+  border: 2px solid #848484;
+  background-color: "lightgrey";
+  color: #C5B4B4;
+}
+
+.step-container .step:hover {
+  border: 2px solid #A6A4A4;
+}
+
+.step-container .step {
+  display: inline-block;
+  padding: 3px 10px;
+  font-size: 20px;
+  color: #999;
+  background-color: #f0f0f0;
+  text-align: center;
+  border: 2px solid #fff;
+  cursor: pointer;
+}
+
+#chart-footnote {
+  position: absolute;
+  top: 20px;
+  right: 0;
+  font-size: 12px;
+}
+
+#legend-canvas {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+#legend {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 20px;
+  width: 100%;
+  text-align: right;
+}
+
+#legend > .title {
+  margin-left: 0;
+  margin-right: 5px;
+}
+
+#legend > .item {
+  margin-left: 0;
+  margin-right: 5px;
+  vertical-align: center;
+  font-size: 12px;
+}
+
+#legend > .item > .fa {
+  margin-right: 3px;
+}
+
+#map-container {
+  width: 270px;
+  height: 150px;
+}
+
+#map {
+  width: 270px;
+  height: 150px;
+}
+
+.river-label {
+  width: 100px;
+  line-height: 1;
+}
+
+.main-container {
+  position: relative;
+}
+
+#loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #EEE;
+  text-align: center;
+  padding-top: 200px;
+  font-size: 42px;
+}
+
+.navigate-btns {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.navigate-btns > .btn-group > .btn {
+  width: 70px;
+}
+
+.btn-group-vertical {
+  width: 139px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}

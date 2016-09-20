@@ -48,7 +48,7 @@
     <div class="container">
       <div class="row" style="margin-top: 20px; margin-bottom: 20px">
         <div class="col-xs-12">
-          <h1>West Brook Fish Tagging Study</h1>
+          <h1>Fish Tagging Studies Introduction</h1>
         </div>
       </div>
     </div>
@@ -61,7 +61,7 @@
           <h2>What is a tagging study?</h2>
           <p style="font-size:1.2em;">Understanding the performance and fate of individual fish helps us understand why populations fluctuate and why species come and go.</p>
           <p style="font-size:1.2em;">Since 1997, we have studied stream fish using <a href="https://en.wikipedia.org/wiki/Radio-frequency_identification" target="_blank"> tags </a>that contain unique electronic codes. We can estimate body growth, movement and reproduction (performance) and survival (fate) by recapturing tagged fish over time. </p>
-          <p style="font-size:1.2em;">Our longest-running study is the West Brook, in Whately MA. Dots on the map are 20m-long sampling sections. Mouse over a section to see a picture of the section from 2006. Blue dots are the West Brook mainstem. Green, orange and red dots are tributaries. Get a tour of the data by  <a href="/west-brook-story/index.html"> launching </a>the introduction.</p>
+          <p style="font-size:1.2em;">Our longest-running study is the West Brook, in Whately MA. Dots on the map are 20m-long sampling sections. Mouse over a section to see a picture of the section from 2006. Blue dots are the West Brook mainstem. Green, orange and red dots are tributaries. Get a tour of the data by  <a href="/PITtagOverview/index.html"> launching </a>the introduction.</p>
 
         </div>
 
@@ -70,7 +70,7 @@
           <div>
             <div id="map"></div>
           </div>
-          <p><a class="btn btn-lg btn-primary" style="margin-top: 25px" href="/west-brook-story/index.html">Launch Intro <span class="glyphicon glyphicon-chevron-right"></span></a></p>
+          <p><a class="btn btn-lg btn-primary" style="margin-top: 25px" href="/PITtagOverview/index.html">Launch Intro <span class="glyphicon glyphicon-chevron-right"></span></a></p>
         </div>
       </div>
     </div>
@@ -218,12 +218,12 @@ function ready(error, locations) {
 
       var fileName = "img/" + d.river + "_" + year + "_" + season + "_" + d.section + ".jpg";
 
-      // tooltip.html('<h3>River = ' + d.riverFull + ", Section = " + d.section + '</h3><br><img src= ' + fileName + '>')
-      //   .style("left", "100px")// (d3.event.pageX + 15) + "px")
-      //   .style("top",  "160px")// (d3.event.pageY - 15) + "px")
-      //   .transition()
-      //   .duration(100)
-      //   .style("opacity", 1);
+       tooltip.html('<h3>River = ' + d.riverFull + ", Section = " + d.section + '</h3><br><img src= ' + fileName + '>')
+         .style("left", "100px")// (d3.event.pageX + 15) + "px")
+         .style("top",  "160px")// (d3.event.pageY - 15) + "px")
+         .transition()
+         .duration(100)
+         .style("opacity", 1);
     })
     .on("mouseout", function (d) {
       d3.select(this)
@@ -231,9 +231,9 @@ function ready(error, locations) {
         .style("stroke", function(d) { return d3.rgb(riverColors(d.river)).darker(1); })
         .style("fill", function(d) { return riverColors(d.river); });
 
-      // tooltip.transition()
-      //   .duration(250)
-      //   .style("opacity", 0);
+       tooltip.transition()
+         .duration(250)
+         .style("opacity", 0);
     });
 
   map.on("viewreset", onViewReset);
