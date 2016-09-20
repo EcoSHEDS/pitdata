@@ -1,58 +1,712 @@
-// GLOBALS --------------------------------------------------------------------
-var state = {
-  forceX: undefined,
-  forceY: undefined,
-  nodes: undefined,
-  counts: []
+(function () {
+var app = {
+  debug: false,
+  params: {
+    fishPerCircle: 25,
+    radius: 3
+  },
+  scales: {},
+  state: {
+    step: 'step1',
+    groupby: 'none',
+    colorby: 'none'
+  },
+  layout: {
+    canvas: {
+      margin: { top: 40, right: 40, bottom: 0, left: 100 }
+    }
+  },
+  steps: {}
 };
 
-var xy, posVar, posData = [], xPos, yPos, textLabel;
+// PRIMARY INITIALIZATION FUNCTION --------------------------------------------
+app.init = function (url, debug) {
+  console.log('Loading data...');
+  app.debug = debug;
 
-var byFish;
+  var q = d3.queue()
+    .defer(d3.csv, url)
+    .defer(d3.csv, 'data/wb-segment-coordinates.csv')
+    .await(function (error, data, coords) {
+      if (error) {
+        alert('Error occurred while loading the data.');
+        throw error;
+      }
 
-var spp, riv, sea, yea;
+      console.log('Initializing interface...');
 
-var fishPerCircle = 25;
+      data = data.map(parseRow)
+      data = data.filter(function(d) {
+        return d.enc == 1;
+      });
 
-var csvIn = {};
+      app.coords = coords.map(function (d) {
+          return {
+            watershed: d.watershed,
+            river: d.riverAbbr,
+            lat: +d.lat,
+            lon: +d.lon,
+            section: +d.section
+          }
+        })
+        .filter(function (d) {
+          return d.watershed === 'west' && d.section > 0 && d.section < 48;
+        });
 
-var uniqueYears, stepWidth, uniqueSeasons, stepHeight;
+      app.nodes = initNodes(data, app.params.fishPerCircle);
 
-var initialRadius = 3;
+      app.layout.canvas = initCanvas('#viz-canvas', app.layout.canvas);
+      app.scales = initScales(app.layout.canvas, app.nodes);
+      app.layout.legend = initLegend('#legend');
+      app.layout.labels = initLabels('#chart-container');
+      app.simulation = initSimulation(app.nodes, app.layout.canvas, app.params.radius);
 
-var searchRadius = 5;
+      initControls();
 
-var tooltip = d3.select("body")
-  .append("div")
-    .attr("class", "tooltip")
-    .style("position", "absolute")
-    .style("z-index", "10")
-    .style("visibility", "hidden");
+      app.switchStep(app.state.step);
 
+      hideLoading();
 
-var sppText = " <u>Brook trout</u> are native and reproduce naturally.</p>  <u>Brown trout</u> reproduce naturally, but were introduced from Europe in the mid 1800â€™s.</p>  <u>Atlantic salmon</u> were native but do not reproduce naturally. They were stocked as 25 mm fry in the spring.";
+      console.log('Ready!');
+    });
+}
 
-var riverText = " <u>WB</u> is the mainstem and has the most area. </p>  <u>OL</u> is a Large, Open tributary, with a  fully passable culvert. </p>  <u>OS</u> is a Small, Open tributary, with a perched culvert until the Nature Conservancy replaced it in 2013. </p>  <u>IL</u> is a Large, Isolated tributary with an impassable waterfall at the confluence with WB";
+// STATE TRANSITIONS ----------------------------------------------------------
+app.switchStep = function (step) {
+  // exit current step
+  app.steps[app.state.step].exit();
 
-var riverText2 = " All three species lived in the <u>WB</u>. </p>  <u>OL</u> had mostly brook trout with some brown trout. </p>  <u>OS</u> was almost all brook trout. </p>  <u>IL</u> contained only brook trout.";
+  // update app state to next step
+  app.state.step = step;
 
-var seasonText = "Most fish were caught in Autumn, when we could first tag the youngest fish";
+  // show next step narration
+  d3.selectAll('.narration-step').style('display', 'none');
+  d3.select('#narration-' + app.state.step).style('display', 'block');
 
-var stepText = [
-  "dummy",
-  "From 1997 to 2015, we tagged almost 30,000 individual fish. </p> Those fish were captured a total of 63,232 times, many just once, some up to 10 times. </p> In the dot cloud, each circle is 25 fish captures.",
-  "There were three <b>species</b> of fish in the stream. </p>" + sppText,
-  "There were four <b>rivers</b> in the stream network. </p> add map here" ,
-  "We sampled in four <b>seasons</b>. </p>" + seasonText,
-  "We sampled for 19 <b>years</b>.</p> There were high abundances in some years (e.g. 2003) and low abundances in others (e.g. 2011).",
-  "Over the 19 <b>years</b> of sampling we couldn't sample the winter in some years because of ice.",
-  "We started tagging <b>trout</b> in the WB in 2000 and in the WB and the tributaries in 2002.</p> We stopped stocking <b>salmon</b> in 2004. By 2008, there were very few salmon left in the stream network",
-  "Explore the data by <b>yourself</b> by clicking buttons to <u>position</u> and <u>color</u> the circles. </p> Many combinations are possible and the history of clicks can create interesting patterns."
-];
+  // update active step button
+  d3.selectAll('.step').classed('selected', false);
+  d3.select('.step[data-value="' + app.state.step + '"]').classed('selected', true);
 
-// FUNCTIONS ------------------------------------------------------------------
+  // enter next step
+  app.steps[app.state.step].enter();
 
-function typeCoreData(d){
+  redraw();
+}
+
+app.steps.step1 = {
+  enter: function () {
+    app.state.groupby = 'none';
+    app.state.colorby = 'none';
+  },
+  exit: function () {
+  }
+};
+app.steps.step2 = {
+  enter: function () {
+    app.state.groupby = 'species';
+    app.state.colorby = 'species';
+  },
+  exit: function () {
+  }
+};
+app.steps.step3 = {
+  enter: function () {
+    app.state.groupby = 'river';
+    app.state.colorby = 'species';
+    d3.select('#map-container').append('div').attr('id', 'map');
+    this.map = drawMap();
+  },
+  exit: function () {
+    this.map.remove();
+    d3.select('#map').remove();
+  }
+};
+app.steps.step4 = {
+  enter: function () {
+    app.state.groupby = 'season';
+    app.state.colorby = 'species';
+  },
+  exit: function () {
+  }
+};
+app.steps.step5 = {
+  enter: function () {
+    app.state.groupby = 'year';
+    app.state.colorby = 'species';
+  },
+  exit: function () {
+  }
+};
+app.steps.step6 = {
+  enter: function () {
+    app.state.groupby = 'none';
+    app.state.colorby = 'none';
+  },
+  exit: function () {
+  }
+};
+
+function hideLoading () {
+  d3.select('#loading')
+    .style('opacity', 1)
+    .transition()
+    .duration(1000)
+    .style('opacity', 0)
+    .on('end', function () {
+      // after transition, hide element
+      d3.select(this).style('display', 'none');
+  });
+}
+
+// INITIALIZATION FUNCTIONS ---------------------------------------------------
+function initNodes (data, fishPerCircle) {
+  var result = [];
+
+  var nest = d3.nest()
+    .key(function (d) {
+      // creates a compound key as string (e.g. "bkt,IL,Spring,2013")
+      return [d.species, d.river, d.season, d.year];
+    })
+    .rollup(function (leaves) {
+      return leaves.length;
+    })
+    .entries(data);
+
+  nest.forEach(function (d) {
+    var key = d.key.split(","), // "bkt,IL,Spring,2013" -> ["bkt", "IL", "Spring", 2013]
+        fishCount = d.value,
+        circleCount = parseInt(fishCount / fishPerCircle);
+
+    for (var i = 0; i < circleCount; i++) {
+      result.push({
+        species: key[0],
+        river: key[1],
+        season: key[2],
+        year: key[3]
+      });
+    }
+  });
+
+  result.forEach(function(d) {
+    d.color = "lightgrey";
+    d.year = +d.year;
+  });
+
+  var sorter = firstBy(function (d) { return d.species; })
+    .thenBy("river")
+    .thenBy("season");
+  result.sort(sorter);
+
+  return result;
+}
+
+function initControls () {
+  // update footnote
+  d3.selectAll('.fish-per-circle').text(app.params.fishPerCircle);
+  d3.select('#chart-footnote').style('display', 'block');
+
+  // setup listeners on groupby buttons
+  var state = app.state;
+  d3.selectAll('.btn-groupby').on('click', function () {
+    // extract value of selected button and redraw
+    state.groupby = d3.select(this).attr('data-value');
+    redraw();
+  });
+
+  // setup listeners on colorby buttons
+  d3.selectAll('.btn-colorby').on('click', function () {
+    // extract value of selected button and redraw
+    state.colorby = d3.select(this).attr('data-value');
+    redraw();
+  });
+
+  // setup listeners on step buttons
+  d3.selectAll('.step').on('click', function () {
+    var step = d3.select(this).attr('data-value');
+    app.switchStep(step);
+  });
+}
+
+function initScales (canvas, data) {
+  var width = canvas.width,
+      height = canvas.height,
+      margin = canvas.margin;
+
+  var labels = {},
+      color = {},
+      groupby = {};
+
+  var yearExtent = d3.extent(data, function (d) { return d.year; }),
+      yearValues = d3.range(yearExtent[0], yearExtent[1] + 1);
+
+  // label scales
+  labels.species = d3.scaleOrdinal()
+    .domain(["ats","bnt","bkt"])
+    .range(["Atlantic Salmon", "Brown Trout", "Brook Trout"]);
+  labels.river = d3.scaleOrdinal()
+    .domain(["WB","OL","OS","IL"])
+    .range(["Main Branch","Large Tributary","Small Tributary","Isolated Tributary"]);
+  labels.season = function (d) { return d; };
+  labels.year = function (d) { return d; };
+  labels.seasonyear = function (d) { return d; };
+
+  // color scales
+  var greens = ['#A6CEE3', '#1F78B4', '#B2DF8A', '#33A02C'];
+  color.none = function (d) {
+    return 'lightgrey';
+  };
+  color.species =  d3.scaleOrdinal()
+    .domain(["bkt","bnt","ats"])
+    .range(greens.slice(0, 3));
+  color.river = d3.scaleOrdinal()
+    .domain(["WB","OL","OS","IL"])
+    .range(greens);
+  color.season = d3.scaleOrdinal()
+    .domain(["Spring","Summer","Autumn","Winter"])
+    .range(greens);
+  color.year = d3.scaleOrdinal(d3.schemeCategory20c).domain(yearValues);
+
+  // groupby position scales
+  var xProp = [0.33, 0.5, 0.66],
+      yProp = [0.33, 0.5, 0.66];
+
+  groupby.none = function () {
+    return [width * xProp[1], height * yProp[1]];
+  };
+  groupby.species = function (d) {
+    var positions = {
+      ats: [width * xProp[1], height * yProp[2]],
+      bkt: [width * xProp[0], height * yProp[0]],
+      bnt: [width * xProp[2], height * yProp[0]]
+    };
+    return positions[d.species];
+  };
+  groupby.river = function (d) {
+    var positions = {
+      WB: [width * xProp[0], height * yProp[0]],
+      OL: [width * xProp[0], height * yProp[2]],
+      OS: [width * xProp[2], height * yProp[0]],
+      IL: [width * xProp[2], height * yProp[2]]
+    };
+    return positions[d.river];
+  };
+  groupby.season = function (d) {
+    var positions = {
+      Spring: [width * xProp[0], height * yProp[0]],
+      Summer: [width * xProp[0], height * yProp[2]],
+      Autumn: [width * xProp[2], height * yProp[0]],
+      Winter: [width * xProp[2], height * yProp[2]]
+    };
+    return positions[d.season];
+  };
+
+  var scaleYearX = d3.scaleLinear()
+    .domain(yearExtent)
+    .range([margin.left, width - margin.left - margin.right]);
+  groupby.year = function (d) {
+    return [scaleYearX(d.year), height * 0.5];
+  };
+
+  var seasons = ["Spring", "Summer", "Autumn", "Winter"],
+      scaleSeasonY = d3.scaleLinear()
+                       .domain([0, 3])
+                       .range([100, height - 200]);
+  groupby.seasonyear = function (d) {
+    return [scaleYearX(d.year), 40 + scaleSeasonY(seasons.indexOf(d.season))];
+  };
+
+  return {
+    labels: labels,
+    color: color,
+    groupby: groupby
+  };
+}
+
+function initSimulation (nodes, canvas, radius) {
+  var simulation = d3.forceSimulation()
+    .force("charge",
+           d3.forceManyBody()
+             .strength(- radius + 1)) // strength of attraction among points [ - repels, + attracts ]
+    .force("collide",
+           d3.forceCollide()
+             .radius(radius + 1.02)) // (function(d) { return ageScale(d.currentAge) + 1.025; })
+    .force("x", d3.forceX().x(function (d) { return d.xx; }))
+    .force("y", d3.forceY().y(function (d) { return d.yy; }))
+    .alphaMin(0.01)
+    .nodes(nodes)
+    .on("tick", function () {
+      ticked(canvas, nodes, radius);
+    });
+
+  return simulation;
+}
+
+function initCanvas (el, options) {
+  var el = document.querySelector(el),
+      context = el.getContext("2d");
+
+  var margin = options.margin,
+      width = el.width - margin.left - margin.right,
+      height = el.height - margin.top - margin.bottom;
+
+  return {
+    el: el,
+    context: context,
+    margin: margin,
+    width: width,
+    height: height
+  }
+}
+
+function initLegend (el) {
+  var el = d3.select(el);
+  // var canvas = document.querySelector(el),
+  //     context = canvas.getContext("2d");
+
+  // var margin = {top: 0, right: 0, bottom: 0, left: 0},
+  //     width = canvas.width - margin.left - margin.right,
+  //     height = 0; //canvas.height - margin.top - margin.bottom;
+
+  // return {
+  //   el: canvas,
+  //   context: context,
+  //   margin: margin,
+  //   width: width,
+  //   height: height
+  // }
+  return {
+    el: el
+  };
+}
+
+function initLabels (el) {
+  var positions = {};
+  positions.species = [
+    {
+      value: 'ats',
+      x: 150,
+      y: 500,
+      size: '24px'
+    },
+    {
+      value: 'bnt',
+      x: 720,
+      y: 80,
+      size: '24px'
+    },
+    {
+      value: 'bkt',
+      x: 40,
+      y: 80,
+      size: '24px'
+    }
+  ];
+  positions.river = [
+    {
+      value: 'WB',
+      x: 50,
+      y: 50,
+      size: '24px'
+    },
+    {
+      value: 'OL',
+      x: 75,
+      y: 575,
+      size: '24px'
+    },
+    {
+      value: 'OS',
+      x: 690,
+      y: 120,
+      size: '24px'
+    },
+    {
+      value: 'IL',
+      x: 680,
+      y: 575,
+      size: '24px'
+    }
+  ];
+  positions.season = [
+    {
+      value: 'Spring',
+      x: 100,
+      y: 100,
+      size: '24px'
+    },
+    {
+      value: 'Autumn',
+      x: 775,
+      y: 100,
+      size: '24px'
+    },
+    {
+      value: 'Summer',
+      x: 100,
+      y: 550,
+      size: '24px'
+    },
+    {
+      value: 'Winter',
+      x: 775,
+      y: 550,
+      size: '24px'
+    }
+  ];
+  positions.year = [
+    {
+      value: 1997,
+      x: 20,
+      y: 440,
+      size: '14px'
+    },
+    {
+      value: 2015,
+      x: 820,
+      y: 440,
+      size: '14px'
+    }
+  ];
+  positions.seasonyear = [
+    {
+      value: 1997,
+      x: 60,
+      y: 580,
+      size: '14px'
+    },
+    {
+      value: 2015,
+      x: 800,
+      y: 580,
+      size: '14px'
+    },
+    {
+      value: 'Spring',
+      x: 10,
+      y: 90,
+      size: '14px'
+    },
+    {
+      value: 'Summer',
+      x: 10,
+      y: 200,
+      size: '14px'
+    },
+    {
+      value: 'Autumn',
+      x: 10,
+      y: 320,
+      size: '14px'
+    },
+    {
+      value: 'Winter',
+      x: 10,
+      y: 470,
+      size: '14px'
+    }
+  ];
+
+  var svg = d3.select(el)
+    .append('svg')
+    .attr('id', 'labels')
+    .append('g');
+
+  return {
+    el: svg,
+    positions: positions
+  };
+}
+
+// DRAWING FUNCTIONS ----------------------------------------------------------
+function redraw () {
+  // update target and color of each node based on current state
+  updateNodes(app.nodes, app.state, app.scales);
+
+  drawLabels(app.state.groupby);
+  drawLegend(app.state.colorby);
+
+  d3.selectAll('.btn-groupby').classed('active', false);
+  d3.selectAll('.btn-colorby').classed('active', false);
+  d3.select('.btn-groupby[data-value="' + app.state.groupby + '"]').classed('active', true);
+  d3.select('.btn-colorby[data-value="' + app.state.colorby + '"]').classed('active', true);
+
+  // restart simulation
+  if (app.state.groupby === 'year' || app.state.groupby === 'seasonyear') {
+    // hack to restart simulation after 50% completion in order to get all
+    // nodes to move to their groups (otherwise nodes get stuck in wrong group)
+    app.simulation
+      .alpha(1)
+      .alphaMin(0.5)
+      .nodes(app.nodes)
+      .restart()
+      .on('end', function () {
+        app.simulation
+          .alpha(1)
+          .alphaMin(0.01) // need to reset default alphaMin, otherwise future simulations will end at 0.5
+          .nodes(app.nodes)
+          .restart()
+          .on('end', function () {}); // need to turn off the end event, otherwise future simulations will restart infinitely
+      });
+  } else {
+    app.simulation
+      .alpha(1)
+      .nodes(app.nodes)
+      .restart();
+  }
+}
+
+function updateNodes (nodes, state, scales) {
+  var groupby = state.groupby,
+      colorby = state.colorby,
+      groupbyScale = scales.groupby[groupby],
+      colorScale = scales.color[colorby];
+
+  nodes.forEach(function (d) {
+    // update target position (focus)
+    d.xx = groupbyScale(d)[0];
+    d.yy = groupbyScale(d)[1];
+
+    // update node color
+    d.color = colorScale(d[colorby]);
+  });
+}
+
+function drawNode(d, radius, context){
+  context.beginPath();
+  context.arc( d.x, d.y, radius, 0, 2 * Math.PI);
+
+  context.strokeStyle = d3.rgb(d.color).darker(1);
+  context.stroke();
+  context.fillStyle = d.color;
+  context.fill();
+
+  if (app.debug) {
+    context.beginPath();
+    context.arc( d.xx, d.yy, 5, 0, 2 * Math.PI);
+
+    context.fillStyle = 'red';
+    context.fill();
+  }
+}
+
+function ticked (canvas, nodes, radius) {
+  var context = canvas.context;
+  context.clearRect(0, 0, canvas.el.width, canvas.el.height);
+  context.save();
+  context.translate(canvas.margin.left, canvas.margin.top); // subtract the margin values whenever use simulation.find()
+
+  nodes.forEach(function (d) {
+    drawNode(d, radius, context);
+  });
+
+  context.restore();
+}
+
+function drawLegend (colorby) {
+  var labelColors,
+      legend = app.layout.legend.el,
+      scale = app.scales.color[colorby];
+
+  if (colorby === 'none') {
+    // hide legend
+    legend.style('display', 'none');
+    return;
+  } else {
+    // show legend
+    legend.style('display', 'block');
+    // 2-d array of [[label, color], ...]
+    labelColors = d3.zip(scale.domain().map(app.scales.labels[colorby]), scale.range());
+  }
+
+  // remove existing labels
+  legend.selectAll('.item').remove();
+
+  // add new labels
+  var items = legend.selectAll('.item')
+    .data(labelColors);
+
+  items.enter()
+    .append('span')
+    .classed('item', true)
+    .each(function (d) {
+      // add the circle
+      d3.select(this)
+        .append('i')
+        .classed('fa fa-circle fa-', true)
+        .style('color', function (d) { return d[1]; });
+      // add the text
+      d3.select(this).append('span').text(function (d) { return d[0]; });
+    });
+}
+
+function drawLabels (groupby) {
+  var svg = app.layout.labels.el,
+      positions = app.layout.labels.positions;
+
+  svg.selectAll('text').remove();
+
+  if (positions[groupby]) {
+    labels = svg.selectAll('text')
+      .data(positions[groupby]);
+
+    labels.enter()
+      .append('text')
+      .attr('x', function(d) { return d.x; })
+      .attr('y', function(d) { return d.y; })
+      .attr('font-size', function (d) { return d.size; })
+      .attr('fill', '#777')
+      .text(function (d) { return app.scales.labels[groupby](d.value); });
+  }
+}
+
+function drawMap () {
+  var labels = app.scales.labels.river,
+      rivers = labels.domain(),
+      color = d3.scaleOrdinal(d3.schemeCategory10).domain(rivers);
+
+  var map = L.map('map').setView([42.434, -72.669], 14);
+
+  L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
+
+  var rivers = color.domain(); // ['WB', 'OS', 'OL', 'IL']
+
+  var labelCoordinates = {
+    WB: new L.LatLng(42.433, -72.663),
+    OS: new L.LatLng(42.4373, -72.668),
+    OL: new L.LatLng(42.4379, -72.673),
+    IL: new L.LatLng(42.433, -72.6775)
+  };
+
+  rivers.map(function (river) {
+    // create array of LatLng points for this river sorted by section
+    var polyline = app.coords.
+      filter(function (d) {
+        return d.river == river;
+      })
+      .sort(function (a, b) {
+        return a.section - b.section;
+      })
+      .map(function (d) {
+        return new L.LatLng(d.lat, d.lon);
+      });
+
+    // add river polyline to map
+    new L.polyline(polyline, {color: color(river), opacity: 1}).addTo(map);
+
+    // add text label
+    new L.marker(labelCoordinates[river], {
+        icon: new L.divIcon({ className: 'river-label', html: labels(river) })
+      })
+      .addTo(map);
+  });
+
+  return map;
+}
+
+// UTILITIES ------------------------------------------------------------------
+function parseRow (d) {
   d.sample = +d.sample;
   d.date = Date.parse(d.date);
   d.id = +d.id;
@@ -77,830 +731,24 @@ function typeCoreData(d){
   return d;
 }
 
-function initializeInterface(){
-
-   $("#all").on("click", function () {
-     console.log("#all click");
-     getXY("all");
-     posVar = "all";
-     drawPositionLabels(posVar); // to empty out the labels if return to here
-     simulation.alpha(1).nodes(state.counts).restart();
-   });
-   $("#species").on("click", function () {
-     console.log("#species click");
-     getXY("species");
-     posVar = "species";
-     drawPositionLabels(posVar);
-     simulation.alpha(1).nodes(state.counts).restart();
-   });
-   $("#river").on("click", function () {
-     console.log("#river click");
-     getXY("river");
-     posVar = "river";
-     drawPositionLabels(posVar);
-     simulation.alpha(1).nodes(state.counts).restart();
-   });
-   $("#season").on("click", function () {
-     console.log("#season click");
-     getXY("season");
-     posVar = "season";
-     drawPositionLabels(posVar);
-     simulation.alpha(1).nodes(state.counts).restart();
-   });
-   $("#year").on("click", function () {
-     console.log("#year click");
-     getXY("year");
-     posVar = "year";
-     drawPositionLabels(posVar);
-     // sim was not completing - run 3/4 way, then start again seems to work well
-     simulation.alpha(1).alphaMin(0.75).nodes(state.counts).restart()
-       .on( "end", function(){simulation.alpha(1).nodes(state.counts).restart()} );
-   });
-   $("#seasonYear").on("click", function () {
-     console.log("#seasonYear click");
-     getXY("seasonYear");
-     posVar = "seasonYear";
-     drawPositionLabels(posVar);
-     simulation.alpha(1).alphaMin(0.75).nodes(state.counts).restart()
-       .on( "end", function(){simulation.alpha(1).nodes(state.counts).restart()} );
-   });
-//
-   $("#colorSpecies").on("click", function () {
-     console.log("#colorSpecies click");
-     state.counts.forEach(function(d){ d.color = sppColor( d.species )  });
-     ticked();
-     canvasL.height = 125;
-     contextL.clearRect(0, 0, canvasL.width, canvasL.height);
-     spp.forEach(function(d,i) {drawLegend(d,i,"species")});
-   });
-   $("#colorRiver").on("click", function () {
-     console.log("#colorSpecies click");
-     state.counts.forEach(function(d){ d.color = riverColor( d.river )  });
-     ticked();
-     canvasL.height = 150;
-     contextL.clearRect(0, 0, canvasL.width, canvasL.height);
-     riv.forEach(function(d,i) {drawLegend(d,i,"river")});
-   });
-   $("#colorSeason").on("click", function () {
-     console.log("#colorSeason click");
-     state.counts.forEach(function(d){ d.color = seasonColor( d.season )  });
-     ticked();
-     canvasL.height = 150;
-     contextL.clearRect(0, 0, canvasL.width, canvasL.height);
-     sea.forEach(function(d,i) {drawLegend(d,i,"season")});
-   });
-   $("#colorYear").on("click", function () {
-     console.log("#colorYear click");
-     state.counts.forEach(function(d){ d.color = yearColor( d.year )  });
-     ticked();
-     canvasL.height = 500;
-     contextL.clearRect(0, 0, canvasL.width, canvasL.height);
-     yea.forEach(function(d,i) {drawLegend(d,i,"year")});
-   });
-
-   $("#reset").on("click", function () {
-     console.log("#reset click");
-     //location.reload();
-     //$("#all").click();
-     state.counts.forEach(function(d){ d.color = "lightgrey" });
-     ticked();
-     contextL.clearRect(0, 0, canvasL.width, canvasL.height);
-     canvasL.height = 0;
-   });
-
-   $("#numF").text("Each circle represents " + fishPerCircle + " fish");
+function uniques(array) {
+  return Array.from(new Set(array));
 }
 
-function initializeXY(w,h){
-  var xProp4 = [0.33,0.5,0.66], yProp4 = [0.33,0.5,0.66];
-//   var xProp3 = [0.33,0.66], yProp3 = [0.33,0.66];
-
-  xy = {
-    all: [ w*xProp4[1], h*yProp4[1] ],
-    species: {
-      ats: [w*xProp4[1], h*yProp4[2]],
-      bkt: [w*xProp4[0], h*yProp4[0]],
-      bnt: [w*xProp4[2], h*yProp4[0]]
-    },
-    river: {
-      WB: [w*xProp4[0], h*yProp4[0]],
-      OL: [w*xProp4[0], h*yProp4[2]],
-      OS: [w*xProp4[2], h*yProp4[0]],
-      IL: [w*xProp4[2], h*yProp4[2]]
-    },
-    season: {
-      Spring: [w*xProp4[0], h*yProp4[0]],
-      Summer: [w*xProp4[0], h*yProp4[2]],
-      Autumn: [w*xProp4[2], h*yProp4[0]],
-      Winter: [w*xProp4[2], h*yProp4[2]]
-    }
-  };
-}
-/*
-function initializeFishData(cd){
-  console.log("initializefishData");
-
-  spp = sortUnique(cd.map(function(d){return d.species}));
-  riv = sortUnique(cd.map(function(d){return d.river}));
-  sea = sortUnique(cd.map(function(d){return d.season}));
-  yea = sortUnique(cd.map(function(d){return d.year}));
-
-  state.counts = [];
-  indx = 0;
-  for (var s in spp){
-    for (var r in riv){
-      for (var s2 in sea){
-        for (var y in yea){
-
-          var subset = getDataSRSY(cd,spp[s],riv[r],sea[s2],yea[y]);
-          var numLines = parseInt(subset.length / fishPerCircle);
-
-          console.log(indx,spp[s],riv[r],sea[s2],yea[y],numLines)//,subset,subset.length,numLines)
-
-          for( var i = 0; i < numLines; i++){
-
-            state.counts[indx] = { species: spp[s], river: riv[r], season: sea[s2], year: yea[y] };
-        //    console.log(i,indx,spp[s],riv[r],sea[s2],yea[y],subset,subset.length,numLines)
-            indx = indx + 1;
-          }
-
-        }
-      }
+function sortUnique(arr) {
+  arr.sort();
+  var last_i;
+  for (var i=0;i<arr.length;i++) {
+    if ((last_i = arr.lastIndexOf(arr[i])) !== i) {
+      arr.splice(i+1, last_i-i);
     }
   }
-  console.log("initializefishData - done");
-  state.counts.forEach(function(d){ d.color = sppColor( "bnt" ) });
+  return arr;
 }
-
-*/
-// Jeff's version, 12x faster
-function initializeFishData(cd){
-  console.log("initializefishData()");
-
-  spp = ["bkt", "bnt", "ats"].reverse();//sortUnique(cd.map(function(d){return d.species}));
-  riv = [ "WB", "OL", "OS", "IL"].reverse(); //sortUnique(cd.map(function(d){return d.river}));
-  sea = [ "Spring", "Summer", "Autumn", "Winter"].reverse(); // sortUnique(cd.map(function(d){return d.season}));
-  yea = sortUnique(cd.map(function(d){return d.year}));
-
-  var nest = d3.nest()
-    .key(function (d) {
-      // creates a compound key as string (e.g. "bkt,IL,Spring,2013")
-      return [d.species, d.river, d.season, d.year];
-    })
-    .rollup(function (leaves) {
-      return leaves.length;
-    })
-    .entries(cd);
-
-  nest.forEach(function (d) {
-    var key = d.key.split(","), // "bkt,IL,Spring,2013" -> ["bkt", "IL", "Spring", 2013]
-        fishCount = d.value,
-        circleCount = parseInt(fishCount / fishPerCircle);
-
-    for (var i = 0; i < circleCount; i++) {
-      state.counts.push({
-        species: key[0],
-        river: key[1],
-        season: key[2],
-        year: key[3]
-      });
-    }
-  });
-
-  state.counts.forEach(function(d){ d.color = "lightgrey"; d.year = +d.year });
-  sortFishData();
-}
-
-function sortFishData(){
-  // sort the counts to get different starting patterns  (".thenBy(" ", -1)" to reverse)
-  state.counts.sort(firstBy(function(d){return d.species})
-                    .thenBy("river")
-                    .thenBy("season")
-  //                  .thenBy("year")
-                    );
-}
-
-function getDataSRSY(d,spp,riv,sea,yea){
- return d.filter( function(dd) {
-   return dd.species == spp && dd.river == riv && dd.season == sea && dd.year == yea ;
- });
-}
-
-function getXY(scenario){
-
-    state.counts.forEach(function(d){
-
-      switch(scenario){
-        case "all":
-          d.xx = xy.all[0];
-          d.yy = xy.all[1];
-        break;
-
-        case "species":
-          switch(d.species){
-            case "ats":
-              d.xx = xy.species.ats[0];
-              d.yy = xy.species.ats[1];
-              break;
-            case "bkt":
-              d.xx = xy.species.bkt[0];
-              d.yy = xy.species.bkt[1];
-              break;
-            case "bnt":
-              d.xx = xy.species.bnt[0];
-              d.yy = xy.species.bnt[1];
-              break;
-          }
-        break;
-
-        case "river":
-          switch(d.river){
-            case "WB":
-              d.xx = xy.river.WB[0];
-              d.yy = xy.river.WB[1];
-              break;
-            case "OL":
-              d.xx = xy.river.OL[0];
-              d.yy = xy.river.OL[1];
-              break;
-            case "OS":
-              d.xx = xy.river.OS[0];
-              d.yy = xy.river.OS[1];
-              break;
-            case "IL":
-              d.xx = xy.river.IL[0];
-              d.yy = xy.river.IL[1];
-              break;
-          }
-        break;
-
-        case "season":
-          switch(d.season){
-            case "Spring":
-              d.xx = xy.season.Spring[0];
-              d.yy = xy.season.Spring[1];
-              break;
-            case "Summer":
-              d.xx = xy.season.Summer[0];
-              d.yy = xy.season.Summer[1];
-              break;
-            case "Autumn":
-              d.xx = xy.season.Autumn[0];
-              d.yy = xy.season.Autumn[1];
-              break;
-            case "Winter":
-              d.xx = xy.season.Winter[0];
-              d.yy = xy.season.Winter[1];
-              break;
-          }
-        break;
-
-        case "year":
-          d.xx = scaleWidth( uniqueYears.indexOf(d.year) * stepWidth + stepWidth );
-          d.yy = height * 0.5;
-        break;
-
-        case "seasonYear":
-          d.xx = scaleWidth( uniqueYears.indexOf(d.year) * stepWidth + stepWidth );
-          d.yy = scaleHeight( uniqueSeasons.indexOf(d.season) * stepHeight + stepHeight );
-        break;
-      }
-
-    });
-  }
-
-function ticked() {
-//  console.log(state.currentSample,simulation.alpha())
-
-  context.clearRect(0, 0, canvas.width, canvas.height);
-  context.save();
-  context.translate(margin.left, margin.top); // subtract the margin values whenever use simulation.find()
-
-  state.counts.forEach(drawNode);
-
-  context.restore();
-}
-
-function drawNode(d){
-    context.beginPath();
-    context.arc( d.x, d.y, initialRadius, 0, 2 * Math.PI);
-
-    context.strokeStyle = d3.rgb(d.color).darker(1);//"grey";
-    context.stroke();
-    context.fillStyle = d.color;//"grey";
-    context.fill();
-
-}
-
-function drawLegend(d,i,variable){
-  // move to global variables?
-   var col, txt, numrows;
-
-   switch(variable){
-    case "species":
-      col = d3.rgb(sppColor( d ));
-      txt = sppScale(d);
-      numRows = spp.length;
-      break;
-    case "river":
-      col = d3.rgb(riverColor( d ));
-      txt = d;
-      numRows = riv.length;
-      break;
-    case "season":
-      col = d3.rgb(seasonColor( d ));
-      txt = d;
-      numRows = sea.length;
-      break;
-    case "year":
-      col = d3.rgb(yearColor( d ));
-      txt = d;
-      numRows = yea.length;
-      break;
-  }
-
-  // scale the legend canvas to # or rows
-  var vOffset = 25;
-
-  heightL = canvasL.height - marginL.top - marginL.bottom;
-  var radius = 5; vOffsetText = radius/2;
-  var w = 10, h = (heightL/2 + vOffset*numRows/2 - vOffset) - vOffset * i;
-
-  contextL.save();
-  contextL.translate(0.5, 0.5);
-
-  contextL.beginPath();
-  contextL.arc(w, h, radius, 0, 2 * Math.PI);
-  contextL.strokeStyle = col.darker(2);
-  contextL.stroke();
-  contextL.fillStyle = col;
-  contextL.fill();
-  contextL.font = "20px calibri";
-  contextL.fillText(txt ,w + 20, h + vOffsetText);
-
-  contextL.restore();
-
-}
-
-function drawPositionLabels(posVar){
-
-  posData = [];
-  d3.selectAll("text").remove();
-
-  switch(posVar){
-    case "species":
-      spp.forEach(function(d,i) {getPosData(d,i,posVar)});
-    break;
-    case "river":
-      riv.forEach(function(d,i) {getPosData(d,i,posVar)});
-    break;
-    case "season":
-      sea.forEach(function(d,i) {getPosData(d,i,posVar)});
-    break;
-    case "year":
-      yea.forEach(function(d,i) {getPosData(d,i,posVar)});
-    break;
-    case "seasonYear":
-      sea.forEach(function(d,i) {getPosData(d,i,posVar,'s')});
-      yea.forEach(function(d,i) {getPosData(d,i+4,posVar,'y')}); // +4 is a hack, cause I cound't get updating to work in V4
-    break;
-  }
-
-  addTextLabels();
-
-}
-
-function addTextLabels(){
-  textLabel = svgContainer.selectAll("text")
-                          .data(posData);
-
-  textLabel
-     .enter()
-     .append("text")
-  //   .merge(textLabel)
-     .attr("x", function(d) { return d.xPos; })
-     .attr("y", function(d) { return d.yPos; })
-     .text( function (d) { return d.txt; })
-     .attr("font-family", function (d) { return d.fontFamily; })
-     .attr("font-size", function (d) { return d.fontSize; })
-     .attr("fill", function(d) { return d.col; })
-     ;
-}
-
-
-function getPosData(d,i,variable,sOrY){
-  var col,txt;
-  var fontSize = "24px";
-  var fontFamily = "calibri";
-
-  switch(variable){
-    case "species":
-      switch(d){
-        case "ats":
-          xPos = xy.species.ats[0] + 200;
-          yPos = xy.species.ats[1] + 50;
-          col = d3.rgb(sppColor( d ));
-          txt = sppScale(d);
-          break;
-        case "bkt":
-          xPos = xy.species.bkt[0] - 300;
-          yPos = xy.species.bkt[1] - 120;
-          col = d3.rgb(sppColor( d ));
-          txt = sppScale(d);
-          break;
-        case "bnt":
-          xPos = xy.species.bnt[0] + 175;
-          yPos = xy.species.bnt[1] - 100;
-          col = d3.rgb(sppColor( d ));
-          txt = sppScale(d);
-          break;
-      }
-      break;
-    case "river":
-      switch(d){
-        case "WB":
-          xPos = xy.river.WB[0] - 300;
-          yPos = xy.river.WB[1] - 150;
-          col = d3.rgb(riverColor( d ));
-          txt = riverScale( d );
-          break;
-        case "OL":
-          xPos = xy.river.OL[0] - 300;
-          yPos = xy.river.OL[1] + 100;
-          col = d3.rgb(riverColor( d ));
-          txt = riverScale( d );
-          break;
-        case "OS":
-          xPos = xy.river.OS[0] + 150;
-          yPos = xy.river.OS[1] - 50;
-          col = d3.rgb(riverColor( d ));
-          txt = riverScale( d );
-          break;
-        case "IL":
-          xPos = xy.river.IL[0] + 150;
-          yPos = xy.river.IL[1] + 100;
-          col = d3.rgb(riverColor( d ));
-          txt = riverScale( d );
-          break;
-      }
-      break;
-    case "season":
-     switch(d){
-        case "Spring":
-          xPos = xy.season.Spring[0] - 250;
-          yPos = xy.season.Spring[1] - 150;
-          col = d3.rgb(seasonColor( d ));
-          txt = d;
-          break;
-        case "Summer":
-          xPos = xy.season.Summer[0] - 250;
-          yPos = xy.season.Summer[1] + 100;
-          col = d3.rgb(seasonColor( d ));
-          txt = d;
-          break;
-        case "Autumn":
-          xPos = xy.season.Autumn[0] + 200;
-          yPos = xy.season.Autumn[1] - 150;
-          col = d3.rgb(seasonColor( d ));
-          txt = d;
-          break;
-        case "Winter":
-          xPos = xy.season.Winter[0] + 200;
-          yPos = xy.season.Winter[1] + 100;
-          col = d3.rgb(seasonColor( d ));
-          txt = d;
-          break;
-      }
-      break;
-    case "year":
-      xPos = scaleWidthYear( uniqueYears.indexOf(d) * stepWidth + stepWidth );
-      yPos = height * 0.95;
-      col = d3.rgb(yearColor( d ));
-      txt = d;
-      fontSize = "20px";
-      break;
-    case "seasonYear":
-      if (sOrY == "y"){
-        xPos = scaleWidthSeasonYear( uniqueYears.indexOf(d) * stepWidth + stepWidth );
-        yPos = height * 1;
-        col = d3.rgb(yearColor( d ));
-        txt = d;
-        fontSize = "20px";
-      }
-      else if (sOrY == "s"){
-        switch(d){
-          case "Spring":
-            xPos = 25 - margin.left;
-            yPos = 20;
-            col = '#cccccc';//d3.rgb(seasonColor( d ));
-            txt = d;
-            break;
-          case "Summer":
-            xPos = 25 - margin.left;
-            yPos = 140;
-            col = '#cccccc';//d3.rgb(seasonColor( d ));
-            txt = d;
-            break;
-          case "Autumn":
-            xPos = 25 - margin.left;;
-            yPos = 250;
-            col = '#cccccc';//d3.rgb(seasonColor( d ));
-            txt = d;
-            break;
-          case "Winter":
-            xPos = 25 - margin.left;;
-            yPos = 410;
-            col = '#cccccc';//d3.rgb(seasonColor( d ));
-            txt = d;
-            break;
-        }
-      }
-      break;
-  }
-
-  posData[i] = { xPos: xPos + margin.left,
-                 yPos: yPos + margin.top,
-                 col: col,
-                 txt: txt,
-                 fontSize: fontSize,
-                 fontFamily: fontFamily
-               };
-
-/*    // add legends to context
-  context.save();
-  //context.translate(0.5, 0.5);
-
-  context.fillStyle = col;
-  context.fill();
-
-  context.fillText(txt ,xPos, yPos);
-
-  //if( selectedStep == "step4") spp.forEach(function(dd,ii){ addSpeciesStep4(dd,ii) });
-
-  context.restore();
-*/
-}
-
-/* function addSpeciesStep4 (d,i){
-  var col,txt,xPos,yPos;
-
-  switch(d){
-    case "ats":
-      xPos = 275 - margin.left;
-      yPos = 300 - margin.top;
-      col = d3.rgb(sppColor( d ));
-      txt = sppScale(d);
-      break;
-    case "bkt":
-      xPos = 190 - margin.left;
-      yPos = 122 - margin.top;
-      col = d3.rgb(sppColor( d ));
-      txt = sppScale(d);
-      break;
-    case "bnt":
-      xPos = 360 - margin.left;
-      yPos = 100 - margin.top;
-      col = d3.rgb(sppColor( d ));
-      txt = sppScale(d);
-      break;
-  }
-
-  // add legends to context
-//    context.save();
-
-  context.font = "24px calibri";
-  context.textBaseline = 'top';
-  context.fillStyle = '#FCFCFC';
-  context.fillRect(xPos,yPos, context.measureText(txt).width + 4, 23);
-
-  context.fillStyle = col;
-
-  context.fillText(txt ,xPos + 2, yPos - 2);
-
-//    context.restore();
-}
-*/
-
-function getDataEnc(d){
- return d.filter( function(dd) {
-   return dd.enc == 1;
- });
-}
-
-function getDataIdLessThan(d,maxId){
- return d.filter( function(dd) {
-   return dd.id < maxId;
- });
-}
-
-function getDataIdBtw(d,minId,maxId){
- return d.filter( function(dd) {
-   return dd.id < maxId && dd.id > minId;
- });
-}
-
-
-
-function clickSubject() {
-  console.log("mouseClickSubject",d3.event.x,d3.event.y,simulation.find(d3.event.x - margin.left, d3.event.y - margin.top, searchRadius));
-  return simulation.find(d3.event.x - margin.left, d3.event.y - margin.top, searchRadius);
-}
-
-function clickDot(){
-
-  var d = clickSubject();
-  console.log("selected",d.id);
-
-}
-
-function mouseMoved() {
-  var a = this.parentNode,
-      m = d3.mouse(this),
-      d = simulation.find(m[0]- margin.left , m[1]- margin.top , searchRadius);
-
-  if (!d) return a.removeAttribute("title"), tooltip.style('visibility','hidden');
-/*
-  var buildText = d.id + " " + d.tag + '\n' ;
-
-    d.sample.forEach(function(dd,i){
-      var tmp = [dd].concat([d.river[i], d.year[i], d.season[i], d.section[i], d.age[i], d.len[i]]) +'\n';
-      if (dd == state.currentSample + 1) tmp = "*" + tmp;
-      buildText = buildText + tmp;
-    });
-*/
-  a.setAttribute("title", sppScale(d.species) + ", " + d.river + ", " +  d.season + ", " + d.year);
-
-  tooltip
-    .style("visibility", "visible");
-}
-
- function uniques(array) {
-   return Array.from(new Set(array));
-}
-
-    function sortUnique(arr) {
-        arr.sort();
-        var last_i;
-        for (var i=0;i<arr.length;i++)
-            if ((last_i = arr.lastIndexOf(arr[i])) !== i)
-                arr.splice(i+1, last_i-i);
-        return arr;
-    }
-
 
 /*** Copyright 2013 Teun Duynstee Licensed under the Apache License, Version 2.0 https://github.com/Teun/thenBy.js ***/
 firstBy=function(){function n(n){return n}function t(n){return"string"==typeof n?n.toLowerCase():n}function r(r,e){if(e="number"==typeof e?{direction:e}:e||{},"function"!=typeof r){var i=r;r=function(n){return n[i]?n[i]:""}}if(1===r.length){var u=r,o=e.ignoreCase?t:n;r=function(n,t){return o(u(n))<o(u(t))?-1:o(u(n))>o(u(t))?1:0}}return-1===e.direction?function(n,t){return-r(n,t)}:r}function e(n,t){var i="function"==typeof this?this:!1,u=r(n,t),o=i?function(n,t){return i(n,t)||u(n,t)}:u;return o.thenBy=e,o}return e}();
 
-// APP CODE -------------------------------------------------------------------
-
-var sppScale = d3.scaleOrdinal().domain(["ats","bnt","bkt"]).range(["Atlantic salmon", "Brown trout", "Brook trout"]);
-var riverScale = d3.scaleOrdinal().domain(["WB","OL","OS","IL"]).range(["Main branch","Large tributary","Small tributary","Isolated trib."]);
-
-var fourColors = ['#a6cee3','#1f78b4','#b2df8a','#33a02c']
-var sppColor = d3.scaleOrdinal().domain(["ats","bnt","bkt"]).range(fourColors);//[d3.rgb(162,205,174), d3.rgb(74,116,134), d3.rgb(36,45,66)]); //ICE+20
-
-//var riverColor = d3.scaleOrdinal().domain(["WB","OL","OS","IL"]).range([d3.schemeCategory20[0], d3.schemeCategory20[2],d3.schemeCategory20[4],d3.schemeCategory20[6]]);
-
-var riverColor = d3.scaleOrdinal().domain(["WB","OL","OS","IL"]).range(fourColors);
-
-//var riverColor = d3.scaleOrdinal().domain(["WB","OL","OS","IL"]).range([d3.rgb(162,205,174), d3.rgb(74,116,134), d3.rgb(36,45,66), d3.rgb(16,25,46)]); //ICE+20
-
-var seasonColor = d3.scaleOrdinal().domain(["Spring","Summer","Autumn","Winter"]).range(fourColors);//[d3.rgb(162,205,174), d3.rgb(74,116,134), d3.rgb(36,45,66), d3.rgb(16,25,46)]); //ICE+20
-//var yearColor = d3.scaleOrdinal().domain(d3.range(0,3)).range([d3.rgb(162,205,174), d3.rgb(74,116,134), d3.rgb(36,45,66), d3.rgb(16,25,46)]); //ICE+20
-
-var yearColor = d3.scaleOrdinal(d3.schemeCategory20c);
-
-/////////////////////
-// set up map graphics
-
-var canvas = document.querySelector("canvas"),
-    context = canvas.getContext("2d");
-
-var margin = {top: 40, right: 40, bottom: 0, left: 100},
-    width = canvas.width - margin.left - margin.right,
-    height = canvas.height - margin.top - margin.bottom;
-
-var xScale = d3.scaleLinear()
-    .range([0, width - margin.top - margin.bottom]);
-
-var yScale = d3.scaleLinear()
-    .range([0, height - margin.left - margin.right]);
-
-//var scaleWidth = d3.scaleLinear().domain([0, canvas.width - margin.left]).range([40, canvas.width - 240]);
-var scaleWidth = d3.scaleLinear().domain([0, width]).range([40, width - 140]);
-var scaleWidthYear = d3.scaleLinear().domain([0, width]).range([-margin.left - margin.right, width - 10]);
-var scaleWidthSeasonYear = d3.scaleLinear().domain([0, width]).range([-margin.left- margin.right, width - 40]);
-var scaleHeight = d3.scaleLinear().domain([0, height]).range([40, height - 80]);
-
-d3.select(canvas)
-  .on("mousemove", mouseMoved)
-  .call(d3.drag()
-    .container(canvas)
-    .subject(clickDot)  // acts as 'onclick'
-  );
-
-var canvasL = document.getElementById("legendCanvas"),
-    contextL = canvasL.getContext("2d");
-
-var marginL = {top: 0, right: 0, bottom: 0, left: 0},
-    widthL = canvasL.width - marginL.left - marginL.right,
-    heightL = 0; //canvasL.height - marginL.top - marginL.bottom;
-
-//////////////
-// svg labels
-
-svgContainer =
-  d3.select('body')
-    .append('svg')
-      .attr('width', canvas.width)
-      .attr('height', canvas.height)
-      .append('g');
-
-svgContainer.append('rect')
-  .attr('class', 'overlay')
-      .attr('width', canvas.width)
-      .attr('height', canvas.height);
-
-////////////
-// force simulation
-  simulation = d3.forceSimulation()
-    .force("charge", d3.forceManyBody()
-                       .strength(-initialRadius + 1) //strength of attraction among points [ - repels, + attracts ]
-//                    .distanceMax(200)
-          )
-    .force("collide", d3.forceCollide()
-                        .radius(initialRadius + 1.02)//(function(d) { return ageScale(d.currentAge) + 1.025; })
-          )
-    .force("x", d3.forceX().x(function(d) { return d.xx; })
-          )
-    .force("y", d3.forceY().y(function(d) { return d.yy; })
-          )
-  ;
-
-
-  // hide panels to start
-  d3.selectAll(".panel").style("visibility", "hidden")
-
-  d3.selectAll(".step").on("click", function() {
-      var transDur = 400, desc;
-
-      d3.selectAll(".panel").style("visibility", "hidden"); // in case go back to steps
-      d3.selectAll(".right-container").style("display", "block")
-      desc = d3.select(".description");
-
-      d3.selectAll(".step").classed("selected", false);
-      d3.select(this).classed("selected", true);
-
-      selectedStep = d3.select(this).attr("id");
-
-      switch(selectedStep){
-        case "step1":
-          $("#all").click();
-          state.counts.forEach(function(d){ d.color = "lightgrey" });
-          contextL.clearRect(0, 0, canvasL.width, canvasL.height);
-          break;
-        case "step2":
-          $("#colorSpecies").click();
-          $("#species").click();
-          break;
-       case "step3":
-          $("#colorRiver").click();
-          $("#river").click();
-          break;
-       case "step4":
-          $("#colorSeason").click();
-          $("#season").click();
-          break;
-       case "step5":
-          $("#colorYear").click();
-          $("#year").click();
-          break;
-       case "step6":
-          $("#colorYear").click();
-          $("#seasonYear").click();
-          break;
-       case "step7":
-          $("#species").click();
-          $("#colorSpecies").click();
-          window.setTimeout( function(){
-            $("#seasonYear").click()},
-            2000
-          );
-          break;
-       case "step8":
-          $("#all").click(),
-          state.counts.forEach(function(d){ d.color = "lightgrey" });
-          canvasL.height = 0;
-          contextL.clearRect(0, 0, canvasL.width, canvasL.height);
-          window.setTimeout( function(){
-            d3.selectAll(".panel").transition().duration(2000).style("visibility", "visible"),
-            d3.selectAll(".right-container").style("display", "none")}
-            ,
-            5000
-          );
-          break;
-      }
-
-      desc.html(stepText[+selectedStep.substr(4)]).style("opacity", 0); // can't transition html
-      desc.transition().duration(transDur).delay(250).style("opacity", 1)
-  });
+// export globals
+window.app = app;
+})();
