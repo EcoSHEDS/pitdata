@@ -81,7 +81,7 @@ app.init = function () {
 
       initControls();
 
-      app.switchStep(app.state.step);
+      app.switchStep("step1"); //app.state.step);
 
       hideLoading();
 
@@ -133,12 +133,13 @@ app.steps.step3 = {
   enter: function () {
     app.state.groupby = 'river';
     app.state.colorby = 'species';
-    d3.select('#map-container').append('div').attr('id', 'map');
+    d3.select('#map-container-' + app.state.selectedWatershed).append('div').attr('id', 'map');
     this.map = drawMap();
   },
   exit: function () {
     this.map.remove();
     d3.select('#map').remove();
+    d3.select('#map-container-' + app.state.selectedWatershed).remove();
   }
 };
 app.steps.step4 = {
@@ -248,8 +249,10 @@ function initControls () {
   
   $("#selectedWatershedDD").on("change", function () {
     state.selectedWatershed = $("#selectedWatershedDD").val();
-    console.log(app)
+
+    //app.simulation.stop(); // not sure if this is necessary
     app.init(app.data, app.coords);
+   
   });
 }
 
@@ -389,6 +392,7 @@ function initScales (canvas, data) {
 }
 
 function initSimulation (nodes, canvas, radius) {
+  
   var simulation = d3.forceSimulation()
     .force("charge",
            d3.forceManyBody()
@@ -761,10 +765,10 @@ function drawMap () {
       break;
     case "stanley":
       var labelCoordinates = {
-        tidal: new L.LatLng(44.2975, -68.248),
+        tidal:    new L.LatLng(44.2975, -68.248),
         mainstem: new L.LatLng(44.303, -68.24),
-        west: new L.LatLng(44.310, -68.24),
-        east: new L.LatLng(44.310, -68.2545)
+        west:     new L.LatLng(44.310, -68.24),
+        east:     new L.LatLng(44.310, -68.2545)
       };
       break;
   }
