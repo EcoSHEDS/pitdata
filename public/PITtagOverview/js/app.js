@@ -99,11 +99,13 @@ app.switchStep = function (step) {
 
   // show next step narration
   d3.selectAll('.narration-step').style('display', 'none');
-  d3.select('#narration-' + app.state.step).style('display', 'block');
+  d3.select('#narration-' + app.state.step + "-" + app.state.selectedWatershed).style('display', 'block');
 
   // update active step button
   d3.selectAll('.step').classed('selected', false);
   d3.select('.step[data-value="' + app.state.step + '"]').classed('selected', true);
+
+  
 
   // enter next step
   app.steps[app.state.step].enter();
