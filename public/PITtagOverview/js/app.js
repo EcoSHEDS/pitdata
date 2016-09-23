@@ -40,7 +40,7 @@ app.loadData = function (url, debug) {
       app.coordsRaw = coords;
       app.init(app.dataRaw, app.coordsRaw); 
     });
-}    
+};    
 
 app.init = function () {
       console.log('Initializing interface...',app);
@@ -87,7 +87,55 @@ app.init = function () {
 
       console.log('Ready!', app);
 
-}
+};
+
+app.reInit = function () {
+      console.log('ReInitializing interface...',app);
+
+      app.data = app.dataRaw.filter(function(d) {
+        return d.enc == 1 && d.watershed === app.state.selectedWatershed;
+      });
+
+      app.coords = app.coordsRaw.map(function (d) {
+          return {
+            watershed: d.watershed,
+            river: d.riverAbbr,
+            lat: +d.lat,
+            lon: +d.lon,
+            section: +d.section
+          };
+        })
+        .filter(function (d) {
+          return d.watershed === app.state.selectedWatershed && d.section > 0 && d.section < 55;
+        });
+
+      switch(app.state.selectedWatershed){
+        case "west":
+          app.params.fishPerCircle = 25;
+          break;
+        case "stanley":
+          app.params.fishPerCircle = 10;
+          break;
+      } 
+
+      app.nodes = initNodes(app.data, app.params.fishPerCircle);
+
+   //   app.layout.canvas = initCanvas('#viz-canvas', app.layout.canvas);
+      app.scales = initScales(app.layout.canvas, app.nodes);
+   //   app.layout.legend = initLegend('#legend');
+   //   app.layout.labels = initLabels('#chart-container');
+      app.simulation = initSimulation(app.nodes, app.layout.canvas, app.params.radius);
+
+  //    initControls();
+
+      app.switchStep("step1"); //app.state.step);
+
+  //    hideLoading();
+
+      console.log('re Ready!', app);
+
+};
+
 
 // STATE TRANSITIONS ----------------------------------------------------------
 app.switchStep = function (step) {
@@ -105,10 +153,10 @@ app.switchStep = function (step) {
   d3.selectAll('.step').classed('selected', false);
   d3.select('.step[data-value="' + app.state.step + '"]').classed('selected', true);
 
-  
-
   // enter next step
   app.steps[app.state.step].enter();
+
+console.log('in switch',app.state.step)
 
   redraw();
 }
@@ -137,9 +185,8 @@ app.steps.step3 = {
     this.map = drawMap();
   },
   exit: function () {
-    this.map.remove();
+//    this.map.remove();
     d3.select('#map').remove();
-    d3.select('#map-container-' + app.state.selectedWatershed).remove();
   }
 };
 app.steps.step4 = {
@@ -249,10 +296,10 @@ function initControls () {
   
   $("#selectedWatershedDD").on("change", function () {
     state.selectedWatershed = $("#selectedWatershedDD").val();
-
+console.log("before init")
     //app.simulation.stop(); // not sure if this is necessary
-    app.init(app.data, app.coords);
-   
+    app.reInit(app.data, app.coords);
+console.log("after init")   
   });
 }
 
@@ -497,7 +544,33 @@ function initLabels (el) {
       size: '24px'
     }
   ];
-  positions.season = [
+/*  positions.river.stanley = [    
+    {
+      value: 'mainstem',
+      x: 50,
+      y: 50,
+      size: '24px'
+    },
+    {
+      value: 'west',
+      x: 75,
+      y: 575,
+      size: '24px'
+    },
+    {
+      value: 'tidal',
+      x: 690,
+      y: 120,
+      size: '24px'
+    },
+    {
+      value: 'east',
+      x: 680,
+      y: 575,
+      size: '24px'
+    }
+  ];
+*/  positions.season = [
     {
       value: 'Spring',
       x: 100,
@@ -731,10 +804,9 @@ function drawLabels (groupby) {
 
 function drawMap () {
   var labels = app.scales.labels.river,
-      rivers = labels.domain(),
+      rivers = app.scales.color.river.domain(), //labels.domain(),
       color = d3.scaleOrdinal(d3.schemeCategory10).domain(rivers);
 
-  
   switch(app.state.selectedWatershed){
     case "west":
       var latLonMap = [42.434, -72.669];
@@ -751,8 +823,6 @@ function drawMap () {
   L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(map);
-
-  var rivers = color.domain(); 
 
   switch(app.state.selectedWatershed){
     case "west":
