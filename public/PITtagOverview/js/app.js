@@ -123,12 +123,18 @@ app.reInit = function () {
    //   app.layout.canvas = initCanvas('#viz-canvas', app.layout.canvas);
       app.scales = initScales(app.layout.canvas, app.nodes);
    //   app.layout.legend = initLegend('#legend');
-   //   app.layout.labels = initLabels('#chart-container');
+      app.layout.labels = initLabels('#chart-container');
       app.simulation = initSimulation(app.nodes, app.layout.canvas, app.params.radius);
 
   //    initControls();
 
       app.switchStep("step1"); //app.state.step);
+      
+            // title
+      $('#mainTitle').empty();
+      $("#mainTitle").append(app.layout.labels.titles[0].main);
+      $('#subTitle').empty();
+      $("#subTitle").append(app.layout.labels.titles[0].sub);
 
   //    hideLoading();
 
@@ -296,10 +302,8 @@ function initControls () {
   
   $("#selectedWatershedDD").on("change", function () {
     state.selectedWatershed = $("#selectedWatershedDD").val();
-console.log("before init")
-    //app.simulation.stop(); // not sure if this is necessary
     app.reInit(app.data, app.coords);
-console.log("after init")   
+
   });
 }
 
@@ -430,7 +434,7 @@ function initScales (canvas, data) {
   groupby.seasonyear = function (d) {
     return [scaleYearX(d.year), 40 + scaleSeasonY(seasons.indexOf(d.season))];
   };
-
+  
   return {
     labels: labels,
     color: color,
@@ -654,9 +658,29 @@ function initLabels (el) {
     .attr('id', 'labels')
     .append('g');
 
+  switch(app.state.selectedWatershed){
+    case "west":
+      titles = [
+        {
+          main:"The West Brook Story",
+          sub:"Trout and Salmon in a Small Stream Network in Western Massachusetts, USA" 
+        }
+      ];
+      break;
+    case "stanley":
+      titles = [
+        {
+          main:"The Stanley Brook Story",
+          sub:"Brook Trout in a Small Coastal Stream Network in Acadia, Maine, USA" 
+        }
+      ];
+      break;
+  } 
+
   return {
     el: svg,
-    positions: positions
+    positions: positions,
+    titles: titles
   };
 }
 
@@ -837,8 +861,8 @@ function drawMap () {
       var labelCoordinates = {
         tidal:    new L.LatLng(44.2975, -68.248),
         mainstem: new L.LatLng(44.303, -68.24),
-        west:     new L.LatLng(44.310, -68.24),
-        east:     new L.LatLng(44.310, -68.2545)
+        west:     new L.LatLng(44.310, -68.2545),
+        east:     new L.LatLng(44.310, -68.24)
       };
       break;
   }
