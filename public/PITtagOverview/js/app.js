@@ -452,10 +452,12 @@ function initSimulation (nodes, canvas, radius) {
   var simulation = d3.forceSimulation()
     .force("charge",
            d3.forceManyBody()
-             .strength(- radius + 1)) // strength of attraction among points [ - repels, + attracts ]
+             .strength(- radius + 1) // strength of attraction among points [ - repels, + attracts ]
+          )
     .force("collide",
            d3.forceCollide()
-             .radius(radius + 1.02)) // (function(d) { return ageScale(d.currentAge) + 1.025; })
+             .radius(radius + 1.02) // (function(d) { return ageScale(d.currentAge) + 1.025; })
+          )   
     .force("x", d3.forceX().x(function (d) { return d.xx; }))
     .force("y", d3.forceY().y(function (d) { return d.yy; }))
     .alphaMin(0.01)
