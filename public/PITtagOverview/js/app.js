@@ -126,18 +126,19 @@ app.reInit = function () {
       app.layout.labels = initLabels('#chart-container');
       app.simulation = initSimulation(app.nodes, app.layout.canvas, app.params.radius);
 
-  //    initControls();
+      //initControls();
+      d3.selectAll('.fish-per-circle').text(app.params.fishPerCircle);
 
       app.switchStep("step1"); //app.state.step);
       
-            // title
+      // title
       $('#mainTitle').empty();
       $("#mainTitle").append(app.layout.labels.titles[0].main);
       $('#subTitle').empty();
       $("#subTitle").append(app.layout.labels.titles[0].sub);
 
   //    hideLoading();
-
+    
       console.log('re Ready!', app);
 
 };
@@ -186,7 +187,7 @@ app.steps.step2 = {
 app.steps.step3 = {
   enter: function () {
     app.state.groupby = 'river';
-    app.state.colorby = 'species';
+    app.state.colorby = app.scales.color['watershed'](app.state.selectedWatershed); //'species';
     d3.select('#map-container-' + app.state.selectedWatershed).append('div').attr('id', 'map');
     this.map = drawMap();
   },
@@ -198,7 +199,7 @@ app.steps.step3 = {
 app.steps.step4 = {
   enter: function () {
     app.state.groupby = 'season';
-    app.state.colorby = 'species';
+    app.state.colorby = app.scales.color['watershed'](app.state.selectedWatershed); //'species';
   },
   exit: function () {
   }
@@ -206,7 +207,7 @@ app.steps.step4 = {
 app.steps.step5 = {
   enter: function () {
     app.state.groupby = 'year';
-    app.state.colorby = 'species';
+    app.state.colorby = app.scales.color['watershed'](app.state.selectedWatershed); //'species';
   },
   exit: function () {
   }
@@ -367,7 +368,11 @@ function initScales (canvas, data) {
     .domain(["Spring","Summer","Autumn","Winter"])
     .range(greens);
   color.year = d3.scaleOrdinal(d3.schemeCategory20c).domain(yearValues);
-
+  
+  color.watershed = d3.scaleOrdinal()
+    .domain(["west","stanley"])
+    .range(['species','river']);
+    
   // groupby position scales
   var xProp = [0.33, 0.5, 0.66],
       yProp = [0.33, 0.5, 0.66];
@@ -602,13 +607,13 @@ function initLabels (el) {
   ];
   positions.year = [
     {
-      value: 1997,
+      value: d3.min(app.data, function(d) { return d.year; }),
       x: 20,
       y: 440,
       size: '14px'
     },
     {
-      value: 2015,
+      value: d3.max(app.data, function(d) { return d.year; }),
       x: 820,
       y: 440,
       size: '14px'
@@ -652,6 +657,9 @@ function initLabels (el) {
       size: '14px'
     }
   ];
+
+  //remove any labels from prvious watershed
+  d3.selectAll('text').remove();
 
   var svg = d3.select(el)
     .append('svg')
