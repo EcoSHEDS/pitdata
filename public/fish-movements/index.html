@@ -8,6 +8,7 @@
 
   <link rel="stylesheet" href="/libs/bootstrap/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="/libs/bootstrap/dist/css/bootstrap-theme.min.css">
+  <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
 
   <link rel="stylesheet" href="css/styles.css">
 </head>
@@ -50,6 +51,11 @@
           </ul>
         </div>
       </form>
+
+      <div id="loading">
+        <p>Loading...</p>
+        <p><i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i></p>
+      </div>
 
       <hr>
     </div>
@@ -186,6 +192,7 @@
       </div>
     </div>
   </div>
+  
 </div>
 
 
@@ -265,6 +272,8 @@ d3.csv("data/envDataOut.csv", typeEnv, function (envIn){
       .force("y", d3.forceY().y(function(d) { return yScale(d.coordinate[1]); }).strength(intervalDur / 1000 * strengthAdj))
       .on("tick", ticked)
       .on("end",  ended)
+      
+      hideLoading();
 
     });
   });
