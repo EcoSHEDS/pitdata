@@ -81,7 +81,7 @@
           <h2>What is a tagging study?</h2>
           <p style="font-size:1.2em;">Understanding the performance and fate of individual fish helps us understand why populations fluctuate and why species come and go.</p>
           <p style="font-size:1.2em;">Since 1997, we have studied stream fish using <a href="https://en.wikipedia.org/wiki/Radio-frequency_identification" target="_blank"> tags </a>that contain unique electronic codes. We can estimate body growth, movement and reproduction (performance) and survival (fate) by recapturing tagged fish over time. </p>
-          <p style="font-size:1.2em;">Our two longest-running studies are the West Brook, in Whately MA and Stanley Brook in coastal Maine. Dots on the maps are 20m-long sampling sections. Mouse over a section to see a picture of the section from 2006. Get a tour of the data by <a href="/PITtagOverview/index.html"> launching </a>the introduction.</p>
+          <p style="font-size:1.2em;">Our two longest-running studies are the West Brook, in Whately MA and Stanley Brook in coastal Maine. Dots on the maps are 20m-long sampling sections. Mouse over a section in the West Brook to see a picture of the section from 2006. Get a tour of the data by <a href="/PITtagOverview/index.html"> launching </a>the introduction.</p>
 
         </div>
 
@@ -137,8 +137,8 @@
       <div class="row">
         <div class="col-xs-12 col-md-8">
           <h2>Project Team</h2>
-          <p>Ben Letcher initiated the West Brook study in 1997 with Gabe Gries. Since then the study has been a collaboration among the <a href="http://www.lsc.usgs.gov/?q=cafb-population-dynamics-personnel" target="_blank">USGS Conte Laboratory</a> (Ben Letcher, Matt O'Donnell, Todd Dubreuil), the <a href="http://www.nrs.fs.fed.us/people/knislow" target="_blank">USFS Northern Research Station</a> (Keith Nislow, Jason Coombs), and the <a href="http://eco.umass.edu/" target="_blank">University of Massachusetts Department of Environmental Conservation</a> ( <a href="http://www.cfc.umt.edu/personnel/details.php?ID=4461" target="_blank">Andrew Whiteley</a> - now at The University of Montana). </p>
-           <p>Ben Letcher and Matt O'Donnell started the Stanley Brook study in 2006 with Bruce Connery of the <a href="https://www.nps.gov/acad/index.htm" target="_blank">National Park Service </a>.</p>
+          <p>Ben Letcher initiated the West Brook study in 1997 with Gabe Gries. Since then the study has been a collaboration among the <a href="http://www.lsc.usgs.gov/?q=cafb-population-dynamics-personnel" target="_blank">USGS Conte Laboratory</a> (Ben Letcher, Matt O'Donnell, Todd Dubreuil), the <a href="http://www.nrs.fs.fed.us/people/knislow" target="_blank">USFS Northern Research Station</a> (Keith Nislow, Jason Coombs), and the <a href="http://eco.umass.edu/" target="_blank">University of Massachusetts Department of Environmental Conservation</a> (<a href="http://www.cfc.umt.edu/personnel/details.php?ID=4461" target="_blank">Andrew Whiteley</a> - now at The University of Montana). </p>
+           <p>Ben Letcher and Matt O'Donnell started the Stanley Brook study in 2006 with <a href="http://www.coopunits.org/Maine/People/Joseph_Zydlewski/" target="_blank">Joe Zydlewski </a> from <a href="https://umaine.edu/wle/faculty-staff-directory/" target="_blank">the University of Maine </a> and Bruce Connery of the <a href="https://www.nps.gov/acad/index.htm" target="_blank">National Park Service </a>.</p>
            <p>We thank the many graduate students, interns, post-docs and others who have helped sample the streams over the years. </p>
         </div>
       </div>
@@ -151,7 +151,7 @@
       <div class="row">
         <h2>Funding Sources</h2>
         <p> <a href="http://www.lsc.usgs.gov/?q=cafb-population-dynamics-personnel" target="_blank">USGS Conte Laboratory</a> and 
-        <a href="http://www.nrs.fs.fed.us/" target="_blank">USFS Northern Research Station</a>, with additional funding from
+        <a href="http://www.nrs.fs.fed.us/" target="_blank">USFS Northern Research Station</a>, with additional funding from:
 
         <div class="row">
           <div class="col-lg-12 text-center funding-section">
@@ -286,7 +286,7 @@ d3.queue()
            .style("opacity", 0);
       });
       
-  mapWest.on("viewreset", onViewResetWest());
+  mapWest.on("viewreset", onViewResetWest)
   onViewResetWest();
   
   function onViewResetWest() {
@@ -356,7 +356,7 @@ d3.queue()
            .style("opacity", 0);
       });
       
-  mapStanley.on("viewreset", onViewResetStanley());
+  mapStanley.on("viewreset", onViewResetStanley)
   onViewResetStanley();
   
   function onViewResetStanley() {
@@ -365,9 +365,7 @@ d3.queue()
                             mapStanley.latLngToLayerPoint(d.LatLng).y + ")";
     });
   }  
-  
-  
-  
+
 });
 
 

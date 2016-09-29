@@ -51,13 +51,13 @@ function getWatershedData(){
   $('#getYear').children().remove();
   
   // fill in with this watershed's years
-  $(yearSelect).ready(function(){
+
    for( var index in y )
    {
      $('#yearSelect ul').append('<li><a href="#">'  + y[index] + '</a></li>');
    }
-  });
   
+   getYearList();
 }
 
 // inputting data
@@ -236,7 +236,14 @@ function color(d){ return d.id; }
 
    });
    
-   getYearList();
+   /*getYearList();
+   $("#getYear li").on("click", function (d) {
+     console.log("#yearSelect change",$(this).text());
+     state.currentSample = getDataSampleInfoFromYear( state.sampleInfo,$(this).text() )[0].sample;
+     updateRenderData();
+     incrementSegments();
+   });
+   */
  }
  
 function getYearList(){     
@@ -246,7 +253,6 @@ function getYearList(){
      updateRenderData();
      incrementSegments();
    });
-  
 } 
 
 function initializeNetwork(coordsXY){
