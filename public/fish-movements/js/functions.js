@@ -1229,9 +1229,90 @@ function hideLoading () {
     .on('end', function () {
       // after transition, hide element
       d3.select(this).style('display', 'none');
+      startTour();
   });
 }
 
+function startTour () {
+  var intro = introJs();
+  intro.setOptions({
+    showStepNumbers: false,
+    steps: [
+      {
+        intro: '<p class="text-center" style="font-size:20px">Welcome to the<br><strong>Data Visualizer</strong><br>for<br><strong>PIT tagging studies</strong> from the West brook and Stanley brook</p><p>Click Next to begin the tour of this dashboard, or Skip to quit the tour and get right to exploring the data.</p>'
+      },
+      {
+        element: '#mapCanvas',
+        intro: '<p>This panel is the main display. Each circle represents a fish. The larger the circle, the larger the fish. Species is denoted by color and circles with yellow interiors are fish that were not seen again. The year and sampling interval are shown in the bottom right of the panel. Movements are shown from the beginning of the sampling interval to the end of the sampling interval.</p>'
+      },
+      {
+        element: '#nextSamp',
+        intro: '<p>Click to advance to the next sampling interval.</p>'
+      },
+      {
+        element: '#yearSelect',
+        intro: '<p>Click the arrow to switch years.</p>'
+      },
+      {
+        element: '#collapseOne',
+        intro: '<p>This window contains selectors to choose what you see on the main display and in the panels below.</p>'
+      },
+      {
+      element: '#selectedWatershedDD',
+        intro: '<p>Use this dropdown to select the watershed (study area).</p>'
+      },
+      {
+        element: '#selectedSpeciesDD',
+        intro: '<p>Use this dropdown to select the species.</p>'
+      },
+      {
+        element: '#dotOptionDD',
+        intro: '<p>Use this dropdown to show all the circles or only the selected circles. When all is selected, the unselected points will be faded. If Selected is chosen in the dropdown and no fish are selected, you will not see any circles. </p>'
+      },
+      {
+        element: '#onClickDD',
+        intro: '<p>Use this dropdown to choose what group of circles is selected when you click on a circle.</p>'
+      },
+      {
+        element: '#addLastSampleDD',
+        intro: '<p>Use this dropdown to select whether fish observed for the last time will have yellow interiors or not.</p>'
+      },
+      {
+        element: '#propMovedDD',
+        intro: '<p>Use this dropdown to select whether transitions in the transitions box below are calculated as a proportion of all fish at the beginning of the interval or as a proportion of the fish in the same river at the beginning of the interval.</p>'
+      },
+      {
+        element: '#unselectAll',
+        intro: '<p>Use this botton to unselect all circles.</p>'
+      },
+      {
+        element: '#showNotEnc',
+        intro: '<p>Use this botton to show fish that were known to be alive, but were not captured (encountered).</p>'
+      },
+      {
+        element: '#collapseTwo',
+        intro: '<p>This panel shows distributions of daily environmental conditions (stream temperature [top, degress C] and stream flow [bottom, m3/sec]) for all samples (blue) and for the selected sampling interval (orange) for the current season. This panel and those below can be collapsed by double-clicking on the header.</p>'
+      },
+      {
+        element: '#collapseThree',
+        intro: '<p>This panel shows transitions (proportions) of fish moving from one part of the stream network to another. Stream locations are labelled on the map. Em stands for emigrants, which are fish that were observed for the last time on PIT tag antennas at the bottom of the study area.</p>'
+      },
+      {
+        element: '#collapseFour',
+        intro: '<p>This panel shows movement distance (m) distributions for the current season, for all years and for the current year.  </p>'
+      },
+      {
+        element: '#btn-help',
+        intro: '<p>Click this button to repeat this tour.</p>'
+      }
+    ]
+  })
+  intro.start();
+}
+
+//  $('#collapseTwo').collapse('toggle')
+//  $('#collapseThree').collapse('toggle')
+//  $('#collapseFour').collapse('toggle')
 
 /*** Copyright 2013 Teun Duynstee Licensed under the Apache License, Version 2.0 ***/
 firstBy=function(){function n(n){return n}function t(n){return"string"==typeof n?n.toLowerCase():n}function r(r,e){if(e="number"==typeof e?{direction:e}:e||{},"function"!=typeof r){var i=r;r=function(n){return n[i]?n[i]:""}}if(1===r.length){var u=r,o=e.ignoreCase?t:n;r=function(n,t){return o(u(n))<o(u(t))?-1:o(u(n))>o(u(t))?1:0}}return-1===e.direction?function(n,t){return-r(n,t)}:r}function e(n,t){var i="function"==typeof this?this:!1,u=r(n,t),o=i?function(n,t){return i(n,t)||u(n,t)}:u;return o.thenBy=e,o}return e}();
