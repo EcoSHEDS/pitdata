@@ -681,7 +681,7 @@ function initLabels (el) {
       titles = [
         {
           main:"The Stanley Brook Story",
-          sub:"Brook Trout in a Small Coastal Stream Network in Acadia, Maine, USA" 
+          sub:"Brook Trout in a Small Coastal Stream Network in Acadia National Park, Seal Harbor, Maine, USA" 
         }
       ];
       break;

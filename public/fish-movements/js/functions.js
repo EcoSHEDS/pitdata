@@ -1251,7 +1251,7 @@ function startTour () {
       },
       {
         element: '#yearSelect',
-        intro: '<p>Click the arrow to switch years.</p>'
+        intro: '<p>Click the arrow to switch years. You will stay in the same season.</p>'
       },
       {
         element: '#collapseOne',
