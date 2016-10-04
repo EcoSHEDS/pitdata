@@ -19,20 +19,21 @@ This repo contains source code for a series of interactive data visualizations s
 ## Data Sources
 1. Tagging studies introduction
   1. Coordinates for study site sections `/data/coordsForD3JS.csv`.
-2. Tagging studies overview [`/PITtagOverview`]
+2. Tagging studies overview 
   1. Raw fish data `/data/coreDataOut.csv` and environmental data `/data/envDataOut.csv` created with `createCSVFromDataWBSBForD3.R`.     2. Data input to create the CSV files is `data/dataWBSBForD3.RData` created  on `osensei/git/geWBCoreDataforD3FishMove/` using the 6 files that each start with 1_, 2_, or 3_ for both WB and SB and finally `4_combineWatersheds.R`. 
   3.Files were copied from osensei to felek and then to the /data subdirectories for each application. 
-3. Fish movements [`/fish-movements`]
+3. Fish movements 
   1. Same data source as 'tagging Studies overview' above
 
 ## Dependencies
+d3, bootstrap, font-awesome, intro.js, jquery, leaflet, landing-page
 
 ## Development Server
 1. Introduction `none`
 2. Overview `Home/wbTagViz/`
 3. Fish movements `Home/d3FishMove/forceV4/selectWatershed/dev`
 
-### Directory Structure
+## Directory Structure
 ```
 Project
  |
@@ -46,7 +47,7 @@ Project
  |       
  +-- R
  
- +-- PITTagOverview [overview]
+ +-- PITtagOverview [Overview]
  |  |  
  |  +-- css
  |  |  
