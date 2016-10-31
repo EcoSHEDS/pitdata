@@ -200,7 +200,7 @@ var riverNames = {
   'east': 'east',
   'west': 'west',
   'mainstem': 'mainstem',
-  'tidal': 'tidal',
+  'tidal': 'tidal'
 };
 
 var featureWest, featureStanley;
@@ -266,7 +266,7 @@ d3.queue()
           .style("stroke", "red")
           .style("fill", "lightgrey");
 
-        var fileName = "img/" + d.river + "_" + year + "_" + season + "_" + d.section + ".jpg";
+        var fileName = "img/westbrook/" + d.river + "_" + year + "_" + season + "_" + d.section + ".jpg";
 
         tooltip.html('<h3>River = ' + d.riverFull + ", Section = " + d.section + '</h3><br><img class="object-fit-contain" src= ' + fileName + '>')
            .style("left", "80px")// (d3.event.pageX + 15) + "px")
@@ -331,14 +331,21 @@ d3.queue()
       .style("opacity", 0.6)
       .attr("r", 4)
       .on("mouseover", function(d) {
+        var year = 2008, season = 2;
+        var riverLabel = {
+          'east': 'SB East',
+          'west': 'SB West',
+          'mainstem': 'SB Mainstem',
+          'tidal': 'SB Tidal'
+        }
         d3.select(this)
           .attr("r", 8)
           .style("stroke", "red")
           .style("fill", "lightgrey");
 
-        var fileName = "img/" + d.river + "_" + year + "_" + season + "_" + d.section + ".jpg";
+        var fileName = "img/stanley/" + d.river + "_" + year + "_" + season + "_" + d.section + ".jpg";
 
-        tooltip.html('<h3>River = ' + d.riverFull + ", Section = " + d.section + '</h3><br><img class="object-fit-contain" src= ' + fileName + '>')
+        tooltip.html('<h3>River = ' + riverLabel[d.riverFull] + ", Section = " + d.section + '</h3><br><img class="object-fit-contain" src= ' + fileName + '>')
            .style("left", "80px")// (d3.event.pageX + 15) + "px")
            .style("top",  "200px")// (d3.event.pageY - 15) + "px")
            .transition()
