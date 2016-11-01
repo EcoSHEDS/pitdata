@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <!-- <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/dc/1.7.5/dc.min.css"> -->
+  <link rel="stylesheet" href="/libs/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+  <link rel="stylesheet" href="http://dc-js.github.io/dc.js/css/dc.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css">
+  <link rel="stylesheet" href="/libs/intro.js/minified/introjs.min.css">
+  <style>
+    #map {
+      height: 300px;
+      width: 100%;
+      margin: 0 10px;
+      float: left;
+    }
+
+    span.filter {
+      padding-left: 10px;
+    }
+
+    div.tooltip {
+      position: absolute;
+      padding: 2px;
+      font: 12px sans-serif;
+      background: #fff;
+      pointer-events: none;
+    }
+
+    .chart-container {
+      height: 225px;
+      margin-bottom: 20px;
+    }
+
+    .main-container {
+      position: relative;
+    }
+
+    #loading {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #EEE;
+      text-align: center;
+      padding-top: 200px;
+      font-size: 42px;
+      z-index: 9000;
+    }
+
+    h2.sub-title {
+      color: #555;
+      font-size: 20px;
+    }
+
+    .introjs-tooltip {
+      width: 500px;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="row">
+    <div class="col-xs-12">
+      <h1>Fish Capture Crossfilter</h1>
+      <h2 class="sub-title" id="subTitle">Multi-dimensional data exploration tool for fish capture data</h2>
+    </div>
+  </div>
+  <hr>
+  <div class="main-container">
+    <div class="row">
+      <div class="col-xs-6">
+        <form class="form-inline" id="watershed-form">
+          <div class="form-group">
+            <label for="selectWatershed">Select Watershed:</label>
+            <select class="form-control" name="selectWatershed">
+              <option value="westbrook" selected>West Brook, MA</option>
+              <!-- <option value="stanley">Stanley Brook, ME</option> -->
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="col-xs-6 text-right">
+        <button onclick="startTour()" class="btn btn-default"><i class="fa fa-info-circle"></i> Help</button>
+      </div>
+    </div>
+
+    <hr>
+
+    <div id="histogram-rows">
+      <div class="row">
+        <div class="col-lg-4">
+          <div id="species-chart" class="chart-container">
+            <strong>Species</strong>
+            <a class="reset" style="display: none;" href="javascript:resetChart('species')">reset</a>
+            <div class="clearfix"></div>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div id="river-chart" class="chart-container">
+            <strong>River Branch</strong>
+            <a class="reset" style="display: none;" href="javascript:resetChart('river')">reset</a>
+            <div class="clearfix"></div>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div id="section-chart" class="chart-container">
+            <strong>Branch Section</strong>
+            <a class="reset" style="display: none;" href="javascript:resetChart('section')">reset</a><span class="filter"></span>
+            <div class="clearfix"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-lg-4">
+          <div id="year-chart" class="chart-container">
+            <strong>Year</strong>
+            <a class="reset" style="display: none;" href="javascript:resetChart('year')">reset</a><span class="filter"></span>
+            <div class="clearfix"></div>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div id="season-chart" class="chart-container">
+            <strong>Season</strong>
+            <a class="reset" style="display: none;" href="javascript:resetChart('season')">reset</a>
+            <div class="clearfix"></div>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div id="len-chart" class="chart-container">
+            <strong>Fish Length</strong>
+            <a class="reset" style="display: none;" href="javascript:resetChart('len')">reset</a><span class="filter"></span>
+            <div class="clearfix"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-4">
+        <div id="map" class="chart-container"></div>
+      </div>
+      <div class="col-lg-8">
+        <div id="time-chart" class="chart-container" style="height:300px">
+          <strong>Timeseries</strong>
+          <a class="reset" style="display: none;" href="javascript:resetChart('time')">reset</a><span class="filter"></span>
+          <div class="clearfix"></div>
+        </div>
+      </div>
+    </div>
+    <div id="loading">
+      <p>Loading...</p>
+      <p><i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i></p>
+    </div>
+  </div>
+</div>
+
+<script src="/libs/jquery/dist/jquery.min.js"></script>
+<script src="/libs/bootstrap/dist/js/bootstrap.min.js"></script>
+
+<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="https://d3js.org/queue.v1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.js"></script>
+<script src="http://dc-js.github.io/dc.js/js/dc.js"></script>
+
+<script src="/libs/intro.js/minified/intro.min.js"></script>
+
+<script>
+var data, ndx;
+
+var labels = {
+  species: {
+    ats: 'Atlantic Salmon',
+    bkt: 'Brook Trout',
+    bnt: 'Brown Trout'
+  },
+  rivers: {
+    IL: 'Isolated Trib',
+    OL: 'Large Trib',
+    OS: 'Small Trib',
+    WB: 'Mainstem'
+  }
+};
+
+var map = L.map('map').setView([42.434, -72.669], 15);
+
+L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.{ext}', {
+  attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  subdomains: 'abcd',
+  minZoom: 4,
+  maxZoom: 18,
+  ext: 'png'
+}).addTo(map);
+
+map._initPathRoot();
+
+var svg = d3.select("#map").select("svg"),
+g = svg.append("g");
+
+var tooltip = d3.select("body").append("div")
+  .attr("class", "tooltip")
+  .style("opacity", 0);
+
+queue()
+  .defer(d3.csv, 'data/coreDataOut.csv')
+  .defer(d3.csv, 'data/WBCoordsForD3JS.csv')
+  .await(ready);
+
+function ready(error, rawData, locations) {
+  if (error) throw error;
+
+  var parseDate = d3.time.format('%Y-%m-%d').parse;
+  data = rawData.map(function (d) {
+    return {
+      date: parseDate(d.date),
+      year: +d.year,
+      section: +d.section,
+      len: +d.len,
+      season: d.seasonStr,
+      species: d.species,
+      river: d.river
+    };
+  }).filter(function (d) {
+    return Object.keys(d).map(function (key) {
+        return d[key];
+      }).every(function (e) {
+        return typeof e === 'string' || isFinite(e);
+      });
+  }).filter(function (d) {
+    return d.section > 0;
+  });
+
+  ndx = crossfilter(data);
+  var all = ndx.groupAll();
+
+  var yearDim = ndx.dimension(function (d) {
+    return d.year;
+  });
+  var yearGroup = yearDim.group().reduceCount();
+
+  var sectionDim = ndx.dimension(function (d) {
+    return d.section;
+  });
+  var sectionGroup = sectionDim.group().reduceCount();
+
+  var riverSectionDim = ndx.dimension(function (d) {
+    return [d.river, d.section];
+  });
+  var riverSectionGroup = riverSectionDim.group().reduce(function (p, v) {
+    p.count += 1;
+    p.lenSum += v.len;
+    p.lenMean = p.count > 0 ? p.lenSum / p.count : 0;
+    return p;
+  }, function (p, v) {
+    p.count -= 1;
+    p.lenSum -= v.len;
+    p.lenMean = p.count > 0 ? p.lenSum / p.count : 0;
+    return p;
+  }, function () {
+    return {
+      count: 0,
+      lenSum: 0,
+      lenMean: 0
+    };
+  });
+
+  var lenDim = ndx.dimension(function (d) {
+    return Math.floor(d.len / 10) * 10;
+    // return d.len;
+  });
+  var lenGroup = lenDim.group().reduceCount();
+
+  var seasonDim = ndx.dimension(function (d) {
+    return d.season;
+  });
+  var seasonGroup = seasonDim.group().reduceCount();
+
+  var speciesDim = ndx.dimension(function (d) {
+    return d.species;
+  });
+  var speciesGroup = speciesDim.group().reduceCount();
+
+  var riverDim = ndx.dimension(function (d) {
+    return d.river;
+  });
+  var riverGroup = riverDim.group().reduceCount();
+
+  var timeDim = ndx.dimension(function (d) {
+    return d3.time.month(d.date);
+  });
+  var timeGroup = timeDim.group().reduceCount();
+
+  var charts = {};
+  charts.year = dc.barChart('#year-chart')
+    .width(400)
+    .height(200)
+    .margins({top: 10, right: 50, bottom: 30, left: 40})
+    .dimension(yearDim)
+    .group(yearGroup)
+    .transitionDuration(10)
+    .elasticY(true)
+    .centerBar(true)
+    .gap(1)
+    .alwaysUseRounding(true)
+    .round(function(n) { return Math.floor(n) + 0.5; })
+    .x(d3.scale.linear().domain([1996, 2016]))
+    .renderHorizontalGridLines(true)
+    .filterPrinter(function (filters) {
+      var filter = filters[0];
+      s = '[' + (filter[0] + 0.5) + ' -> ' + (filter[1] - 0.5) + ']';
+      return s;
+    });
+
+  charts.section = dc.barChart('#section-chart')
+    .width(400)
+    .height(200)
+    .margins({top: 10, right: 50, bottom: 30, left: 40})
+    .dimension(sectionDim)
+    .group(sectionGroup)
+    .transitionDuration(10)
+    .elasticY(true)
+    .centerBar(true)
+    .gap(1)
+    .x(d3.scale.linear().domain([-1, 47]))
+    .renderHorizontalGridLines(true)
+    .on('renderlet', function(chart, filter){
+      onFilter();
+    });
+
+  charts.season = dc.barChart('#season-chart')
+    .width(400)
+    .height(200)
+    .margins({top: 10, right: 50, bottom: 30, left: 40})
+    .dimension(seasonDim)
+    .group(seasonGroup)
+    .transitionDuration(10)
+    .elasticY(true)
+    .gap(1)
+    .x(d3.scale.ordinal().domain(["Spring", "Summer", "Autumn", "Winter"]))
+    .xUnits(dc.units.ordinal)
+    .renderHorizontalGridLines(true);
+
+  charts.len = dc.barChart('#len-chart')
+    .width(400)
+    .height(200)
+    .margins({top: 10, right: 50, bottom: 30, left: 40})
+    .dimension(lenDim)
+    .group(lenGroup)
+    .transitionDuration(10)
+    .elasticY(true)
+    .centerBar(true)
+    // .gap(1)
+    .xUnits(function () { return 40; })
+    .x(d3.scale.linear().domain([0, 400]))
+    .renderHorizontalGridLines(true);
+
+  charts.species = dc.barChart('#species-chart')
+    .width(400)
+    .height(200)
+    .margins({top: 10, right: 50, bottom: 30, left: 40})
+    .dimension(speciesDim)
+    .group(speciesGroup)
+    .transitionDuration(10)
+    .elasticY(true)
+    .gap(1)
+    .x(d3.scale.ordinal().domain(["ats", "bkt", "bnt"]))
+    .xUnits(dc.units.ordinal)
+    .renderHorizontalGridLines(true);
+  charts.species.xAxis().tickFormat(function (v) { return labels.species[v]; });
+
+  charts.river = dc.barChart('#river-chart')
+    .width(400)
+    .height(200)
+    .margins({top: 10, right: 50, bottom: 30, left: 40})
+    .dimension(riverDim)
+    .group(riverGroup)
+    .transitionDuration(10)
+    .elasticY(true)
+    .gap(1)
+    .x(d3.scale.ordinal().domain(["IL", "OL", "OS", "WB"]))
+    .xUnits(dc.units.ordinal)
+    .renderHorizontalGridLines(true);
+  charts.river.xAxis().tickFormat(function (v) { return labels.rivers[v]; });
+
+  charts.time = dc.lineChart('#time-chart')
+    .width(800)
+    .height(280)
+    .margins({top: 10, right: 50, bottom: 30, left: 40})
+    .transitionDuration(10)
+    .dimension(timeDim)
+    .group(timeGroup)
+    .x(d3.time.scale().domain(d3.extent(data, function(d) { return d.date; })));
+
+  charts.year.xAxis().tickFormat(function (v) {
+    return v.toString();
+  });
+
+  dc.constants.EVENT_DELAY = 0;
+  dc.renderAll();
+
+  // Map
+  var riverNames = {
+    'West Brook': 'WB',
+    'WB Mitchell': 'OS',
+    'WB Jimmy': 'OL',
+    'WB Obear': 'IL'
+  };
+
+  locations.forEach(function (d) {
+    d.lat = +d.lat;
+    d.lon = +d.lon;
+    d.river = riverNames[d.river1];
+  });
+
+  var locationsMap = d3.map();
+  locations.forEach(function(d) {
+    locationsMap.set([d.river, d.section], {
+      river: d.river,
+      section: d.section,
+      LatLng: new L.LatLng(d.lat, d.lon)
+    })
+    // d.LatLng = new L.LatLng(d.lat, d.lon);
+  });
+
+  var riverColors = d3.scale.category10()
+    .domain(['WB', 'OS', 'OL', 'IL']);
+
+  var radiusScale = d3.scale.sqrt()
+    // .domain([50, 200]) // value.lenMean
+    .domain([0, 1000]) // value.count
+    // .domain([0, 1]) // value.count / max(value.count)
+    // .domain([0, 0.1]) // value.count / total count
+    .range([0, 15])
+    .clamp(true);
+
+  var feature = g.selectAll("circle")
+    // .data(locations)
+    .data(riverSectionGroup.top(Infinity), function (d) {
+      return d.key;
+    })
+    .enter().append("circle")
+    .style("stroke", "black")
+    .style("opacity", 0.6)
+    .style("fill", function (d) {
+      return riverColors(d.key[0]);
+    })
+    // .attr("r", function (d) {
+    //   return radiusScale(d.value.count);
+    // })
+    .on("mouseover", function (d) {
+      d3.select(this)
+        .style("stroke", "red");
+
+      tooltip.html(labels.rivers[d.key[0]] + ' - Section ' + d.key[1])
+        .style("left", (d3.event.pageX + 15) + "px")
+        .style("top", (d3.event.pageY - 15) + "px")
+        .transition()
+        .duration(100)
+        .style("opacity", 1);
+    })
+    .on("mouseout", function (d) {
+      d3.select(this)
+        .style("stroke", "black");
+
+      tooltip.transition()
+        .duration(100)
+        .style("opacity", 0);
+    });
+
+  map.on("viewreset", onViewReset);
+  onViewReset();
+
+  function onFilter() {
+    // var count = ndx.groupAll().value();
+    // var maxCount = d3.max(riverSectionGroup.top(Infinity), function (d) {
+    //   return d.value.count;
+    // });
+    // console.log(maxCount);
+    feature
+      .data(riverSectionGroup.top(Infinity), function (d) {
+        return d.key;
+      })
+      .attr("r", function (d) {
+        return radiusScale(d.value.count);
+        // return radiusScale(maxCount > 0 ? d.value.count/maxCount : 0);
+        // return radiusScale(count > 0 ? d.value.count/count : 0);
+      });
+  }
+
+  function onViewReset() {
+    feature.attr("transform", function(d) {
+      var location = locationsMap.get(d.key);
+
+      if (!location) {
+        console.error("Undefined: ", d.key);
+      }
+      return "translate("+
+        map.latLngToLayerPoint(location.LatLng).x +","+
+        map.latLngToLayerPoint(location.LatLng).y +")";
+    });
+  }
+
+  window.resetChart = function (name) {
+    charts[name].filterAll();
+    dc.redrawAll();
+  }
+
+  hideLoading();
+};
+
+
+function hideLoading () {
+  d3.select('#loading')
+    .style('opacity', 1)
+    .transition()
+    .duration(1000)
+    .style('opacity', 0)
+    .each('end', function () {
+      d3.select(this).remove();
+      startTour();
+    });
+}
+
+
+function startTour () {
+  var intro = introJs();
+  intro.setOptions({
+    showStepNumbers: false,
+    steps: [
+      {
+        intro: '<p class="intro-intro text-center" style="font-size:20px">Welcome to the<br><strong>Crossfilter Tool</strong><br>for<br><strong>PIT Tagging Studies</strong><br>from the West Brook and Stanley Brook</p><p>Click Next to begin the tour of this dashboard, or Skip to quit the tour and get right to exploring the data.</p>'
+      },
+      {
+        element: '#histogram-rows',
+        intro: '<p>These are histograms showing the number of individual fish captured for each category or bin.</p><p>Each chart is interactive and allows you to select a subset of the data by clicking on one or more bars.</p><p>Whenever you select a subset of the data, all other charts will be automatically updated to reflect that subset.'
+      },
+      {
+        element: '#map',
+        position: 'top',
+        intro: '<p>The map shows the location of each section of the four branches.</p><p>The size of each circle is proportional to the number of fish captured in that section.</p>'
+      },
+      {
+        element: '#time-chart',
+        position: 'top',
+        intro: 'The timeseries shows the number of fish captured on each sampling date. You can also click and drag on this chart to select a specific period of the dataset.'
+      },
+      {
+        element: '#watershed-form',
+        position: 'bottom',
+        intro: 'Use the dropdown menu to switch between watersheds.'
+      }
+    ]
+  })
+  intro.start();
+}
+</script>
+</body>
+</html>
