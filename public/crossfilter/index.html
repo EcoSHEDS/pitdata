@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title></title>
+  <title>Fish Capture Crossfilter</title>
   <!-- <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/dc/1.7.5/dc.min.css"> -->
   <link rel="stylesheet" href="/libs/bootstrap/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
@@ -18,6 +18,10 @@
       float: left;
     }
 
+    body {
+      background: #eeeeee;
+    }
+
     span.filter {
       padding-left: 10px;
     }
@@ -30,6 +34,10 @@
       pointer-events: none;
     }
 
+    .container {
+      background: white;
+    }
+
     .chart-container {
       height: 225px;
       margin-bottom: 20px;
@@ -37,6 +45,7 @@
 
     .main-container {
       position: relative;
+      margin-bottom: 20px;
     }
 
     #loading {
@@ -93,52 +102,49 @@
 
     <hr>
 
-    <div id="histogram-rows">
-      <div class="row">
-        <div class="col-lg-4">
-          <div id="species-chart" class="chart-container">
-            <strong>Species</strong>
-            <a class="reset" style="display: none;" href="javascript:resetChart('species')">reset</a>
-            <div class="clearfix"></div>
-          </div>
-        </div>
-        <div class="col-lg-4">
-          <div id="river-chart" class="chart-container">
-            <strong>River Branch</strong>
-            <a class="reset" style="display: none;" href="javascript:resetChart('river')">reset</a>
-            <div class="clearfix"></div>
-          </div>
-        </div>
-        <div class="col-lg-4">
-          <div id="section-chart" class="chart-container">
-            <strong>Branch Section</strong>
-            <a class="reset" style="display: none;" href="javascript:resetChart('section')">reset</a><span class="filter"></span>
-            <div class="clearfix"></div>
-          </div>
+    <div class="row" id="row-1">
+      <div class="col-lg-4">
+        <div id="species-chart" class="chart-container">
+          <strong>Species</strong>
+          <a class="reset" style="display: none;" href="javascript:resetChart('species')">reset</a>
+          <div class="clearfix"></div>
         </div>
       </div>
-
-      <div class="row">
-        <div class="col-lg-4">
-          <div id="year-chart" class="chart-container">
-            <strong>Year</strong>
-            <a class="reset" style="display: none;" href="javascript:resetChart('year')">reset</a><span class="filter"></span>
-            <div class="clearfix"></div>
-          </div>
+      <div class="col-lg-4">
+        <div id="river-chart" class="chart-container">
+          <strong>River Branch</strong>
+          <a class="reset" style="display: none;" href="javascript:resetChart('river')">reset</a>
+          <div class="clearfix"></div>
         </div>
-        <div class="col-lg-4">
-          <div id="season-chart" class="chart-container">
-            <strong>Season</strong>
-            <a class="reset" style="display: none;" href="javascript:resetChart('season')">reset</a>
-            <div class="clearfix"></div>
-          </div>
+      </div>
+      <div class="col-lg-4">
+        <div id="season-chart" class="chart-container">
+          <strong>Season</strong>
+          <a class="reset" style="display: none;" href="javascript:resetChart('season')">reset</a>
+          <div class="clearfix"></div>
         </div>
-        <div class="col-lg-4">
-          <div id="len-chart" class="chart-container">
-            <strong>Fish Length</strong>
-            <a class="reset" style="display: none;" href="javascript:resetChart('len')">reset</a><span class="filter"></span>
-            <div class="clearfix"></div>
-          </div>
+      </div>
+    </div>
+    <div class="row" id="row-2">
+      <div class="col-lg-4">
+        <div id="len-chart" class="chart-container">
+          <strong>Fish Length</strong>
+          <a class="reset" style="display: none;" href="javascript:resetChart('len')">reset</a><span class="filter"></span>
+          <div class="clearfix"></div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div id="section-chart" class="chart-container">
+          <strong>Branch Section</strong>
+          <a class="reset" style="display: none;" href="javascript:resetChart('section')">reset</a><span class="filter"></span>
+          <div class="clearfix"></div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div id="year-chart" class="chart-container">
+          <strong>Year</strong>
+          <a class="reset" style="display: none;" href="javascript:resetChart('year')">reset</a><span class="filter"></span>
+          <div class="clearfix"></div>
         </div>
       </div>
     </div>
@@ -415,10 +421,10 @@ function ready(error, rawData, locations) {
   };
 
   locations.forEach(function (d) {
-    d.lat = +d.lat;
-    d.lon = +d.lon;
-    d.river = riverNames[d.river1];
-  });
+      d.lat = +d.lat;
+      d.lon = +d.lon;
+      d.river = riverNames[d.river1];
+    });
 
   var locationsMap = d3.map();
   locations.forEach(function(d) {
@@ -441,9 +447,24 @@ function ready(error, rawData, locations) {
     .range([0, 15])
     .clamp(true);
 
+  var featureData = riverSectionGroup.top(Infinity);
+  featureData.sort(function (a, b) {
+    var keyA = a.key[1] < 10 ? a.key[0] + "0" + a.key[1] : a.key[0] + a.key[1],
+        keyB = b.key[1] < 10 ? b.key[0] + "0" + b.key[1] : b.key[0] + b.key[1];
+
+    if (keyA < keyB) {
+      return 1;
+    }
+    if (keyA > keyB) {
+      return -1;
+    }
+
+    return 0;
+  });
+
   var feature = g.selectAll("circle")
     // .data(locations)
-    .data(riverSectionGroup.top(Infinity), function (d) {
+    .data(featureData, function (d) {
       return d.key;
     })
     .enter().append("circle")
@@ -452,9 +473,6 @@ function ready(error, rawData, locations) {
     .style("fill", function (d) {
       return riverColors(d.key[0]);
     })
-    // .attr("r", function (d) {
-    //   return radiusScale(d.value.count);
-    // })
     .on("mouseover", function (d) {
       d3.select(this)
         .style("stroke", "red");
@@ -539,8 +557,12 @@ function startTour () {
         intro: '<p class="intro-intro text-center" style="font-size:20px">Welcome to the<br><strong>Crossfilter Tool</strong><br>for<br><strong>PIT Tagging Studies</strong><br>from the West Brook and Stanley Brook</p><p>Click Next to begin the tour of this dashboard, or Skip to quit the tour and get right to exploring the data.</p>'
       },
       {
-        element: '#histogram-rows',
-        intro: '<p>These are histograms showing the number of individual fish captured for each category or bin.</p><p>Each chart is interactive and allows you to select a subset of the data by clicking on one or more bars.</p><p>Whenever you select a subset of the data, all other charts will be automatically updated to reflect that subset.'
+        element: '#row-1',
+        intro: '<p>These are histograms of categorical variables showing the number of individual fish captured for each category.</p><p>Each chart is interactive and allows you to select a subset of the data by clicking on one or more bars.</p><p>When you select one or more categories, the corresponding bars remain blue, while the unselected bars turn gray indicating that these categories are excluded from the dataset.</p><p>Click reset to clear any existing selections.</p><p>Whenever you select a subset of the data, all other charts will be automatically updated to reflect that subset.</p>'
+      },
+      {
+        element: '#row-2',
+        intro: '<p>These are histograms of continuous variables showing the number of individual fish captured within each bin.</p><p>On these charts, you can click-and-drag to create a window that will filter the dataset by a range of values.</p>'
       },
       {
         element: '#map',
@@ -550,7 +572,7 @@ function startTour () {
       {
         element: '#time-chart',
         position: 'top',
-        intro: 'The timeseries shows the number of fish captured on each sampling date. You can also click and drag on this chart to select a specific period of the dataset.'
+        intro: 'The timeseries shows the number of fish captured on each sampling date. You can also click-and-drag on this chart to select a specific period of the dataset.'
       },
       {
         element: '#watershed-form',
