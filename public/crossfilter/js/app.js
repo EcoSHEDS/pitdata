@@ -431,7 +431,6 @@ function selectWatershed (watershed) {
   app.xf.dims.watershed.filterExact(watershed);
 
   app.charts.river.x(d3.scale.ordinal().domain(app.config.domains[app.watershed].river));
-console.log(app.config.domains[app.watershed].river);
   updateMapWatershed(app.watershed);
 
   dc.redrawAll();
