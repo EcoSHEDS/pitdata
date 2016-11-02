@@ -1,0 +1,58 @@
+#map {
+  height: 300px;
+  width: 100%;
+  margin: 0 10px;
+  float: left;
+}
+
+body {
+  background: #eeeeee;
+}
+
+span.filter {
+  padding-left: 10px;
+}
+
+div.tooltip {
+  position: absolute;
+  padding: 2px;
+  font: 12px sans-serif;
+  background: #fff;
+  pointer-events: none;
+}
+
+.container {
+  background: white;
+}
+
+.chart-container {
+  height: 225px;
+  margin-bottom: 20px;
+}
+
+.main-container {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+#loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #EEE;
+  text-align: center;
+  padding-top: 200px;
+  font-size: 42px;
+  z-index: 9000;
+}
+
+h2.sub-title {
+  color: #555;
+  font-size: 20px;
+}
+
+.introjs-tooltip {
+  width: 500px;
+}
