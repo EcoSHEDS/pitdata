@@ -60,33 +60,40 @@
       width: 100%;
     }
 
+    h4 {
+      font-size: 20px;
+    }
+
+    p {
+      font-size: 1.2em;
+    }
+
   </style>
 </head>
 <body>
 
-  <div style="border-bottom: 2px solid #e7e7e7;background:#f8f8f8">
-    <div class="container">
-      <div class="row" style="margin-top: 20px; margin-bottom: 20px">
-        <div class="col-xs-12">
-          <h1>Fish Tagging Studies Introduction</h1>
-        </div>
+<div style="border-bottom: 2px solid #e7e7e7;background:#f8f8f8">
+  <div class="container">
+    <div class="row" style="margin-top: 20px; margin-bottom: 20px">
+      <div class="col-xs-12">
+        <h1>Fish Tagging Data Visualizations <small>part of the <a href="http://www.ecosheds.org/">Spatial Hydro-Ecological Decision System</a></small></h1>
       </div>
     </div>
   </div>
+</div>
 
-  <div class="content-section-b top-section">
-    <div class="container">
-      <div class="row" style="margin-top: 20px; margin-bottom: 40px">
-        <div class="col-md-4">
-          <h2>What is a tagging study?</h2>
-          <p style="font-size:1.2em;">Understanding the performance and fate of individual fish helps us understand why populations fluctuate and why species come and go.</p>
-          <p style="font-size:1.2em;">Since 1997, we have studied stream fish using <a href="https://en.wikipedia.org/wiki/Radio-frequency_identification"> tags </a>that contain unique electronic codes. We can estimate body growth, movement and reproduction (performance) and survival (fate) by recapturing tagged fish over time. </p>
-          <p style="font-size:1.2em;">Our two longest-running tagging studies are the West Brook, in Whately MA and Stanley Brook in Seal Harbor, Maine. Dots on the maps are 20m-long or 40-m long (Stanley) sampling sections. Mouse over a section in the West Brook to see a picture of the section from 2006. Get a tour of the data by <a href="/overview/index.html"> launching </a>the introduction.</p>
+<div class="content-section-b top-section">
+  <div class="container">
+    <div class="row" style="margin-top: 20px; margin-bottom: 40px">
+      <div class="col-md-4">
+        <h2>What is a Tagging Study?</h2>
+        <p>Understanding the performance and fate of individual fish helps us understand why populations fluctuate and why species come and go.</p>
+        <p>Since 1997, we have studied stream fish using <a href="https://en.wikipedia.org/wiki/Radio-frequency_identification"> tags </a>that contain unique electronic codes. We can estimate body growth, movement and reproduction (performance) and survival (fate) by recapturing tagged fish over time. </p>
+        <p>Our two longest-running tagging studies are the West Brook, in Whately MA and Stanley Brook in Seal Harbor, Maine. Dots on the maps are 20m-long or 40-m long (Stanley) sampling sections. Mouse over a section in the West Brook to see a picture of the section from 2006. Get a tour of the data by launching <a href="/overview">the overview visualization</a>.</p>
+      </div>
 
-        </div>
-
-        <div class="col-md-8">
-
+      <div class="col-md-8">
+        <div class="row">
           <div class="col-md-6 text-center" style="margin-top: 40px">
             <h3>West Brook, MA</h3>
             <div>
@@ -100,57 +107,88 @@
               <div id="mapstanley"></div>
             </div>
           </div>
+        </div>
 
-          <div class="row" >
-            <div class="col-md-4 col-md-offset-4 text-center" style="margin-top: 20px">
-               <p><a class="btn btn-lg btn-primary" style="margin-top: 25px" href="/overview/index.html">Launch Intro <span class="glyphicon glyphicon-chevron-right"></span></a></p>
-            </div>
+        <div class="row" >
+          <div class="col-md-12 text-center" style="margin-top: 20px">
+             <p><a class="btn btn-lg btn-primary" style="margin-top: 25px" href="/overview/index.html">Begin with the Overview <span class="glyphicon glyphicon-chevron-right"></span></a></p>
           </div>
-
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <div class="content-section-a">
-    <div class="container">
-      <div class="row" style="margin-top: 40px">
-        <div class="col-md-6">
+<div class="content-section-a">
+  <div class="container">
+    <div class="row" style="margin-top: 40px">
+      <div class="col-md-6">
+        <h2><a href="/overview">Overview</a></h2>
+        <h4>What is a fish tagging study and what can we learn from it?</h4>
 
-          <h2>Want a detailed look at the data?</h2>
+        <p>
+          The <a href="/overview">overview visualization</a> provides a step-by-step explanation of the basic patterns we found in the fish tagging datasets for each watershed. Through this narrative, you will learn how the number of captured fish varies between species, seasons, river branches, and year to year. At the end, the visualization lets you explore the dataset yourself by changing the color and grouping of bubbles representing individual fish.
+        </p>
+      </div>
+      <div class="col-md-6 text-center">
+        <a href="/overview">
+          <img src="/img/thumb-overview.png" width="500px">
+        </a>
+      </div>
+    </div>
+    <div class="row" style="margin-top: 40px">
+      <div class="col-md-6">
+        <h2><a href="/crossfilter">Interactive Crossfilter</a></h2>
+        <h4>What are the relationships between variables?</h4>
 
-          <p>
-            This <a href="/fish-movements/index.html">application</a> shows the locations of individual fish over time. Watch the fish from West Brook or Stanley Brook move from season to season and see who lives and dies. Individuals, all fish from a sampling section, river or even family (in some years) can be selected to see how groups of fish move around and how long they survive.
-          </p>
-        </div>
-        <div class="col-md-6 text-center">
-          <a href="/fish-movements/index.html">
-            <img src="/img/thumb-select-watershed.png" class="img-rounded" alt="Web pic" width="500" height="267">
-          </a>
-        </div>
+        <p>
+          The <a href="/crossfilter">interactive crossfilter visualization</a> lets you slice and dice the dataset across multiple variables. Each variable is represented by a histogram showing the number of fish captured for each value. You can focus on subsets of the dataset by selecting individual categories or ranges values among the variables, and then immediately see how the other variables respond through changes in the other histograms.
+        </p>
+      </div>
+      <div class="col-md-6 text-center">
+        <a href="/crossfilter">
+          <img src="/img/thumb-crossfilter.png" width="500px">
+        </a>
+      </div>
+    </div>
+    <div class="row" style="margin-top: 40px">
+      <div class="col-md-6">
+        <h2><a href="/fish-movements">Fish Movements</a></h2>
+        <h4>How do individual fish move over time and space?</h4>
+
+        <p>
+          The <a href="/fish-movements">fish movement visualization</a> shows how individual fish move between sections of the river over time. Watch the fish from West Brook or Stanley Brook move from season to season and see who lives and dies. Individuals, all fish from a sampling section, river or even family (in some years) can be selected to see how groups of fish move around and how long they survive.
+        </p>
+      </div>
+      <div class="col-md-6 text-center">
+        <a href="/fish-movements">
+          <img src="/img/thumb-movement.png" width="500px">
+        </a>
       </div>
     </div>
   </div>
+</div>
 
-  <div class="content-section-b">
-    <div class="container">
-      <div class="row">
-        <div class="col-xs-12 col-md-8">
-          <h2>Project Team</h2>
-          <p>Ben Letcher initiated the West Brook study in 1997 with Gabe Gries. Since then the study has been a collaboration among the <a href="http://www.lsc.usgs.gov/?q=cafb-population-dynamics-personnel">USGS Conte Laboratory</a> (Ben Letcher, Matt O'Donnell, Todd Dubreuil), the <a href="http://www.nrs.fs.fed.us/people/knislow">USFS Northern Research Station</a> (Keith Nislow, Jason Coombs), and the <a href="http://eco.umass.edu/">University of Massachusetts Department of Environmental Conservation</a> (<a href="http://www.cfc.umt.edu/personnel/details.php?ID=4461">Andrew Whiteley</a> - now at The University of Montana). </p>
-           <p>Ben Letcher and Matt O'Donnell started the Stanley Brook study in 2006 with <a href="http://www.coopunits.org/Maine/People/Joseph_Zydlewski/">Joe Zydlewski </a> from <a href="https://umaine.edu/wle/faculty-staff-directory/">the University of Maine </a> and Bruce Connery of the <a href="https://www.nps.gov/acad/index.htm">National Park Service </a>.</p>
-           <p>We thank the many graduate students, interns, post-docs and others who have helped sample the streams over the years. </p>
-        </div>
+<div class="content-section-b">
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12 col-md-8">
+        <h2>Project Team</h2>
+        <p>Ben Letcher initiated the West Brook study in 1997 with Gabe Gries. Since then the study has been a collaboration among the <a href="http://www.lsc.usgs.gov/?q=cafb-population-dynamics-personnel">USGS Conte Laboratory</a> (Ben Letcher, Matt O'Donnell, Todd Dubreuil), the <a href="http://www.nrs.fs.fed.us/people/knislow">USFS Northern Research Station</a> (Keith Nislow, Jason Coombs), and the <a href="http://eco.umass.edu/">University of Massachusetts Department of Environmental Conservation</a> (<a href="http://www.cfc.umt.edu/personnel/details.php?ID=4461">Andrew Whiteley</a> - now at The University of Montana). </p>
+         <p>Ben Letcher and Matt O'Donnell started the Stanley Brook study in 2006 with <a href="http://www.coopunits.org/Maine/People/Joseph_Zydlewski/">Joe Zydlewski </a> from <a href="https://umaine.edu/wle/faculty-staff-directory/">the University of Maine </a> and Bruce Connery of the <a href="https://www.nps.gov/acad/index.htm">National Park Service </a>.</p>
+         <p>We thank the many graduate students, interns, post-docs and others who have helped sample the streams over the years. </p>
       </div>
     </div>
   </div>
+</div>
 
 
-  <div class="content-section-a">
-    <div class="container">
-      <div class="row">
+<div class="content-section-a">
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12">
         <h2>Funding Sources</h2>
-        <p> <a href="http://www.lsc.usgs.gov/?q=cafb-population-dynamics-personnel">USGS Conte Laboratory</a> and
+        <p><a href="http://www.lsc.usgs.gov/?q=cafb-population-dynamics-personnel">USGS Conte Laboratory</a> and
         <a href="http://www.nrs.fs.fed.us/">USFS Northern Research Station</a>, with additional funding from:
 
         <div class="row">
@@ -167,17 +205,18 @@
       </div>
     </div>
   </div>
+</div>
 
-  <footer>
-    <div class="container">
-      <div class="row">
-        <div class="col-xs-12">
-          <p class="copyright text-muted">Copyright © 2016 SHEDS Development Team</p>
-          <p class="copyright text-muted"><strong>Disclaimer:</strong> This web site (SHEDS) has not yet been approved by the U.S. Geological Survey (USGS). As such, it does not represent any official USGS finding or policy.</p>
-        </div>
+<footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12">
+        <p class="copyright text-muted">Copyright © 2016 SHEDS Development Team</p>
+        <p class="copyright text-muted"><strong>Disclaimer:</strong> This web site (SHEDS) has not yet been approved by the U.S. Geological Survey (USGS). As such, it does not represent any official USGS finding or policy.</p>
       </div>
     </div>
-  </footer>
+  </div>
+</footer>
 
 
 
