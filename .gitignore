@@ -1,4 +1,5 @@
-public/libs
+public/libs/*
+!public/libs/.gitkeep
 .Rproj.user
 .RData
 .jpg
