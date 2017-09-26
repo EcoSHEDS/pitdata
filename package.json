@@ -1,7 +1,7 @@
 {
-  "name": "sheds-fish",
+  "name": "shedsPitData",
   "version": "1.0.0",
-  "description": "Interactive Data Visualizations of Fish Tagging Data for SHEDS",
+  "description": "Interactive Data Visualizations of PIT Tagging Data for SHEDS",
   "main": "index.js",
   "scripts": {
     "start": "http-server ./public",

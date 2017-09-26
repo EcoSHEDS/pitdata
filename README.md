@@ -7,60 +7,44 @@ USGS Conte Anadromous Fish Lab and UMass Amherst Dept of Environmental Conservat
 
 September 2016
 
+**Live Website**: [http://pitdata.ecosheds.org]()
+
 ## About
 
 This repo contains source code for a series of interactive data visualizations showing the movement of individual fish based on the West Brook (MA) and Stanley Brook (ME) PIT Tagging Studies.
 
-## Applications
-1. Tagging studies introduction (WB and SB)
-2. Tagging studies overview (SB only)
-3. Fish movements (WB and SB)
+## Directory Structure
 
-## Data Sources
-1. Tagging studies introduction
-  1. Coordinates for study site sections `/data/coordsForD3JS.csv`.
-2. Tagging studies overview 
-  1. Raw fish data `/data/coreDataOut.csv` and environmental data `/data/envDataOut.csv` created with `createCSVFromDataWBSBForD3.R`.     2. Data input to create the CSV files is `data/dataWBSBForD3.RData` created  on `osensei/git/geWBCoreDataforD3FishMove/` using the 6 files that each start with 1_, 2_, or 3_ for both WB and SB and finally `4_combineWatersheds.R`. 
-  3.Files were copied from osensei to felek and then to the /data subdirectories for each application. 
-3. Fish movements 
-  1. Same data source as 'tagging Studies overview' above
+```txt
+public/               - root directory of website
+public/data           - common data directory
+public/crossfilter    - crossfilter application
+public/fish-movements - fish movements application
+public/img            - static images
+public/libs           - front-end dependencies (installed with bower, see below)
+public/overview       - overview application
+```
+
+## Applications
+
+- Overview - introduction to the two tagging studies (WB and SB) [`./public/overview`]  
+- Crossfilter - multi-variate crossfilter application (WB only) [`./public/crossfilter`]  
+- Fish Movements - dynamic fish movements application (WB and SB) [`./public/fish-movements`]  
 
 ## Dependencies
-d3, bootstrap, font-awesome, intro.js, jquery, leaflet, landing-page
+
+Install front-end dependencies using [bower](https://bower.io/). Libraries are installed to the `public/libs` folder.
+
+```bash
+npm install -g bower # if not already installed
+bower install
+```
 
 ## Development Server
-1. Introduction `none`
-2. Overview `Home/wbTagViz/`
-3. Fish movements `Home/d3FishMove/forceV4/selectWatershed/dev`
 
-## Directory Structure
+Use [http-server](https://www.npmjs.com/package/http-server) to run a development server from the `public/` root directory.
+
+```bash
+npm install -g http-server # if not already installed
+http-server ./public -p 8080
 ```
-Project
- |
- +-- index.html [Introduction]
- |       
- +-- data
- |       
- +-- img 
- |       
- +-- libs
- |       
- +-- R
- 
- +-- PITtagOverview [Overview]
- |  |  
- |  +-- css
- |  |  
- |  +-- data
- |  |  
- |  +-- js
- |   
-  +-- fish-movements [Fish movements]
- |  |  
- |  +-- css
- |  |  
- |  +-- data
- |  |  
- |  +-- js
- |  
- ```
