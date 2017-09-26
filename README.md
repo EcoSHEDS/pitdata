@@ -31,6 +31,8 @@ public/overview       - overview application
 - Crossfilter - multi-variate crossfilter application (WB only) [`./public/crossfilter`]  
 - Fish Movements - dynamic fish movements application (WB and SB) [`./public/fish-movements`]  
 
+Datasets for each application are found in the `/public/<app-name>/data` directories.
+
 ## Dependencies
 
 Install front-end dependencies using [bower](https://bower.io/). Libraries are installed to the `public/libs` folder.
