@@ -1283,7 +1283,7 @@ function startTour () {
       },
       {
         element: '#unselectAll',
-        intro: '<p>Use this botton to unselect all circles.</p>'
+        intro: '<p>Use this button to unselect all circles.</p>'
       },
       {
         element: '#showNotEnc',
@@ -1291,7 +1291,7 @@ function startTour () {
       },
       {
         element: '#collapseTwo',
-        intro: '<p>This panel shows distributions of daily environmental conditions (stream temperature [top, degress C] and stream flow [bottom, m3/sec]) for all samples (blue) and for the selected sampling interval (orange) for the current season. This panel and those below can be collapsed by double-clicking on the header.</p>'
+        intro: '<p>This panel shows distributions of daily environmental conditions (stream temperature [top, degrees C] and stream flow [bottom, m3/sec]) for all samples (blue) and for the selected sampling interval (orange) for the current season. This panel and those below can be collapsed by double-clicking on the header.</p>'
       },
       {
         element: '#collapseThree',
