@@ -14,7 +14,7 @@ var watershed = {
     scaleRivertoRiverHeatMap: d3.scaleOrdinal().domain(["WB","IL","OL","OS","Em"]).range([0,1,2,3,4]),
     sppScale: d3.scaleOrdinal().domain(["ats","bnt","bkt"]).range(["Atlantic salmon", "Brown trout", "Brook trout"]),
     sppScaleColor: d3.scaleOrdinal().domain(["bkt","bnt","ats"]).range([d3.rgb(162,205,174), d3.rgb(74,116,134), d3.rgb(36,45,66)]),
-    initialSampleNumber: 11,
+    initialSampleNumber: 31,
     siteTitle: "Trout and salmon in a small stream network in Western MA, USA"
 
   },

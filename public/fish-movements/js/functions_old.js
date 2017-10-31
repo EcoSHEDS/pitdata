@@ -311,7 +311,7 @@ function initializeFishData(cd,coordsXY){
     state.seasonSet = state.sampleInfo.map(function(d){return d.season});
     
     // Define starting sample #
-    state.currentSample = state.watershedData.initialSampleNumber; //d3.min(state.sampSet); //initialSampleNumber; //
+    state.currentSample = 2002; //d3.min(state.sampSet); //initialSampleNumber; //
         
   //  console.log("sampSet",state);
 
