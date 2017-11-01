@@ -49,4 +49,6 @@ Use [http-server](https://www.npmjs.com/package/http-server) to run a developmen
 ```bash
 npm install -g http-server # if not already installed
 http-server ./public -p 8080
+
+Then, http://ecosheds.org:8080/fish-movements/
 ```
