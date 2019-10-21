@@ -76,7 +76,7 @@
   <div class="container">
     <div class="row" style="margin-top: 20px; margin-bottom: 20px">
       <div class="col-xs-12">
-        <h1>Fish Tagging Data Visualizations <small>part of the <a href="http://www.ecosheds.org/">Spatial Hydro-Ecological Decision System</a></small></h1>
+        <h1>Fish Tagging Data Visualizations <small>part of the <a href="https://www.ecosheds.org/">Spatial Hydro-Ecological Decision System</a></small></h1>
       </div>
     </div>
   </div>
@@ -271,8 +271,8 @@ d3.queue()
 
   var mapWest = L.map('map' + app.state.selectedWatershed).setView(latLonCenter, zoom);
 
-  L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+  L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(mapWest);
 
   mapWest._initPathRoot();
@@ -346,8 +346,8 @@ d3.queue()
 
   var mapStanley = L.map('map' + app.state.selectedWatershed).setView(latLonCenter, zoom);
 
-  L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+  L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(mapStanley);
 
   mapStanley._initPathRoot();
