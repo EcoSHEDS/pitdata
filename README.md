@@ -7,7 +7,7 @@ USGS Conte Anadromous Fish Lab and UMass Amherst Dept of Environmental Conservat
 
 September 2016
 
-**Live Website**: [https://pitdata.ecosheds.org]()
+**Live Website**: [https://usgs.gov/apps/ecosheds/pitdata]()
 
 ## About
 
