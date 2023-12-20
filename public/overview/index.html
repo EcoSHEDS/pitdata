@@ -6,19 +6,33 @@
 
   <title>West Brook Story | SHEDS</title>
 
-  <link rel="stylesheet" href="/libs/bootstrap/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
-  <link rel="stylesheet" href="/libs/leaflet/dist/leaflet.css">
+  <link rel="stylesheet" href="../libs/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../libs/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="../libs/leaflet/dist/leaflet.css">
 
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="../css/usgs.css" rel="stylesheet" type="text/css">
 </head>
 
 <body>
 
+<header id="navbar" class="header-nav" role="banner">
+  <div class="tmp-container">
+    <div class="header-search">
+      <a class="logo-header" href="https://www.usgs.gov/" title="USGS Home">
+        <img src="../img/usgs-logo.png" alt="USGS" class="usgs-img" border="0" />
+      </a>
+      <a href="https://usgs.gov/apps/ecosheds" class="ecosheds-link">
+        <span class="glyphicon glyphicon-chevron-left"></span><span> EcoSHEDS</span>
+      </a>
+    </div>
+  </div>
+</header>
+
 <div class="container-fluid">
   <div class="row">
     <div class="col-xs-12">
-      <div class="pull-right" style="margin-top:10px"><a href="/">Fish Tagging Homepage</a> | <a href="https://ecosheds.org">SHEDS Homepage</a></div>
+      <div class="pull-right" style="margin-top:10px"><a href="../index.html" style="font-weight:bold"><span class="glyphicon glyphicon-chevron-left"></span> Fish Tagging Homepage</a></div>
       <h1 id="mainTitle">The West Brook Story</h1>
       <h2 class="sub-title" id="subTitle">Trout and Salmon in a Small Stream Network in Western Massachusetts, USA </h2>
     </div>
@@ -273,10 +287,43 @@
   <hr>
 </div>
 
-<script src="/libs/d3/d3.js"></script>
-<script src="/libs/jquery/dist/jquery.min.js"></script>
-<script src="/libs/bootstrap/dist/js/bootstrap.min.js"></script>
-<script src="/libs/leaflet/dist/leaflet.js"></script>
+<footer class="footer">
+  <div class="tmp-container">
+    <div class="footer-doi">
+      <ul class="menu nav">
+        <li class="first leaf menu-links menu-level-1"><a href="https://www.doi.gov/privacy">DOI Privacy Policy</a>
+        </li>
+        <li class="leaf menu-links menu-level-1"><a href="https://www.usgs.gov/laws/policies_notices.html">Legal</a>
+        </li>
+        <li class="leaf menu-links menu-level-1"><a
+            href="https://www2.usgs.gov/laws/accessibility.html">Accessibility</a></li>
+        <li class="leaf menu-links menu-level-1"><a href="https://www.usgs.gov/sitemap.html">Site Map</a></li>
+        <li class="last leaf menu-links menu-level-1"><a href="https://answers.usgs.gov/">Contact USGS</a></li>
+      </ul>
+    </div>
+
+    <hr class="usgs">
+
+    <div class="footer-doi">
+      <ul class="menu nav">
+        <li class="first leaf menu-links menu-level-1"><a href="https://www.doi.gov/">U.S. Department of the
+            Interior</a></li>
+        <li class="leaf menu-links menu-level-1"><a href="https://www.doioig.gov/">DOI Inspector General</a></li>
+        <li class="leaf menu-links menu-level-1"><a href="https://www.whitehouse.gov/">White House</a></li>
+        <li class="leaf menu-links menu-level-1"><a href="https://www.whitehouse.gov/omb/management/egov/">E-gov</a>
+        </li>
+        <li class="leaf menu-links menu-level-1"><a href="https://www.doi.gov/pmb/eeo/no-fear-act">No Fear Act</a>
+        </li>
+        <li class="last leaf menu-links menu-level-1"><a href="https://www2.usgs.gov/foia">FOIA</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<script src="../libs/d3/d3.js"></script>
+<script src="../libs/jquery/dist/jquery.min.js"></script>
+<script src="../libs/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="../libs/leaflet/dist/leaflet.js"></script>
 
 <script src="js/app.js"></script>
 

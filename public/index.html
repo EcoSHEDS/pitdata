@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="libs/landing-page/css/landing-page.css" rel="stylesheet" type="text/css">
   <link rel="stylesheet" href="libs/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
   <link rel="stylesheet" href="libs/leaflet/dist/leaflet.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="css/usgs.css" rel="stylesheet" type="text/css">
 
   <style>
     body, h1, h2, h3, h4, h5, h6 {
@@ -56,10 +57,6 @@
 
     .object-fit_contain { object-fit: contain }
 
-    img[class] {
-      width: 100%;
-    }
-
     h4 {
       font-size: 20px;
     }
@@ -72,11 +69,24 @@
 </head>
 <body>
 
+<header id="navbar" class="header-nav" role="banner">
+  <div class="tmp-container">
+    <div class="header-search">
+      <a class="logo-header" href="https://www.usgs.gov/" title="USGS Home">
+        <img src="img/usgs-logo.png" alt="USGS" class="usgs-img" border="0" />
+      </a>
+      <a href="https://usgs.gov/apps/ecosheds" class="ecosheds-link">
+        <span class="glyphicon glyphicon-chevron-left"></span><span> EcoSHEDS</span>
+      </a>
+    </div>
+  </div>
+</header>
+
 <div style="border-bottom: 2px solid #e7e7e7;background:#f8f8f8">
   <div class="container">
     <div class="row" style="margin-top: 20px; margin-bottom: 20px">
       <div class="col-xs-12">
-        <h1>Fish Tagging Data Visualizations <small>part of the <a href="https://www.ecosheds.org/">Spatial Hydro-Ecological Decision System</a></small></h1>
+        <h1>Fish Tagging Data Visualizations</h1>
       </div>
     </div>
   </div>
@@ -123,46 +133,46 @@
   <div class="container">
     <div class="row" style="margin-top: 40px" id="overview">
       <div class="col-md-6">
-        <h2><a href="/overview">Overview</a></h2>
+        <h2><a href="overview">Overview</a></h2>
         <h4>What is the scope of the fish tagging studies?</h4>
 
         <p>
-          The <a href="/overview">overview visualization</a> provides a step-by-step explanation of the basic patterns we found in the fish tagging datasets for each watershed. Through this narrative, you will learn how the number of captured fish varies between species, seasons, river branches, and year to year. At the end, the visualization lets you explore characteristics of the dataset yourself by changing the color and grouping of bubbles representing individual fish.
+          The <a href="overview">overview visualization</a> provides a step-by-step explanation of the basic patterns we found in the fish tagging datasets for each watershed. Through this narrative, you will learn how the number of captured fish varies between species, seasons, river branches, and year to year. At the end, the visualization lets you explore characteristics of the dataset yourself by changing the color and grouping of bubbles representing individual fish.
         </p>
       </div>
       <div class="col-md-6 text-center">
-        <a href="/overview">
-          <img src="/img/thumb-overview.png" width="500px">
+        <a href="overview">
+          <img src="img/thumb-overview.png" width="500px">
         </a>
       </div>
     </div>
     <div class="row" style="margin-top: 40px" id="crossfilter">
       <div class="col-md-6">
-        <h2><a href="/crossfilter">Interactive Crossfilter</a></h2>
+        <h2><a href="crossfilter">Interactive Crossfilter</a></h2>
         <h4>What are the relationships between variables?</h4>
 
         <p>
-          The <a href="/crossfilter">interactive crossfilter visualization</a> lets you slice and dice the dataset across multiple variables. Each variable is represented by a histogram showing the number of fish captured for each value. You can focus on subsets of the dataset by selecting individual categories or ranges of values among the variables, and then immediately see how the other variables respond through linked changes in the other histograms.
+          The <a href="crossfilter">interactive crossfilter visualization</a> lets you slice and dice the dataset across multiple variables. Each variable is represented by a histogram showing the number of fish captured for each value. You can focus on subsets of the dataset by selecting individual categories or ranges of values among the variables, and then immediately see how the other variables respond through linked changes in the other histograms.
         </p>
       </div>
       <div class="col-md-6 text-center">
-        <a href="/crossfilter">
-          <img src="/img/thumb-crossfilter.png" width="500px">
+        <a href="crossfilter">
+          <img src="img/thumb-crossfilter.png" width="500px">
         </a>
       </div>
     </div>
     <div class="row" style="margin-top: 40px" id="movements">
       <div class="col-md-6">
-        <h2><a href="/fish-movements">Fish Movements</a></h2>
+        <h2><a href="fish-movements">Fish Movements</a></h2>
         <h4>How do individual fish move over time and space?</h4>
 
         <p>
-          The <a href="/fish-movements">fish movement visualization</a> shows how individual fish move between sections of the river over time. Watch the fish from West Brook or Stanley Brook move from season to season and see who lives and dies. Individuals, all fish from a sampling section, river or even family (in some years) can be selected to see how groups of fish move around and how long they survive.
+          The <a href="fish-movements">fish movement visualization</a> shows how individual fish move between sections of the river over time. Watch the fish from West Brook or Stanley Brook move from season to season and see who lives and dies. Individuals, all fish from a sampling section, river or even family (in some years) can be selected to see how groups of fish move around and how long they survive.
         </p>
       </div>
       <div class="col-md-6 text-center">
-        <a href="/fish-movements">
-          <img src="/img/thumb-movement.png" width="500px">
+        <a href="fish-movements">
+          <img src="img/thumb-movement.png" width="500px">
         </a>
       </div>
     </div>
@@ -174,10 +184,10 @@
     <div class="row">
       <div class="col-xs-12">
         <h2>Project Team</h2>
-        <p>Ben Letcher initiated the West Brook study in 1997 with Gabe Gries. Since then the study has been a collaboration among the <a href="http://www.lsc.usgs.gov/?q=cafb-population-dynamics-personnel">USGS Conte Laboratory</a> (Ben Letcher, Matt O'Donnell, Todd Dubreuil), the <a href="http://www.nrs.fs.fed.us/people/knislow">USFS Northern Research Station</a> (Keith Nislow, Jason Coombs), and the <a href="http://eco.umass.edu/">University of Massachusetts Department of Environmental Conservation</a> (<a href="http://www.cfc.umt.edu/personnel/details.php?ID=4461">Andrew Whiteley</a> - now at The University of Montana). </p>
+        <p>Ben Letcher initiated the West Brook study in 1997 with Gabe Gries. Since then the study has been a collaboration among the <a href="https://www.usgs.gov/centers/eesc">USGS Conte Laboratory</a> (Ben Letcher, Matt O'Donnell, Todd Dubreuil), the <a href="http://www.nrs.fs.fed.us/people/knislow">USFS Northern Research Station</a> (Keith Nislow, Jason Coombs), and the <a href="http://eco.umass.edu/">University of Massachusetts Department of Environmental Conservation</a> (<a href="http://www.cfc.umt.edu/personnel/details.php?ID=4461">Andrew Whiteley</a> - now at The University of Montana). </p>
         <p>Ben Letcher and Matt O'Donnell started the Stanley Brook study in 2006 with <a href="http://www.coopunits.org/Maine/People/Joseph_Zydlewski/">Joe Zydlewski </a> from <a href="https://umaine.edu/wle/faculty-staff-directory/">the University of Maine </a> and Bruce Connery of the <a href="https://www.nps.gov/acad/index.htm">National Park Service </a>.</p>
         <p>We thank the many graduate students, interns, post-docs and others who have helped sample the streams over the years. </p>
-        <p>The web site and data visualizations were developed by <a href="http://www.lsc.usgs.gov/?q=cafb-ben-letcher">Ben Letcher</a> and <a href="http://walkerenvres.com">Jeff Walker</a>.</p>
+        <p>The web site and data visualizations were developed by <a href="https://www.usgs.gov/staff-profiles/benjamin-h-letcher">Ben Letcher</a> and <a href="https://walkerenvres.com">Jeff Walker</a>.</p>
       </div>
     </div>
   </div>
@@ -189,7 +199,7 @@
     <div class="row">
       <div class="col-xs-12">
         <h2>Funding Sources</h2>
-        <p><a href="http://www.lsc.usgs.gov/?q=cafb-population-dynamics-personnel">USGS Conte Laboratory</a> and
+        <p><a href="https://www.usgs.gov/centers/eesc">USGS Conte Laboratory</a> and
         <a href="http://www.nrs.fs.fed.us/">USFS Northern Research Station</a>, with additional funding from:
 
         <div class="row">
@@ -208,12 +218,36 @@
   </div>
 </div>
 
-<footer>
-  <div class="container">
-    <div class="row">
-      <div class="col-xs-12">
-        <p class="copyright text-muted">Copyright © 2016 SHEDS Development Team</p>
-      </div>
+
+<footer class="footer">
+  <div class="tmp-container">
+    <div class="footer-doi">
+      <ul class="menu nav">
+        <li class="first leaf menu-links menu-level-1"><a href="https://www.doi.gov/privacy">DOI Privacy Policy</a>
+        </li>
+        <li class="leaf menu-links menu-level-1"><a href="https://www.usgs.gov/laws/policies_notices.html">Legal</a>
+        </li>
+        <li class="leaf menu-links menu-level-1"><a
+            href="https://www2.usgs.gov/laws/accessibility.html">Accessibility</a></li>
+        <li class="leaf menu-links menu-level-1"><a href="https://www.usgs.gov/sitemap.html">Site Map</a></li>
+        <li class="last leaf menu-links menu-level-1"><a href="https://answers.usgs.gov/">Contact USGS</a></li>
+      </ul>
+    </div>
+
+    <hr class="usgs">
+
+    <div class="footer-doi">
+      <ul class="menu nav">
+        <li class="first leaf menu-links menu-level-1"><a href="https://www.doi.gov/">U.S. Department of the
+            Interior</a></li>
+        <li class="leaf menu-links menu-level-1"><a href="https://www.doioig.gov/">DOI Inspector General</a></li>
+        <li class="leaf menu-links menu-level-1"><a href="https://www.whitehouse.gov/">White House</a></li>
+        <li class="leaf menu-links menu-level-1"><a href="https://www.whitehouse.gov/omb/management/egov/">E-gov</a>
+        </li>
+        <li class="leaf menu-links menu-level-1"><a href="https://www.doi.gov/pmb/eeo/no-fear-act">No Fear Act</a>
+        </li>
+        <li class="last leaf menu-links menu-level-1"><a href="https://www2.usgs.gov/foia">FOIA</a></li>
+      </ul>
     </div>
   </div>
 </footer>
